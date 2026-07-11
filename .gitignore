@@ -32,6 +32,7 @@ notebooks/.ipynb_checkpoints/
 # Literature PDFs are downloaded locally from the tracked manifest.
 # Keeping them out of the public repository avoids accidental redistribution.
 literature/papers/*.pdf
+literature/papers/*.part
 !literature/papers/.gitkeep
 
 # Shared ECG data live in ../PUBLIC and must never be copied into this repository.

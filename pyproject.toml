@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "melonlink" }]
 dependencies = [
+  "certifi>=2024.7.4",
   "matplotlib>=3.8,<4",
   "numpy>=1.26,<3",
   "pandas>=2.1,<3",
@@ -38,4 +39,3 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-

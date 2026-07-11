@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-07-11",
+  "max_file_bytes": 104857600,
+  "total_bytes": 73553418,
+  "validation": "PDF header and EOF marker plus Poppler pdfinfo parse",
+  "files": [
+    {
+      "file": "belmiloudi2021_fractional_bidomain_torso.pdf",
+      "bytes": 10665819,
+      "pages": 47,
+      "sha256": "03e4ead297c7be7879665d14c947c0740ec97bb78072a7f7a453f7ce795a4297"
+    },
+    {
+      "file": "camps2021_ventricular_activation_inference.pdf",
+      "bytes": 3194102,
+      "pages": 13,
+      "sha256": "021a81bfd2d7f9b1a31e6e60a5670a5e68642cda284b52b8bd802f8542308e65"
+    },
+    {
+      "file": "camps2024_ventricular_activation_digital_twinning.pdf",
+      "bytes": 7709362,
+      "pages": 43,
+      "sha256": "2a229e1d31041ef5475ab0bf9b4a186b49a93015104d424c75c049316bb370e8"
+    },
+    {
+      "file": "cluitmans2024_cardiac_dt_state_of_art.pdf",
+      "bytes": 1176529,
+      "pages": 6,
+      "sha256": "ac8c93d5c04bbfc999d21fc33b5fb23454c4a9d45272eb17d2f86605cf084050"
+    },
+    {
+      "file": "das2013_fractional_ecg_vdp.pdf",
+      "bytes": 1067885,
+      "pages": 28,
+      "sha256": "e8212b50316ab5691a79524d36e0b1ac84d894fe3ece911d9d549e13d99f8df7"
+    },
+    {
+      "file": "gillette2021_ecg_cardiac_digital_twins.pdf",
+      "bytes": 6768323,
+      "pages": 21,
+      "sha256": "6ecd32df188cb76b0d1b8eac300c7aa3ea1470da34ec2debb35f683ff61296b1"
+    },
+    {
+      "file": "grandits2025_cdt_identifiability.pdf",
+      "bytes": 10893981,
+      "pages": 27,
+      "sha256": "58a4b3c43e8b802fdb11101c50d7e87c4977bb0f3e1ab15150c9b0ef7c1db160"
+    },
+    {
+      "file": "li2024_inverse_ecg_cdt_survey.pdf",
+      "bytes": 1359998,
+      "pages": 19,
+      "sha256": "524c1cedee3b846eaa02f47aa4db6acfa5d5ee0176d095499bb235d0bbf14874"
+    },
+    {
+      "file": "mcsharry2003_ecg_dynamical_model.pdf",
+      "bytes": 514479,
+      "pages": 6,
+      "sha256": "c6203b8ee28a40261c028d4cac6bf53e1da9403c366f08793d56242f4834f1cd"
+    },
+    {
+      "file": "sameni2007_nonlinear_bayesian_ecg_filtering.pdf",
+      "bytes": 598481,
+      "pages": 15,
+      "sha256": "dc01f943190964a9dae682a0ec4287e3cbc1c90abe7ab2a5a73ae722e22689af"
+    },
+    {
+      "file": "sierociuk_macias2021_triple_estimation.pdf",
+      "bytes": 1100445,
+      "pages": 15,
+      "sha256": "3f85b05bf69699e0e05d8dc4117e96f3737e62bfa419698a6e740f7622b2e5f8"
+    },
+    {
+      "file": "sierociuk2006_fractional_kalman_filter.pdf",
+      "bytes": 249376,
+      "pages": 12,
+      "sha256": "c5e5516190745f834c72513e9f67653f151daa33b60577e8aa6aaca095a65221"
+    },
+    {
+      "file": "sierociuk2016_dual_variable_order_ufokf.pdf",
+      "bytes": 1850117,
+      "pages": 28,
+      "sha256": "c65d492efe935628f461bdf548303d3d2de5eeaa59e4c429cd4f79b80d499d91"
+    },
+    {
+      "file": "vadhavkar2026_hapi_ep_preprint.pdf",
+      "bytes": 24449147,
+      "pages": 44,
+      "sha256": "5708dd3b52b624221a9e886d5f0166dd34851b5a66d55c6c713b9295ca7d6164"
+    },
+    {
+      "file": "wagner2020_ptb_xl.pdf",
+      "bytes": 1955374,
+      "pages": 15,
+      "sha256": "b2378017e3e84c2abada6c0339edbcdc43111daca39684fc543f523a40a221f0"
+    }
+  ]
+}

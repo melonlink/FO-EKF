@@ -38,6 +38,17 @@ py -3.11 -m venv .venv
 
 The bootstrap package deliberately contains only path/configuration code. Model equations, fractional discretization, and FO-EKF code will be added only after the feasibility and identifiability review fixes their definitions.
 
+## Feasibility checkpoint
+
+The initial review found that the original broad "first FO-EKF cardiac digital twin" claim is not defensible, but a narrower correlation-consistent, identifiability-gated finite-memory observer is conditionally feasible.
+
+- [Feasibility and novelty review](research/feasibility_review_2026-07-11.md)
+- [Environment snapshot](research/environment_snapshot_2026-07-11.md)
+- [Curated literature manifest](literature/manifest.csv)
+- [Verified local literature lock](literature/download-lock.json)
+
+No full FO-EKF implementation should begin until the P0 model-definition gate in the review is closed.
+
 ## Research artifacts
 
 - `PaperPlan/`: original research concept.
