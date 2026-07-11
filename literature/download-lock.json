@@ -2,7 +2,7 @@
   "schema_version": 1,
   "verified_on": "2026-07-11",
   "max_file_bytes": 104857600,
-  "total_bytes": 73553418,
+  "total_bytes": 80854524,
   "validation": "PDF header and EOF marker plus Poppler pdfinfo parse",
   "files": [
     {
@@ -36,6 +36,12 @@
       "sha256": "e8212b50316ab5691a79524d36e0b1ac84d894fe3ece911d9d549e13d99f8df7"
     },
     {
+      "file": "djennoune2019_output_memory_observability.pdf",
+      "bytes": 729947,
+      "pages": 16,
+      "sha256": "a8afbc8824ff5c449d7bbfc09a6cced2acc8b60a5ea16d50bdbf4ccff6ab7837"
+    },
+    {
       "file": "gillette2021_ecg_cardiac_digital_twins.pdf",
       "bytes": 6768323,
       "pages": 21,
@@ -46,6 +52,12 @@
       "bytes": 10893981,
       "pages": 27,
       "sha256": "58a4b3c43e8b802fdb11101c50d7e87c4977bb0f3e1ab15150c9b0ef7c1db160"
+    },
+    {
+      "file": "guermah2008_discrete_fractional_observability.pdf",
+      "bytes": 176894,
+      "pages": 10,
+      "sha256": "433f6af70e93b983b7c155e82b63fd657d9149841905dd4de57e30aec75b959f"
     },
     {
       "file": "li2024_inverse_ecg_cdt_survey.pdf",
@@ -82,6 +94,12 @@
       "bytes": 1850117,
       "pages": 28,
       "sha256": "c65d492efe935628f461bdf548303d3d2de5eeaa59e4c429cd4f79b80d499d91"
+    },
+    {
+      "file": "takha2025_doctoral_thesis.pdf",
+      "bytes": 6394265,
+      "pages": 165,
+      "sha256": "3f4c283317e7cbd1978fb8fc1bcb62b9c34ff358e24c86c396388b84f5eddbbd"
     },
     {
       "file": "vadhavkar2026_hapi_ep_preprint.pdf",

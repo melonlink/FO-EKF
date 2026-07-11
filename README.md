@@ -38,16 +38,19 @@ py -3.11 -m venv .venv
 
 The bootstrap package deliberately contains only path/configuration code. Model equations, fractional discretization, and FO-EKF code will be added only after the feasibility and identifiability review fixes their definitions.
 
-## Feasibility checkpoint
+## Feasibility and theory checkpoints
 
 The initial review found that the original broad "first FO-EKF cardiac digital twin" claim is not defensible, but a narrower correlation-consistent, identifiability-gated finite-memory observer is conditionally feasible.
 
+The subsequent control-theory review narrows the primary paper further: a periodicity-consistent mixed integer-fractional ECG surrogate, a gauge-invariant multi-heart-rate certificate for fractional-order identifiability, and an approximation-aware Mittag-Leffler observer-error tube. Generic FO-EKF, finite-memory compensation, and LMI stability remain prior-art tools rather than headline contributions.
+
 - [Feasibility and novelty review](research/feasibility_review_2026-07-11.md)
+- [Control-theory innovation specification](research/control_theory_innovation_spec_2026-07-11.md)
 - [Environment snapshot](research/environment_snapshot_2026-07-11.md)
 - [Curated literature manifest](literature/manifest.csv)
 - [Verified local literature lock](literature/download-lock.json)
 
-No full FO-EKF implementation should begin until the P0 model-definition gate in the review is closed.
+No performance implementation should begin until the analytical recovery, finite-dwell bound, counterexamples, and observer tube in the theory specification pass their data-free tests.
 
 ## Research artifacts
 
