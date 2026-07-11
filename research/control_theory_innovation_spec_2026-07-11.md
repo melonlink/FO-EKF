@@ -407,6 +407,124 @@ m_I=\inf_{\alpha\in I}F'(\alpha)>0.
 
 **证明**：第一式由倒数差的精确恒等式得到；第二式由复商扰动恒等式和 \(|D+\delta D|\ge|D|-2\epsilon_W\) 得到；第三式使用均值定理。
 
+### S3 执行后补充：可由观测量直接计算的后验闭式界
+
+上式适合真值审计。实际算法只有观测复系数 \(\widetilde Z_r\) 和误差半径 \(\epsilon_r\)。若
+
+\[
+|\widetilde Z_r|>\epsilon_r,
+\]
+
+则
+
+\[
+|\widetilde W_r-W_r|
+\le b_r=
+\frac{\epsilon_r}
+{|\widetilde Z_r|(|\widetilde Z_r|-\epsilon_r)}.
+\]
+
+令
+
+\[
+\widetilde B=\widetilde W_2-\widetilde W_1,
+\qquad
+\widetilde R=\frac{\widetilde W_3-\widetilde W_1}{\widetilde B}.
+\]
+
+若 \(|\widetilde B|>b_1+b_2\)，则共享的 \(W_1\) 误差可保留其正确系数，得到
+
+\[
+|\widetilde R-R|
+\le
+\epsilon_R^{\mathrm{chain}}
+=
+\frac{
+b_3+|\widetilde R|b_2+|1-\widetilde R|b_1
+}{
+|\widetilde B|-b_1-b_2
+}.
+\]
+
+若响应圆盘包含零或差分分母条件失败，该三元组不是“误差较大但仍可用”，而是没有有限倒数/差商证书，必须拒绝。
+
+进一步令
+
+\[
+a=\log(\nu_2/\nu_1),\qquad
+b=\log(\nu_3/\nu_1),\qquad0<a<b,
+\]
+
+并写成
+
+\[
+F'(\alpha)=F(\alpha)g(\alpha),
+\qquad
+g(\alpha)=
+\frac b{1-e^{-b\alpha}}-
+\frac a{1-e^{-a\alpha}}.
+\]
+
+因为
+
+\[
+g'(\alpha)=
+\left[\frac{a}{2\sinh(a\alpha/2)}\right]^2-
+\left[\frac{b}{2\sinh(b\alpha/2)}\right]^2>0,
+\]
+
+所以 \(F''(\alpha)=F(\alpha)[g(\alpha)^2+g'(\alpha)]>0\)。因此可严格取
+
+\[
+m_I=F'(\alpha_-),
+\]
+
+无需通过数值网格猜测 \(F'\) 的最小点。
+
+### S3 执行后补充：精确复圆盘可行集
+
+倒数映射可精确处理。若
+
+\[
+Z_r\in\mathcal D(\widetilde Z_r,\epsilon_r),
+\qquad |\widetilde Z_r|>\epsilon_r,
+\]
+
+则
+
+\[
+W_r\in\mathcal D(c_r,s_r),
+\]
+
+\[
+c_r=
+\frac{\overline{\widetilde Z_r}}
+{|\widetilde Z_r|^2-\epsilon_r^2},
+\qquad
+s_r=
+\frac{\epsilon_r}
+{|\widetilde Z_r|^2-\epsilon_r^2}.
+\]
+
+对候选实数 \(R>1\)，存在三个允许的 \(W_r\) 实现该差分比，当且仅当
+
+\[
+|c_3-c_1-R(c_2-c_1)|
+\le s_3+(R-1)s_1+Rs_2.
+\]
+
+代入 \(R=F(\alpha)\) 得到精确的一维阶次可行集：
+
+\[
+\mathcal A_{\mathrm{disk}}
+=\left\{\alpha\in I:
+|c_3-c_1-F(\alpha)(c_2-c_1)|
+\le s_3+[F(\alpha)-1]s_1+F(\alpha)s_2
+\right\}.
+\]
+
+实现必须保留所有连通分量；不能未经检查把可能不连通的集合强行报告成单一窄区间。
+
 ### 形态和阻尼漂移如何进入 \(\epsilon_Z\)
 
 对 \(d_r=\lambda+(i\nu_r)^\alpha\)，若 \(q_r=q+\delta q_r\)、\(\lambda_r=\lambda+\delta\lambda_r\) 且 \(|\delta\lambda_r|<|d_r|\)，则
@@ -425,17 +543,19 @@ m_I=\inf_{\alpha\in I}F'(\alpha)>0.
 
 ### 必须同时通过的阶次更新门
 
-1. **驻留门**：定理 1 的瞬态上界低于预设比例；
-2. **心率分离门**：三个心率严格有序且 \(|W_2-W_1|>2\epsilon_W+\delta_D\)；
-3. **复相位门**：\(|\operatorname{Im}\widehat R|\le\delta_{\mathrm{imag}}\)；
-4. **范围门**：\(\operatorname{Re}\widehat R\in F(I)\) 的误差扩张区间；
-5. **条件数门**：\(m_I\) 和局部 \(F'(\widehat\alpha)\) 高于阈值；
-6. **多三元组门**：五个以上心率的不同三元组给出相容阶次；
-7. **多谐波门**：至少两个非零形态谐波给出相容阶次；
-8. **漂移门**：允许 \(q_r,\lambda_r\) 漂移的竞争模型没有显著优于共同参数模型；
-9. **预测门**：冻结参数后能改善留一心率的更新前预测。
+1. **G0 协议门**：公共相位锚、共同 \(q,\lambda\) 或其独立漂移上界、禁止逐段归一化、延迟已校准、驻留预算已计算；
+2. **驻留门**：定理 1 的瞬态上界进入总 \(\epsilon_r\) 后仍可形成有限阶次区间；
+3. **倒数门**：所有 \(|\widetilde Z_r|>\epsilon_r\)；
+4. **心率分离门**：\(|\widetilde W_2-\widetilde W_1|>b_1+b_2\)；
+5. **复相位门**：\(|\operatorname{Im}\widetilde R|\le\epsilon_R^{\mathrm{chain}}+\tau_{\mathrm{num}}\)；
+6. **范围门**：\(\operatorname{dist}(\operatorname{Re}\widetilde R,F(I))\le\epsilon_R^{\mathrm{chain}}+\tau_{\mathrm{num}}\)；
+7. **条件数门**：主论文要求 \(\epsilon_R^{\mathrm{chain}}/F'(\alpha_-)\le0.02\)，探索性上限为 0.05；
+8. **多三元组门**：五个以上心率的不同三元组给出相容阶次；
+9. **多谐波门**：至少两个非零形态谐波给出相容阶次；
+10. **漂移门**：允许 \(q_r,\lambda_r\) 漂移的竞争模型没有显著优于共同参数模型；
+11. **预测门**：冻结参数后能改善留一心率的更新前预测。
 
-任一关键门失败时冻结 \(\alpha\)；不是调低阈值直到得到可用数值。
+门控结果使用三类语义：`PASS`、`REJECT_NUMERIC` 和 `NOT_CERTIFIABLE`。G0 失败属于 `NOT_CERTIFIABLE`：即使输出与某个合法共同参数模型完全一致，也不能从数据本身排除独立 \(q_r\) 的观测等价构造。任一关键门失败时冻结 \(\alpha\)；不是调低阈值直到得到可用数值。
 
 ## 11. 反例与证伪条件
 

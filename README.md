@@ -46,11 +46,12 @@ The subsequent control-theory review narrows the primary paper further: a period
 
 - [Feasibility and novelty review](research/feasibility_review_2026-07-11.md)
 - [Control-theory innovation specification](research/control_theory_innovation_spec_2026-07-11.md)
+- [S0-S3 theory-validation execution report](research/s0_s3_execution_report_2026-07-11.md)
 - [Environment snapshot](research/environment_snapshot_2026-07-11.md)
 - [Curated literature manifest](literature/manifest.csv)
 - [Verified local literature lock](literature/download-lock.json)
 
-No performance implementation should begin until the analytical recovery, finite-dwell bound, counterexamples, and observer tube in the theory specification pass their data-free tests.
+The analytical recovery, finite-dwell bound, counterexamples, and deterministic order-error chain have passed their data-free S0-S3 tests. Patient-data calibration remains gated on the preregistered Fantasia protocol: no per-window amplitude normalization, explicit phasor-error radii, common-parameter checks, and leave-one-rate prediction.
 
 ## Research artifacts
 

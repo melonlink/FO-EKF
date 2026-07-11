@@ -59,7 +59,9 @@ def order_invariant(order: float, frequencies: Sequence[float]) -> float:
     if order <= 0.0:
         raise ValueError("order must be positive")
     nu_1, nu_2, nu_3 = _three_frequencies(frequencies)
-    return (nu_3**order - nu_1**order) / (nu_2**order - nu_1**order)
+    log_middle = math.log(nu_2 / nu_1)
+    log_upper = math.log(nu_3 / nu_1)
+    return math.expm1(log_upper * order) / math.expm1(log_middle * order)
 
 
 def order_invariant_slope(order: float, frequencies: Sequence[float]) -> float:
@@ -68,12 +70,13 @@ def order_invariant_slope(order: float, frequencies: Sequence[float]) -> float:
     if order <= 0.0:
         raise ValueError("order must be positive")
     nu_1, nu_2, nu_3 = _three_frequencies(frequencies)
-    p_1, p_2, p_3 = (value**order for value in (nu_1, nu_2, nu_3))
-    numerator = p_3 - p_1
-    denominator = p_2 - p_1
-    numerator_prime = p_3 * math.log(nu_3) - p_1 * math.log(nu_1)
-    denominator_prime = p_2 * math.log(nu_2) - p_1 * math.log(nu_1)
-    return (numerator_prime * denominator - numerator * denominator_prime) / denominator**2
+    log_middle = math.log(nu_2 / nu_1)
+    log_upper = math.log(nu_3 / nu_1)
+    value = order_invariant(order, frequencies)
+    log_slope = log_upper / (-math.expm1(-log_upper * order)) - log_middle / (
+        -math.expm1(-log_middle * order)
+    )
+    return value * log_slope
 
 
 def response_invariant(responses: Sequence[complex]) -> complex:

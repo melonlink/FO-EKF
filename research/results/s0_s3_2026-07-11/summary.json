@@ -1,0 +1,58 @@
+{
+  "S0": {
+    "cases": 1200,
+    "elapsed_seconds": 0.05109010000160197,
+    "max_damping_error": 2.7782220968219917e-12,
+    "max_invariant_imag_abs": 2.0138056186663448e-14,
+    "max_morphology_error": 4.5815029176920494e-12,
+    "max_order_error": 3.4727776210274897e-13,
+    "passed": 1200,
+    "status": "PASS"
+  },
+  "S1": {
+    "constant_switch_cases": 225,
+    "constant_switch_passed": 225,
+    "demodulation_cases": 15,
+    "demodulation_passed": 15,
+    "elapsed_seconds": 0.6592094999941764,
+    "max_bound_utilization": 0.6030694809767799,
+    "max_constant_bound_utilization": 0.9998322686860488,
+    "max_implicit_oracle_error": 0.00010867540354995812,
+    "max_pece_oracle_error": 0.0009096002215110625,
+    "monotone_step_convergence": true,
+    "pointwise_cases": 75,
+    "pointwise_passed": 75,
+    "status": "PASS"
+  },
+  "S2": {
+    "adversarial_cases": 10,
+    "adversarial_not_certifiable": 10,
+    "adversarial_numeric_pass": 10,
+    "cases": 280,
+    "elapsed_seconds": 0.02221339999960037,
+    "invalid_protocol_cases": 180,
+    "invalid_protocol_not_certifiable": 180,
+    "positive_control_cases": 60,
+    "positive_control_passed": 60,
+    "status": "PASS"
+  },
+  "S3": {
+    "adversarial_chain_coverage": 1.0,
+    "adversarial_max_u_alpha": 0.5964310576561788,
+    "adversarial_max_u_r": 0.9520637915030713,
+    "adversarial_trials": 256,
+    "bound_violations": 0,
+    "bounded_random_trials": 49152,
+    "configurations": 384,
+    "elapsed_seconds": 12.087249500000325,
+    "max_u_alpha": 0.8848758973550608,
+    "max_u_r": 0.9603169941111114,
+    "max_u_w": 0.9999680391249861,
+    "min_chain_coverage": 1.0,
+    "min_disk_true_feasible": 1.0,
+    "status": "PASS"
+  },
+  "elapsed_seconds": 12.819894599997497,
+  "overall_status": "PASS",
+  "seed": 20260711
+}
