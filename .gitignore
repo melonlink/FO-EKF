@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Editors and operating systems
+.idea/
+.vscode/*.log
+.DS_Store
+Thumbs.db
+
+# Local configuration
+.env
+*.local.toml
+
+# Generated research artifacts
+artifacts/
+outputs/
+data/processed/
+notebooks/.ipynb_checkpoints/
+
+# Literature PDFs are downloaded locally from the tracked manifest.
+# Keeping them out of the public repository avoids accidental redistribution.
+literature/papers/*.pdf
+!literature/papers/.gitkeep
+
+# Shared ECG data live in ../PUBLIC and must never be copied into this repository.
+PUBLIC/
+data/raw/
+*.dat
+*.hea
+*.mat
+*.h5
+*.hdf5
+*.npz
+*.npy
