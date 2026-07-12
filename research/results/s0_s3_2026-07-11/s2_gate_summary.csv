@@ -1,9 +1,9 @@
 scenario,severity,cases,pass,reject_numeric,not_certifiable,numeric_pass,numeric_pass_rate
 adversarial_observation_equivalent_q,0.15000000000000002,10,0,0,10,10,1.0
-close_heart_rates,0.25,10,0,10,0,0,0.0
-close_heart_rates,1.0,10,0,10,0,0,0.0
-close_heart_rates,3.0,10,0,10,0,0,0.0
-close_heart_rates,8.0,10,0,10,0,0,0.0
+close_heart_rates,0.25,10,0,0,10,0,0.0
+close_heart_rates,1.0,10,0,0,10,0,0.0
+close_heart_rates,3.0,10,0,0,10,0,0.0
+close_heart_rates,8.0,10,0,0,10,0,0.0
 common_gain_phase,0.0,10,10,0,0,10,1.0
 delay_corrected,1.0,10,10,0,0,10,1.0
 delay_corrected,5.0,10,10,0,0,10,1.0

@@ -1,7 +1,7 @@
 {
   "S0": {
     "cases": 1200,
-    "elapsed_seconds": 0.05109010000160197,
+    "elapsed_seconds": 0.04774199999519624,
     "max_damping_error": 2.7782220968219917e-12,
     "max_invariant_imag_abs": 2.0138056186663448e-14,
     "max_morphology_error": 4.5815029176920494e-12,
@@ -14,7 +14,7 @@
     "constant_switch_passed": 225,
     "demodulation_cases": 15,
     "demodulation_passed": 15,
-    "elapsed_seconds": 0.6592094999941764,
+    "elapsed_seconds": 0.5521267000003718,
     "max_bound_utilization": 0.6030694809767799,
     "max_constant_bound_utilization": 0.9998322686860488,
     "max_implicit_oracle_error": 0.00010867540354995812,
@@ -29,7 +29,7 @@
     "adversarial_not_certifiable": 10,
     "adversarial_numeric_pass": 10,
     "cases": 280,
-    "elapsed_seconds": 0.02221339999960037,
+    "elapsed_seconds": 0.020320099996752106,
     "invalid_protocol_cases": 180,
     "invalid_protocol_not_certifiable": 180,
     "positive_control_cases": 60,
@@ -44,7 +44,7 @@
     "bound_violations": 0,
     "bounded_random_trials": 49152,
     "configurations": 384,
-    "elapsed_seconds": 12.087249500000325,
+    "elapsed_seconds": 11.323235800002294,
     "max_u_alpha": 0.8848758973550608,
     "max_u_r": 0.9603169941111114,
     "max_u_w": 0.9999680391249861,
@@ -52,7 +52,7 @@
     "min_disk_true_feasible": 1.0,
     "status": "PASS"
   },
-  "elapsed_seconds": 12.819894599997497,
+  "elapsed_seconds": 11.943554700003006,
   "overall_status": "PASS",
   "seed": 20260711
 }

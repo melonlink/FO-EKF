@@ -109,9 +109,8 @@ def evaluate_chain_certificate(
     )
     if any(abs(response) <= error for response, error in zip(responses, errors, strict=True)):
         reasons.append("reciprocal_disk_contains_zero")
-        status = "NOT_CERTIFIABLE" if not protocol_certified else "REJECT_NUMERIC"
         return ChainCertificate(
-            status=status,
+            status="NOT_CERTIFIABLE",
             reasons=tuple((["protocol_G0"] if not protocol_certified else []) + reasons),
             numeric_pass=False,
             invariant=None,
@@ -135,9 +134,8 @@ def evaluate_chain_certificate(
     denominator_margin = (abs(difference) - difference_error) / abs(difference)
     if abs(difference) <= difference_error:
         reasons.append("unseparated_inverse_response")
-        status = "NOT_CERTIFIABLE" if not protocol_certified else "REJECT_NUMERIC"
         return ChainCertificate(
-            status=status,
+            status="NOT_CERTIFIABLE",
             reasons=tuple((["protocol_G0"] if not protocol_certified else []) + reasons),
             numeric_pass=False,
             invariant=None,
@@ -197,11 +195,18 @@ def evaluate_chain_certificate(
             reasons.append("empty_chain_order_set")
 
     numeric_pass = not reasons and interval is not None
+    incompatibility_reasons = {
+        "imaginary_inconsistency",
+        "invariant_out_of_range",
+        "empty_chain_order_set",
+    }
     if not protocol_certified:
         status = "NOT_CERTIFIABLE"
         reasons.insert(0, "protocol_G0")
     elif numeric_pass:
         status = "PASS"
+    elif not incompatibility_reasons.intersection(reasons):
+        status = "NOT_CERTIFIABLE"
     else:
         status = "REJECT_NUMERIC"
     return ChainCertificate(
@@ -253,14 +258,17 @@ def disk_order_intervals(
     order_bounds: tuple[float, float] = (0.4, 1.0),
     grid_size: int = 4097,
 ) -> tuple[OrderInterval, ...]:
-    """Approximate all connected components of the exact disk-feasible order set."""
+    """Approximate the relaxed three-point disk-consistent order set.
+
+    This enforces only the algebraic relation
+    ``W3 - W1 = F(alpha) * (W2 - W1)``. It does not enforce a positive
+    real damping value or joint physical consistency across more than one
+    triplet/harmonic, so it is not the exact feasible set of the full model.
+    """
 
     if grid_size < 33:
         raise ValueError("grid_size must be at least 33")
     centers, radii = inverse_response_disks(measured_responses, response_errors)
-    if abs(centers[1] - centers[0]) <= radii[0] + radii[1]:
-        return ()
-
     def residual(order: float) -> float:
         ratio = order_invariant(order, frequencies)
         center_residual = centers[2] - centers[0] - ratio * (centers[1] - centers[0])

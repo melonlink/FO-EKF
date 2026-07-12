@@ -73,10 +73,33 @@ def test_close_frequencies_fail_the_precision_gate() -> None:
 
     result = evaluate_chain_certificate(measured, frequencies, 1.0e-4)
 
-    assert result.status == "REJECT_NUMERIC"
+    assert result.status == "NOT_CERTIFIABLE"
     assert (
         "unseparated_inverse_response" in result.reasons or "order_bound_too_wide" in result.reasons
     )
+
+
+def test_overlapping_inverse_disks_do_not_imply_empty_relaxed_set() -> None:
+    intervals = disk_order_intervals(
+        (1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j),
+        (0.8, 1.4, 2.4),
+        0.1,
+    )
+
+    assert intervals
+    assert intervals[0].contains(0.4)
+    assert intervals[-1].contains(1.0)
+
+
+def test_reciprocal_disk_containing_zero_is_not_certifiable_not_rejected() -> None:
+    result = evaluate_chain_certificate(
+        (0.1 + 0.0j, 0.2 + 0.0j, 0.3 + 0.0j),
+        (0.8, 1.4, 2.4),
+        0.1,
+    )
+
+    assert result.status == "NOT_CERTIFIABLE"
+    assert "reciprocal_disk_contains_zero" in result.reasons
 
 
 def test_strict_convexity_places_slope_minimum_at_lower_order() -> None:
