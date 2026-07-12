@@ -598,10 +598,11 @@ def _window_hash(
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]], fields: Sequence[str]) -> None:
-    with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
+    buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    _write_text_lf(path, buffer.getvalue())
 
 
 def _write_csv_gzip(path: Path, rows: list[dict[str, Any]], fields: Sequence[str]) -> None:
@@ -621,10 +622,18 @@ def _write_csv_gzip(path: Path, rows: list[dict[str, Any]], fields: Sequence[str
             stream.write(encoded)
 
 
+def _write_text_lf(path: Path, text: str, *, encoding: str = "utf-8") -> None:
+    """Write a sealed text artifact without platform newline translation."""
+
+    if "\r" in text:
+        raise ValueError("sealed text artifacts must use LF line endings")
+    path.write_bytes(text.encode(encoding))
+
+
 def _write_json(path: Path, payload: Any) -> None:
-    path.write_text(
+    _write_text_lf(
+        path,
         json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n",
-        encoding="utf-8",
     )
 
 
@@ -1363,5 +1372,9 @@ def run_fantasia_pilot(
     )
     checksums = {name: sha256_file(destination / name) for name in checksum_targets}
     checksum_lines = [f"{digest}  {name}" for name, digest in checksums.items()]
-    (destination / "SHA256SUMS").write_text("\n".join(checksum_lines) + "\n", encoding="ascii")
+    _write_text_lf(
+        destination / "SHA256SUMS",
+        "\n".join(checksum_lines) + "\n",
+        encoding="ascii",
+    )
     return summary

@@ -2,6 +2,7 @@
 *.py text eol=lf
 *.tex text eol=lf
 *.md text eol=lf
+*.txt text eol=lf
 *.csv text eol=lf
 *.json text eol=lf
 *.toml text eol=lf
@@ -13,3 +14,4 @@
 *.gz binary
 *.png binary
 *.jpg binary
+SHA256SUMS text eol=lf

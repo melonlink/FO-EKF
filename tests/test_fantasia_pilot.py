@@ -1,8 +1,10 @@
 import math
+from pathlib import Path
 
 import numpy as np
 import pytest
 
+from fo_ekf import fantasia_pilot as fantasia_module
 from fo_ekf.fantasia_pilot import (
     FANTASIA_V1_SHA256,
     FantasiaPilotConfig,
@@ -50,6 +52,22 @@ def test_production_manifest_binds_sources_and_runtime() -> None:
     }
     assert all(len(value) == 64 for value in manifest["source_sha256"].values())
     assert {"python", "numpy", "scipy", "wfdb", "python_flint", "flint"} <= set(environment)
+
+
+def test_sealed_plain_text_writers_emit_lf_bytes(tmp_path: Path) -> None:
+    json_path = tmp_path / "payload.json"
+    csv_path = tmp_path / "payload.csv"
+
+    fantasia_module._write_json(json_path, {"message": "line one\nline two"})
+    fantasia_module._write_csv(csv_path, [{"a": 1, "b": 2}], ("a", "b"))
+
+    for path in (json_path, csv_path):
+        payload = path.read_bytes()
+        assert b"\r" not in payload
+        assert payload.endswith(b"\n")
+
+    with pytest.raises(ValueError, match="LF line endings"):
+        fantasia_module._write_text_lf(tmp_path / "invalid.txt", "bad\r\n")
 
 
 def test_empirical_decision_is_derived_from_counts() -> None:
