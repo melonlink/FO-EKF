@@ -22,7 +22,7 @@
 
 \title{Finite-Record Set Identifiability of a Fractional ECG Harmonic Surrogate}
 \author{FO-EKF theory-core working draft}
-\date{11 July 2026}
+\date{12 July 2026}
 
 \begin{document}
 \maketitle
@@ -32,8 +32,9 @@ We establish the theory gates that precede real-data validation.  The first
 result proves that two exact complex rate responses are necessary and
 sufficient to recover the order of a scalar fractional ECG harmonic surrogate
 with an unknown common complex coefficient and positive real damping.  We then
-give a joint forward-disk feasible-set theorem, conditional finite-record
-data-to-disk bounds, and an exact output-set separation threshold for
+give a joint forward-disk feasible-set theorem, a gauge-reduced analytic
+nuisance-selector tube, conditional finite-record data-to-disk bounds, and an
+exact output-set separation threshold for
 worst-case rate-window design.  The data-to-disk assumptions are not yet
 calibrated in the project, so the present result is a theory checkpoint rather
 than a real-ECG order certificate.  These statements concern a declared
@@ -383,7 +384,13 @@ geometry may only propose an inner witness; Arb/ACB inequalities verify it
 before inclusion is issued.  Thus every issued outer exclusion or uniform
 inner inclusion is a machine certificate.  Precision, \(q\)-box, branch, or
 leaf-budget exhaustion remains unknown, so this certified core is not a
-guaranteed finite exact projector.
+guaranteed finite exact projector.  The companion
+\texttt{tube\_certificate.py} implements
+Proposition~\ref{prop:exact-gram-krawczyk} and
+Theorem~\ref{thm:selector-tube}: it uses an exact-rational Gram inverse,
+Arb path inequalities, sealed per-interval evidence, and a replayed
+alpha-only binary cover.  It issues only robust inner, closed inner, or
+unknown results.
 \end{remark}
 
 \begin{assumption}[Certification coordinates]
@@ -417,6 +424,303 @@ damping vector.  Conversely,
 anchor forces \(\bar\lambda=\lambda_{r_0}\).  Substitution preserves every
 model denominator exactly.
 \end{proof}
+
+\begin{lemma}[Rank test for the fully free damping centre map]
+\label{lem:selector-rank}
+Suppose every retained centre \(\widetilde Z_{r,m}\) is nonzero.  In physical
+damping coordinates, with all \(R\) physical rate dampings free, let the real
+matrix \(B_{\rm full}\) represent the linear map
+\[
+ (a_1,\ldots,a_R,b_1,\ldots,b_M)\longmapsto
+ (b_m-\widetilde Z_{r,m}a_r)_{r,m},
+ \qquad a_r\in\R,\quad b_m\in\C.
+\]
+The complex outputs are stacked by real and imaginary parts.  For any
+reference rate \(r_0\), \(B_{\rm full}\) has full column rank if and only if
+there do not exist nonzero real numbers \(\kappa_r\) such that
+\begin{equation}
+ \widetilde Z_{r,m}=\kappa_r\widetilde Z_{r_0,m}
+ \quad\text{for every }r,m.
+ \label{eq:real-separable-response}
+\end{equation}
+The same condition holds after the invertible anchored coordinate change of
+Assumption~\ref{ass:cert-coordinates}.  In particular,
+\(2RM\ge R+2M\) is necessary in this fully free case.
+\end{lemma}
+\begin{proof}
+A null vector satisfies
+\(b_m=\widetilde Z_{r,m}a_r\) for every \(r,m\).  If one \(a_r\) vanishes,
+nonzero response centres force every \(b_m\), and then every \(a_r\), to
+vanish.  Hence a nonzero null vector has all \(a_r\ne0\), and division by the
+equation at \(r_0\) gives
+\(\widetilde Z_{r,m}/\widetilde Z_{r_0,m}=a_{r_0}/a_r\), which is real and
+independent of \(m\).  Conversely, if \eqref{eq:real-separable-response}
+holds, \(a_{r_0}=1\), \(a_r=1/\kappa_r\), and
+\(b_m=\widetilde Z_{r_0,m}\) form a nonzero null vector.  The anchored-to-
+physical damping map in Lemma~\ref{lem:anchored-damping} is invertible, so it
+cannot change rank.  The row-count condition follows immediately.
+\end{proof}
+
+\begin{corollary}[Exact elimination of fixed damping coordinates]
+\label{cor:fixed-coordinate-elimination}
+Before constructing a selector, fix every zero-width damping coordinate at its
+declared value and absorb its contribution into the order-dependent centre
+vector.  If \(p\) damping coordinates remain free, the resulting residual has
+the exact reduced form
+\[
+ B_Jy-g_J(\beta),\qquad y\in\R^{p+2M}.
+\]
+Strict convexity requires only that \(B_J\) have full column rank; hence the
+necessary row-count condition is \(2RM\ge p+2M\).  This elimination changes
+neither the feasible fibres nor their order projection.  The real-separability
+criterion of Lemma~\ref{lem:selector-rank} is the \(p=R\) special case; for a
+general free-coordinate set \(J\), rank is checked on \(B_J\) itself.
+\end{corollary}
+\begin{proof}
+Substitution of a fixed coordinate is an exact affine restriction.  Moving its
+known term to \(g_J(\beta)\) leaves every residual value unchanged on that
+restriction.  The row-count condition follows from the reduced dimensions;
+full column rank of \(B_J\) remains a separate condition to be checked.
+\end{proof}
+
+\begin{theorem}[Gauge-reduced analytic least-squares selector]
+\label{thm:analytic-selector}
+After Corollary~\ref{cor:fixed-coordinate-elimination}, let
+\(y\in\R^{p+2M}\) collect the \(p\) free anchored damping coordinates and the
+real and imaginary parts of every \(q_m\).  Stack the centre residuals as
+\begin{equation}
+ \operatorname{vec}_{\R}
+ \left(q_m-\widetilde Z_{r,m}
+ [\bar\lambda+\delta\lambda_r+(i\nu_{r,m})^\beta]\right)_{r,m}
+ =B_Jy-g_J(\beta),
+ \label{eq:selector-residual}
+\end{equation}
+where all fixed contributions are included in \(g_J\), and \(B_J\) is
+independent of \(\beta\).  Freeze positive weights in a diagonal matrix \(W\),
+and suppose \(B_J\) has full column rank.  To lighten notation, write
+\(B=B_J\) and \(g=g_J\) below.  Then
+\[
+ \Psi_\beta(y)=\tfrac12(By-g(\beta))^\top W(By-g(\beta))
+\]
+is strictly convex, with the unique global selector
+\begin{equation}
+ y_\star(\beta)=H^{-1}B^\top Wg(\beta),
+ \qquad H=B^\top WB\succ0.
+ \label{eq:analytic-selector}
+\end{equation}
+The map \(y_\star\) is the restriction of a real-analytic map on an open
+neighbourhood of \(I\), and
+\begin{align}
+ y_\star'(\beta)&=H^{-1}B^\top Wg'(\beta),\label{eq:selector-first}\\
+ y_\star''(\beta)&=H^{-1}B^\top Wg''(\beta),\label{eq:selector-second}
+\end{align}
+where, for each positive \(\nu\),
+\[
+ \frac{d^k}{d\beta^k}(i\nu)^\beta
+ =(i\nu)^\beta(\log\nu+i\pi/2)^k,
+ \qquad k=1,2.
+\]
+\end{theorem}
+\begin{proof}
+Positive diagonal \(W\) and full column rank of \(B\) give
+\(v^\top Hv=\|Bv\|_W^2>0\) for every \(v\ne0\).  Thus the normal equation
+\(Hy=B^\top Wg(\beta)\) has the unique solution
+\eqref{eq:analytic-selector}, which is the unique global minimizer.  The
+principal-branch formula is analytic for \(\nu>0\); \(B,W,H^{-1}\) are
+constant, so differentiation gives \eqref{eq:selector-first}--
+\eqref{eq:selector-second}.
+\end{proof}
+
+\begin{corollary}[Explicit selector-conditioning bound]
+\label{cor:selector-conditioning}
+Let \(\mu=\lambda_{\min}(H)>0\),
+\(\sigma=\|B^\top W\|_2\), and
+\[
+ L_{r,m}=\sqrt{(\log\nu_{r,m})^2+\pi^2/4}.
+\]
+For \(k=1,2\) and every \(\beta\in I\),
+\begin{equation}
+ \|y_\star^{(k)}(\beta)\|_2
+ \le \frac{\sigma}{\mu}
+ \left(\sum_{r,m}|\widetilde Z_{r,m}|^2
+ \nu_{r,m}^{2\beta}L_{r,m}^{2k}\right)^{1/2}.
+ \label{eq:selector-conditioning}
+\end{equation}
+The supremum over a closed interval \(A=[a,b]\) has the explicit upper bound
+obtained by replacing \(\nu^{2\beta}\) with \(\nu^{2b}\) when \(\nu\ge1\)
+and with \(\nu^{2a}\) when \(0<\nu<1\).
+\end{corollary}
+\begin{proof}
+Since \(H\) is symmetric positive definite,
+\(\|H^{-1}\|_2=1/\mu\).  Equations
+\eqref{eq:selector-first}--\eqref{eq:selector-second} and
+submultiplicativity give
+\(\|y_\star^{(k)}\|_2\le(\sigma/\mu)\|g^{(k)}\|_2\).
+The squared Euclidean norm of the real--imaginary pair generated by one
+complex derivative is
+\(|\widetilde Z_{r,m}|^2\nu_{r,m}^{2\beta}L_{r,m}^{2k}\).
+Summation proves \eqref{eq:selector-conditioning}; monotonicity of
+\(\nu^{2\beta}\) gives the endpoint rule.
+\end{proof}
+
+\begin{remark}[Rate separation versus certification]
+For the fully free damping case, Lemma~\ref{lem:selector-rank} is the
+structural threshold, while \(\mu\) in
+Corollary~\ref{cor:selector-conditioning} is its numerical margin.  As the
+response array approaches the real-separable form
+\eqref{eq:real-separable-response}, continuity forces
+\(\mu\to0\), the selector derivatives can grow, and a fixed-width order tube
+becomes harder to certify.  This is a conditioning statement, not an
+information-theoretic lower bound.
+\end{remark}
+
+\begin{proposition}[Exact-Gram Krawczyk specialization]
+\label{prop:exact-gram-krawczyk}
+Suppose the stored response centres and frozen weights are interpreted as exact
+rational numbers, the rank test passes, and \(C=H^{-1}\) is computed in exact
+rational arithmetic.  Let \(\boldsymbol h(A)\) be a rigorous interval
+extension of \(B^\top Wg(A)\).  For any point \(y^0\) and search box
+\(\boldsymbol X\), the parameterized Krawczyk image of the normal equation is
+\begin{align*}
+ \boldsymbol K
+ &=y^0-C(Hy^0-\boldsymbol h(A))
+   +(I-CH)(\boldsymbol X-y^0)\\
+ &=C\boldsymbol h(A).
+\end{align*}
+Thus \(I-CH=0\) exactly, the fixed-point contraction factor in the
+\(y\)-direction is zero (this is not contraction in the parameter direction),
+and
+\(y_\star(\beta)\in\boldsymbol K\) for every \(\beta\in A\).  A replay checker
+can verify the exact matrix identities before evaluating the original
+inequalities; no approximate inverse is trusted.
+\end{proposition}
+\begin{proof}
+Exact inversion gives \(CH=I\).  Substitution cancels both \(y^0\) terms and
+the search-box term.  Since \(h(\beta)=B^\top Wg(\beta)\in\boldsymbol h(A)\),
+\eqref{eq:analytic-selector} gives
+\(y_\star(\beta)=Ch(\beta)\in C\boldsymbol h(A)\).  Equivalently, the
+fixed-point map \(y\mapsto y-C(Hy-h(\beta))\) is the constant map
+\(Ch(\beta)\).
+\end{proof}
+
+\begin{corollary}[Quadratic-width predictor tube]
+\label{cor:selector-taylor-tube}
+Let \(A=[\beta_0-h,\beta_0+h]\subset(0,1]\), and let
+\(M_j\ge\sup_{\beta\in A}|(y_\star''(\beta))_j|\).  Then every selector
+component satisfies
+\[
+ (y_\star(\beta))_j\in
+ (y_\star(\beta_0))_j+(y_\star'(\beta_0))_j(\beta-\beta_0)
+ +[-M_jh^2/2,M_jh^2/2].
+\]
+Thus an affine predictor has a rigorously bounded \(O(h^2)\) remainder.  Direct
+interval evaluation of \eqref{eq:analytic-selector} is also valid but may be
+wider.
+\end{corollary}
+\begin{proof}
+Apply Taylor's theorem with integral remainder componentwise and use
+\(|\beta-\beta_0|\le h\).
+\end{proof}
+
+\begin{definition}[Full and \(q\)-eliminated feasible sets]
+\label{def:feasible-spaces}
+Let \(\Theta\) be the declared compact anchored damping domain, including
+positive physical-rate damping constraints.  Define
+\[
+ \widehat{\mathcal F}=
+ \left\{(\beta,\theta,(q_m)_m):
+ \begin{array}{l}
+ \beta\in I,\ \theta\in\Theta,\ q_m\in\Eset_m,\\
+ |q_m-d^{\rm dr}_{r,m}(\beta,\theta)\widetilde Z_{r,m}|
+ \le |d^{\rm dr}_{r,m}(\beta,\theta)|\epsilon_{r,m}
+      +\rho^q_{r,m}\quad\forall r,m
+ \end{array}\right\},
+\]
+and let
+\[
+ \mathcal F=\proj_{(\beta,\theta)}\widehat{\mathcal F}.
+\]
+Thus \(\mathcal F\subseteq I\times\Theta\) is the exact parameter set after
+existentially eliminating \(q\).  The branch tree below covers this same
+domain \(I\times\Theta\), while a selector tube constructs points of
+\(\widehat{\mathcal F}\).
+\end{definition}
+
+\begin{theorem}[Certified analytic-selector inner tube]
+\label{thm:selector-tube}
+Let \(A\subset I\) be a closed order interval, and let the box
+\(\boldsymbol Y(A)\) rigorously contain \(y_\star(\beta)\) for every
+\(\beta\in A\), using either \eqref{eq:analytic-selector} or
+Corollary~\ref{cor:selector-taylor-tube}.  Let
+\(\boldsymbol\Theta_\star(A)\) be its projection onto the damping coordinates,
+with fixed coordinates restored.  Suppose ball arithmetic proves the complete
+physical inclusion
+\(\boldsymbol\Theta_\star(A)\subseteq\Theta\), including all coupled
+rate-damping positivity constraints.  Write
+\(q_{\star,m}(\beta)\) and \(d^\star_{r,m}(\beta)\) for the corresponding
+components and denominator along the analytic selector path.  Suppose,
+additionally, that rigorous inclusion evaluations of these path expressions
+prove, for every \(r,m\),
+\begin{align}
+ \sup_{\beta\in A}
+ |q_{\star,m}(\beta)-d^\star_{r,m}(\beta)\widetilde Z_{r,m}|
+ &\le
+ \inf_{\beta\in A}
+ (|d^\star_{r,m}(\beta)|\epsilon_{r,m}+\rho^q_{r,m}),
+ \label{eq:tube-disk-margin}\\
+ q_{\min,m}
+ &\le\inf_{\beta\in A}|q_{\star,m}(\beta)|
+ \le\sup_{\beta\in A}|q_{\star,m}(\beta)|
+ \le q_{\max,m}.
+ \label{eq:tube-annulus-margin}
+\end{align}
+Then
+\begin{equation}
+ \boxed{A\subseteq\proj_\beta\mathcal F},
+ \label{eq:tube-inner-projection}
+\end{equation}
+with the feasible spaces of Definition~\ref{def:feasible-spaces}.  Strict
+versions of all coordinate,
+disk, and annulus inequalities define a \emph{robust inner} certificate;
+rigorously established nonstrict inequalities define a \emph{closed inner}
+certificate.  An unresolved sign yields no inclusion claim.
+\end{theorem}
+\begin{proof}
+For an arbitrary \(\beta\in A\), choose the unique selector
+\(y_\star(\beta)\).  It belongs to \(\boldsymbol Y(A)\).  The coordinate
+inclusions give admissible anchored dampings, while
+\eqref{eq:tube-disk-margin} gives membership of the selected \(q_m\) in every
+rate-indexed forward disk and \eqref{eq:tube-annulus-margin} gives membership
+in \(\Eset_m\).  Hence the fibre of \(\widehat{\mathcal F}\) above every
+\(\beta\in A\) is nonempty, which is exactly
+\eqref{eq:tube-inner-projection}.  Strict inequalities additionally give the
+reported positive margins.
+\end{proof}
+
+\begin{remark}[Correlation-preserving evaluation]
+The path expressions in Theorem~\ref{thm:selector-tube} need not be evaluated
+over the full Cartesian product \(A\times\boldsymbol Y(A)\).  For the central
+least-squares selector, the residual is exactly
+\[
+ r_\star(\beta)=(BH^{-1}B^\top W-I)g(\beta),
+\]
+so evaluating this expression directly preserves useful dependence on
+\(\beta\) while remaining a rigorous enclosure.  Replacing it by an
+independent box evaluation over \(\boldsymbol Y(A)\) is also sound but can be
+strictly wider.
+\end{remark}
+
+\begin{remark}[Selector semantics and failure]
+The uniqueness in Theorem~\ref{thm:analytic-selector} concerns only the frozen
+least-squares selector.  It implies neither uniqueness of a physically feasible
+nuisance vector nor uniqueness of the fractional order.  If the Gram matrix is
+singular, the selector leaves its prior box, or one inequality in
+Theorem~\ref{thm:selector-tube} is unresolved, the tube returns unknown.  In
+particular, failure of this sufficient construction is not an outer-exclusion
+certificate.  Equating \(q_m\) to an arbitrarily selected disk centre would be
+unsound as a general selector: two disks can overlap in a lens containing
+neither centre.
+\end{remark}
 
 \begin{theorem}[Parameter-box disk hull and core]
 \label{thm:hull-core}
@@ -509,25 +813,31 @@ all inner disks in \eqref{eq:inner-disk} and in \(\Eset_m\);}\\
 U:&\text{neither statement has been proved.}
 \end{array}
 \]
-If \(F\) is the exact joint feasible parameter set and
+Let \(\mathcal T\) be any collection of order intervals certified by
+Theorem~\ref{thm:selector-tube}.  With the exact \(q\)-eliminated parameter set
+\(\mathcal F\) from Definition~\ref{def:feasible-spaces}, let
 \[
- \Aset_{\rm in}=\bigcup_{B\in I}\proj_\beta B,\qquad
+ \Aset_{\rm in}=\left(\bigcup_{B\in I}\proj_\beta B\right)
+ \cup\left(\bigcup_{A\in\mathcal T}A\right),\qquad
  \Aset_{\rm out}=\bigcup_{B\in I\cup U}\proj_\beta B,
 \]
-then
+where every \(A\in\mathcal T\) lies in the initial order domain, then
 \begin{equation}
- \boxed{\Aset_{\rm in}\subseteq\proj_\beta F
+ \boxed{\Aset_{\rm in}\subseteq\proj_\beta\mathcal F
  \subseteq\Aset_{\rm out}}.
  \label{eq:sandwich}
 \end{equation}
 Only when \(U=\varnothing\) may the computed projection be called exact.
 \end{theorem}
 \begin{proof}
-Theorem~\ref{thm:hull-core} makes every \(O\) leaf disjoint from \(F\) and
-every \(I\) leaf a subset of \(F\).  Since \(I\cup O\cup U\) covers the initial
-domain, removing only \(O\) leaves cannot remove a feasible point, which gives
-the outer inclusion in \eqref{eq:sandwich}; projecting the \(I\) leaves gives
-the inner inclusion.
+Theorem~\ref{thm:hull-core} makes every \(O\) leaf disjoint from
+\(\mathcal F\) and every \(I\) leaf a subset of \(\mathcal F\).  Since
+\(I\cup O\cup U\) covers the same initial \(I\times\Theta\) domain from
+Definition~\ref{def:feasible-spaces}, removing only \(O\) leaves cannot remove
+a feasible point, which gives the outer inclusion in
+\eqref{eq:sandwich}.  Projecting the \(I\) leaves and
+applying \eqref{eq:tube-inner-projection} to every member of \(\mathcal T\)
+gives the inner inclusion.
 \end{proof}
 
 \begin{remark}[Finite-resource completeness]
@@ -990,7 +1300,8 @@ leaves the local regime.
 Gate & Current status & Blocking item\\
 \midrule
 R0 & pass & assumptions and compact-prior checks\\
-R1 & certified core pass; exact closure open & unresolved leaves and finite budgets\\
+R1 & core and tube pass; exact closure open &
+unresolved leaves, sufficient selector, and finite budgets\\
 R2 & protocol tooling pass; calibration open & independent bounds in Remark~\ref{rem:r2-gap}\\
 R3 & theorem pass & globally certified numerical optimizer\\
 R4 & narrow pass & no claim of generic set/design novelty\\
@@ -1020,14 +1331,19 @@ full-history operator mismatch and is deferred.
 Bounded complex-frequency set inversion for an isomorphic fractional
 first-order model and complex-disk set estimation already exist
 \cite{malti2010,khemane2012}; robust fractional experiment design and generic
-set-membership design also exist \cite{abrashov2017,cerone2020}.  The defensible
-contribution is therefore restricted to the combined ECG protocol: a
-dimensionless two-rate quotient theorem modulo one common complex
-morphology/lead gauge, its strict structural minimum, the joint multi-rate
-consistency semantics, and the finite-record uncertainty/design chain.  We do
-not claim priority with the word first.
+set-membership design also exist \cite{abrashov2017,cerone2020}.  Parameter-
+dependent interval verification, affine sensitivity enclosures, existential
+projection, and validated solution tubes are likewise established methods
+\cite{neumaier1989,rump2010,goldsztejn2006,ponleitner2021}.  We therefore do
+not propose a new interval Newton or validated-continuation method.  The defensible
+contribution is restricted to their FO-ECG specialization: a dimensionless
+two-rate quotient theorem modulo one common complex morphology/lead gauge, the
+rank characterization in Lemma~\ref{lem:selector-rank}, the analytic witness
+tube paired with the outer disk cover, the joint multi-rate consistency
+semantics, and the finite-record uncertainty/design chain.  We do not claim
+priority with the word first.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \small
 \bibitem{malti2010}
 R. Malti, M. Thomassin, F. Khemane, and T. Raissi,
@@ -1054,6 +1370,26 @@ V. Cerone, D. Piga, and D. Regruto,
 Design of experiments for nonlinear system identification: A set membership
 approach, Automatica 119 (2020), 109036,
 \href{https://doi.org/10.1016/j.automatica.2020.109036}{doi link}.
+\bibitem{rump2010}
+S. M. Rump,
+Verification methods: Rigorous results using floating-point arithmetic,
+Acta Numerica 19 (2010), 287--449,
+\href{https://doi.org/10.1017/S096249291000005X}{doi link}.
+\bibitem{neumaier1989}
+A. Neumaier,
+Rigorous sensitivity analysis for parameter-dependent systems of equations,
+Journal of Mathematical Analysis and Applications 144 (1989), 16--25,
+\href{https://doi.org/10.1016/0022-247X(89)90357-0}{doi link}.
+\bibitem{goldsztejn2006}
+A. Goldsztejn and L. Jaulin,
+Inner and outer approximations of existentially quantified equality
+constraints, in CP 2006, LNCS 4204, 198--212,
+\href{https://doi.org/10.1007/11889205_16}{doi link}.
+\bibitem{ponleitner2021}
+B. Ponleitner and H. Schichl,
+Exclusion regions for parameter-dependent systems of equations,
+Journal of Global Optimization 81 (2021), 621--644,
+\href{https://doi.org/10.1007/s10898-021-01082-3}{doi link}.
 \end{thebibliography}
 
 \end{document}

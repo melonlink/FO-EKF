@@ -57,6 +57,7 @@ The subsequent control-theory review narrows the primary paper further: a period
 - [R2 preregistration protocol](research/r2_protocol_spec_2026-07-11.md)
 - [R2 machine-readable template](config/r2_protocol_template.toml)
 - [R1 certification and R2 protocol checkpoint](research/r1_cert_r2_protocol_execution_2026-07-11.md)
+- [T1 analytic-selector tube checkpoint](research/t1_analytic_selector_tube_execution_2026-07-12.md)
 - [Environment snapshot](research/environment_snapshot_2026-07-11.md)
 - [Curated literature manifest](literature/manifest.csv)
 - [Verified local literature lock](literature/download-lock.json)
@@ -64,7 +65,13 @@ The subsequent control-theory review narrows the primary paper further: a period
 The two-rate quotient theorem and the worst-case ambiguity theorem have passed
 their data-free gates. The R1 ball-arithmetic core certifies every issued inner
 or outer box, but a projected order set is exact only when no `UNKNOWN` leaf
-remains. The R2 schema and propagation validator now fail closed on missing,
+remains. The T1 analytic Gram selector now adds replayable
+`ROBUST_INNER / CLOSED_INNER / UNKNOWN` certificates for
+`forall alpha, exists nuisance`, including a gap-free alpha-only subdivision
+audit. Its exact rational inverse makes the state-direction Krawczyk
+contraction term identically zero; all physical claims are still rechecked
+against the original Arb disk, annulus, and damping inequalities. The R2
+schema and propagation validator now fail closed on missing,
 leaking, or downward-rounded evidence. Real-ECG order certification nevertheless
 remains blocked until every data-to-disk term has an independent calibrated
 bound. Missing bounds return `NOT_CERTIFIABLE`; they are never filled from the
