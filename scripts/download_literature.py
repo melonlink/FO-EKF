@@ -1,4 +1,4 @@
-"""Download the curated open-access literature set with a hard 100 MiB limit."""
+"""Download the curated open-access literature set with a hard 100 MB limit."""
 
 from __future__ import annotations
 
@@ -14,7 +14,8 @@ from typing import BinaryIO
 
 import certifi
 
-MAX_FILE_BYTES = 100 * 1024 * 1024
+# User approval is required above 100 decimal MB, not 100 MiB.
+MAX_FILE_BYTES = 100_000_000
 CHUNK_BYTES = 1024 * 1024
 USER_AGENT = "FO-EKF-literature-audit/0.1 (mailto:melonlink@tsnu.edu.cn)"
 SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
@@ -80,14 +81,14 @@ def download_pdf(url: str, destination: Path) -> tuple[str, int]:
                     if expected_bytes and expected_bytes > MAX_FILE_BYTES:
                         raise RuntimeError(
                             f"server reports {expected_bytes} bytes, "
-                            "above the 100 MiB approval limit"
+                            "above the 100 MB approval limit"
                         )
 
                     before = total
                     while chunk := response.read(CHUNK_BYTES):
                         total += len(chunk)
                         if total > MAX_FILE_BYTES:
-                            raise RuntimeError("download crossed the 100 MiB approval limit")
+                            raise RuntimeError("download crossed the 100 MB approval limit")
                         digest.update(chunk)
                         stream.write(chunk)
 

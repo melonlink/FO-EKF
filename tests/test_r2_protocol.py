@@ -9,6 +9,9 @@ import pytest
 from fo_ekf.r2_protocol import (
     BOUND_NAMES,
     R2ProtocolStatus,
+    _upward_product,
+    _upward_ratio,
+    _upward_sum,
     canonical_protocol_sha256,
     canonical_window_result_sha256,
     load_r2_protocol,
@@ -58,7 +61,14 @@ def _valid_deterministic_config() -> dict:
             "identification_split_id": "identification-subjects",
             "validation_split_id": "validation-subjects",
             "calibration_disjoint_from_identification": True,
+            "calibration_disjoint_from_validation": True,
+            "identification_disjoint_from_validation": True,
+            "subject_specific_identification_precedes_validation": True,
+            "record_interval_hashes_required": True,
+            "minimum_temporal_guard_s": 1.0,
+            "temporal_guard_provided": True,
             "split_manifest_sha256": "b" * 64,
+            "record_interval_manifest_sha256": "d" * 64,
         }
     )
 
@@ -183,8 +193,8 @@ def _valid_deterministic_config() -> dict:
     )
     config["bounds"]["measurement_noise"].update(
         {
-            "bound_type": "continuous_l2",
-            "continuous_l2_bound_signal_sqrt_s": 0.001,
+            "bound_type": "weighted_l2",
+            "weighted_l2_bound": 0.0004,
         }
     )
     config["bounds"]["model_residual"].update(
@@ -265,6 +275,19 @@ def _valid_deterministic_config() -> dict:
             "lead_id": "lead-II",
             "physical_gain_id": "gain-calibration-001",
             "record_manifest_id": "record-manifest-001",
+            "record_manifest_sha256": "e" * 64,
+            "estimator_manifest_sha256": "f" * 64,
+            "wls_execution_sha256": "1" * 64,
+            "wls_window_sha256": "2" * 64,
+            "wls_window_start_sample": 25_000,
+            "wls_window_end_sample_exclusive": 27_000,
+            "wls_sample_index_sha256": "3" * 64,
+            "wls_digital_sample_sha256": "4" * 64,
+            "wls_time_seconds_sha256": "5" * 64,
+            "wls_normalized_weights_sha256": "6" * 64,
+            "wls_interval_certificate_sha256": "7" * 64,
+            "wls_exact_sample_functional_coverage": True,
+            "wls_exact_functional_radius_upper": 1.0e-12,
             "protocol_sha256": "",
             "result_sha256": "",
             "left_r_peak_time_s": 100.0,
@@ -354,6 +377,37 @@ def test_unfilled_template_is_not_certifiable() -> None:
     assert result.reasons
 
 
+def test_outward_helpers_do_not_round_positive_subnormal_results_to_zero() -> None:
+    tiny = math.nextafter(0.0, math.inf)
+
+    assert _upward_product(tiny, 0.5) >= tiny
+    assert _upward_ratio(tiny, 2.0) >= tiny
+    assert _upward_sum((tiny, tiny)) >= tiny
+
+
+def test_deep_or_overflowing_protocol_material_fails_closed() -> None:
+    deep = _valid_deterministic_config()
+    cursor = deep
+    for index in range(100):
+        child: dict = {}
+        cursor[f"nested-{index}"] = child
+        cursor = child
+
+    deep_result = validate_r2_protocol(deep)
+
+    overflowing = _valid_deterministic_config()
+    for key in tuple(overflowing["window_result"][0]):
+        if key.startswith("radius_"):
+            overflowing["window_result"][0][key] = 1.0e308
+    _rehash(overflowing)
+    overflow_result = validate_r2_protocol(overflowing)
+
+    assert deep_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert deep_result.reasons == ("root:resource_depth",)
+    assert overflow_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert overflow_result.reasons
+
+
 def test_complete_deterministic_protocol_passes() -> None:
     result = validate_r2_protocol(_valid_deterministic_config())
 
@@ -368,6 +422,135 @@ def test_complete_probability_protocol_passes_with_joint_accounting() -> None:
 
     assert result.status is R2ProtocolStatus.PASS_PROBABILISTIC
     assert result.reasons == ()
+
+
+@pytest.mark.parametrize(
+    ("field", "reason"),
+    (
+        (
+            "calibration_disjoint_from_validation",
+            "data_boundary.calibration_disjoint_from_validation:must_be_true",
+        ),
+        (
+            "identification_disjoint_from_validation",
+            "data_boundary.identification_disjoint_from_validation:must_be_true",
+        ),
+        (
+            "subject_specific_identification_precedes_validation",
+            "data_boundary.subject_specific_identification_precedes_validation:must_be_true",
+        ),
+        (
+            "record_interval_hashes_required",
+            "data_boundary.record_interval_hashes_required:must_be_true",
+        ),
+        (
+            "calibration_subject_disjoint_from_evaluation",
+            "data_boundary.calibration_subject_disjoint_from_evaluation:must_be_true",
+        ),
+        (
+            "identification_validation_same_subject",
+            "data_boundary.identification_validation_same_subject:must_be_true",
+        ),
+    ),
+)
+def test_all_split_and_temporal_leakage_guards_are_mandatory(
+    field: str,
+    reason: str,
+) -> None:
+    config = _valid_deterministic_config()
+    config["data_boundary"][field] = False
+    _rehash(config)
+
+    result = validate_r2_protocol(config)
+
+    assert result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert reason in result.reasons
+
+
+def test_record_interval_hash_and_temporal_guard_are_mandatory() -> None:
+    missing_hash = _valid_deterministic_config()
+    missing_hash["data_boundary"]["record_interval_manifest_sha256"] = ""
+    _rehash(missing_hash)
+    missing_guard = _valid_deterministic_config()
+    missing_guard["data_boundary"]["temporal_guard_provided"] = False
+    _rehash(missing_guard)
+
+    hash_result = validate_r2_protocol(missing_hash)
+    guard_result = validate_r2_protocol(missing_guard)
+
+    assert hash_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert "data_boundary.record_interval_manifest_sha256:invalid_sha256" in hash_result.reasons
+    assert guard_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert "data_boundary.temporal_guard_provided:must_be_true" in guard_result.reasons
+
+
+def test_continuous_l2_noise_cannot_be_sampled_by_discrete_wls_without_a_bridge() -> None:
+    config = _valid_deterministic_config()
+    config["bounds"]["measurement_noise"].update(
+        {
+            "bound_type": "continuous_l2",
+            "continuous_l2_bound_signal_sqrt_s": 0.001,
+        }
+    )
+    _rehash(config)
+
+    result = validate_r2_protocol(config)
+
+    assert result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert "bounds.measurement_noise.continuous_l2:requires_continuous_lockin" in result.reasons
+
+
+@pytest.mark.parametrize(
+    "field",
+    (
+        "record_manifest_sha256",
+        "estimator_manifest_sha256",
+        "wls_execution_sha256",
+        "wls_window_sha256",
+        "wls_sample_index_sha256",
+        "wls_digital_sample_sha256",
+        "wls_time_seconds_sha256",
+        "wls_normalized_weights_sha256",
+        "wls_interval_certificate_sha256",
+    ),
+)
+def test_each_window_binds_record_and_estimator_manifests(field: str) -> None:
+    config = _valid_deterministic_config()
+    config["window_result"][0][field] = ""
+    _rehash(config)
+
+    result = validate_r2_protocol(config)
+
+    assert result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert f"window_result[0].{field}:invalid_sha256" in result.reasons
+
+
+def test_deterministic_pass_requires_exact_wls_coverage_and_numeric_radius_floor() -> None:
+    missing_coverage = _valid_deterministic_config()
+    missing_coverage["window_result"][0]["wls_exact_sample_functional_coverage"] = False
+    _rehash(missing_coverage)
+    understated_sampling = _valid_deterministic_config()
+    understated_sampling["window_result"][0]["wls_exact_functional_radius_upper"] = 1.0
+    _rehash(understated_sampling)
+    invalid_geometry = _valid_deterministic_config()
+    invalid_geometry["window_result"][0]["wls_window_end_sample_exclusive"] = invalid_geometry[
+        "window_result"
+    ][0]["wls_window_start_sample"]
+    _rehash(invalid_geometry)
+
+    coverage_result = validate_r2_protocol(missing_coverage)
+    radius_result = validate_r2_protocol(understated_sampling)
+    geometry_result = validate_r2_protocol(invalid_geometry)
+
+    assert coverage_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert (
+        "window_result[0].wls_exact_sample_functional_coverage:must_be_true"
+        in coverage_result.reasons
+    )
+    assert radius_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert "window_result[0].radius_sampling:below_exact_functional_radius" in radius_result.reasons
+    assert geometry_result.status is R2ProtocolStatus.NOT_CERTIFIABLE
+    assert "window_result[0].wls_integer_window_geometry:invalid" in geometry_result.reasons
 
 
 def test_target_fit_residual_bound_is_not_certifiable() -> None:
@@ -722,7 +905,7 @@ def test_probability_coverage_scope_must_cover_all_selected_disks() -> None:
     [
         (
             "measurement_noise",
-            "continuous_l2_bound_signal_sqrt_s",
+            "weighted_l2_bound",
             1.0,
             "bounds.measurement_noise.computed_w_norm_bound:below_raw_floor",
         ),

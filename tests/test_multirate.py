@@ -5,6 +5,7 @@ from itertools import pairwise
 import pytest
 
 from fo_ekf.multirate import (
+    evaluate_reference_pair_consistency,
     gl_tail_mass,
     harmonic_response,
     invariant_error_bound,
@@ -12,6 +13,7 @@ from fo_ekf.multirate import (
     order_invariant,
     order_invariant_slope,
     recover_parameters,
+    recover_reference_pair,
     response_invariant,
 )
 
@@ -42,6 +44,34 @@ def test_three_rates_recover_order_damping_and_effective_morphology() -> None:
     assert recovered.invariant.imag == pytest.approx(0.0, abs=1.0e-12)
 
 
+def test_geometric_three_rate_cross_ratio_cancels_damping_and_morphology() -> None:
+    order = 0.64
+    base_frequency = 0.75
+    ratio = 1.8
+    frequencies = (
+        base_frequency,
+        ratio * base_frequency,
+        ratio**2 * base_frequency,
+    )
+    expected = 1.0 + ratio**order
+
+    for damping, morphology in (
+        (0.2, 1.1 - 0.4j),
+        (3.7, -2.0 + 0.3j),
+    ):
+        responses = tuple(
+            harmonic_response(order, damping, morphology, frequency) for frequency in frequencies
+        )
+        invariant = response_invariant(responses)
+
+        assert invariant.real == pytest.approx(expected, abs=2.0e-12)
+        assert invariant.imag == pytest.approx(0.0, abs=2.0e-12)
+        assert math.log(invariant.real - 1.0) / math.log(ratio) == pytest.approx(
+            order,
+            abs=2.0e-12,
+        )
+
+
 def test_common_gain_and_phase_gauge_do_not_change_order_or_damping() -> None:
     order = 0.97
     damping = 0.8
@@ -61,6 +91,63 @@ def test_common_gain_and_phase_gauge_do_not_change_order_or_damping() -> None:
         common_measurement_factor * morphology,
         abs=2.0e-11,
     )
+
+
+def test_each_exact_reference_pair_recovers_the_same_parameters() -> None:
+    order = 0.73
+    damping = 0.42
+    morphology = 1.7 - 0.6j
+    frequencies = (0.7, 1.0, 1.5, 2.2)
+    responses = tuple(
+        harmonic_response(order, damping, morphology, frequency) for frequency in frequencies
+    )
+
+    audit = evaluate_reference_pair_consistency(responses, frequencies)
+
+    assert audit.consistent
+    assert audit.maximum_order_spread <= 2.0e-12
+    assert audit.maximum_damping_spread <= 2.0e-12
+    for recovered in audit.recoveries:
+        assert recovered.order == pytest.approx(order, abs=2.0e-12)
+        assert recovered.damping == pytest.approx(damping, abs=2.0e-12)
+        assert recovered.morphology == pytest.approx(morphology, abs=2.0e-12)
+
+
+def test_two_rate_recovery_is_invariant_to_one_common_complex_gain() -> None:
+    order = 0.91
+    damping = 0.8
+    morphology = 0.9 + 0.4j
+    frequencies = (0.9, 2.4)
+    gain = 3.2 * cmath.exp(0.63j)
+    responses = tuple(
+        gain * harmonic_response(order, damping, morphology, frequency) for frequency in frequencies
+    )
+
+    recovered = recover_reference_pair(responses, frequencies)
+
+    assert recovered.order == pytest.approx(order, abs=2.0e-11)
+    assert recovered.damping == pytest.approx(damping, abs=2.0e-11)
+    assert recovered.morphology == pytest.approx(gain * morphology, abs=2.0e-11)
+
+
+def test_third_rate_is_an_exact_model_consistency_check() -> None:
+    order = 0.78
+    damping = 0.55
+    morphology = 1.2 - 0.2j
+    frequencies = (0.8, 1.3, 2.1)
+    responses = [
+        harmonic_response(order, damping, morphology, frequency) for frequency in frequencies
+    ]
+    responses[2] *= 1.0 + 0.02j
+
+    audit = evaluate_reference_pair_consistency(
+        responses,
+        frequencies,
+        consistency_tolerance=1.0e-10,
+    )
+
+    assert not audit.consistent
+    assert audit.maximum_order_spread > 1.0e-3 or audit.maximum_damping_spread > 1.0e-3
 
 
 def test_independent_phase_gauges_are_rejected() -> None:

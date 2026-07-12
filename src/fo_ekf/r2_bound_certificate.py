@@ -32,8 +32,8 @@ from .certified_set import (
     _validate_precision_schedule,
 )
 
-SCHEMA = "fo-ekf.r2-bound-engine.v2"
-ALGORITHM = "arb-mode-separated-r2-bounds-v2"
+SCHEMA = "fo-ekf.r2-bound-engine.v4"
+ALGORITHM = "arb-mode-separated-exact-index-r2-bounds-v4"
 BOUND_NUMERIC_SCOPE = "uniform_all_windows_satisfying_frozen_design"
 MAX_SAMPLES = 4096
 MAX_HARMONICS = 64
@@ -135,6 +135,7 @@ class SamplingBoundInput:
     adc_quantization_step: float
     first_derivative_bound_signal_per_s: float
     implementation: str
+    quadrature_decomposition_target: str
     panel_second_derivative_bound: tuple[float, ...]
     evidence: EvidenceReference
 
@@ -172,7 +173,7 @@ class R2BoundRequest:
     right_r_peak_time_s: float
     complete_rr_intervals: int
     sample_times_s: tuple[float, ...]
-    raw_weights: tuple[float, ...]
+    raw_weights: tuple[float, ...] | None
     retained_harmonics: tuple[int, ...]
     target_harmonic: int
     gram_min_eigenvalue_threshold: float
@@ -181,6 +182,9 @@ class R2BoundRequest:
     dwell: DwellBoundInput | None
     sampling: SamplingBoundInput | None
     delay: DelayBoundInput | None
+    sample_indices: tuple[int, ...] | None = None
+    window_start_sample: int | None = None
+    window_end_sample_exclusive: int | None = None
 
 
 @dataclass(frozen=True)
@@ -279,7 +283,7 @@ def _request_manifest(request: R2BoundRequest) -> dict[str, Any]:
     sampling = request.sampling
     delay = request.delay
     return {
-        "model": "r2-finite-record-component-bounds-v2",
+        "model": "r2-finite-record-component-bounds-v4",
         "window_id": request.window_id,
         "protocol_sha256": request.protocol_sha256,
         "record_manifest_sha256": request.record_manifest_sha256,
@@ -297,7 +301,14 @@ def _request_manifest(request: R2BoundRequest) -> dict[str, Any]:
             "right_r_peak_time_s": _float_manifest(request.right_r_peak_time_s),
             "complete_rr_intervals": request.complete_rr_intervals,
             "sample_times_s": [_float_manifest(value) for value in request.sample_times_s],
-            "raw_weights": [_float_manifest(value) for value in request.raw_weights],
+            "sample_indices": (
+                None if request.sample_indices is None else list(request.sample_indices)
+            ),
+            "window_start_sample": request.window_start_sample,
+            "window_end_sample_exclusive": request.window_end_sample_exclusive,
+            "raw_weights": None
+            if request.raw_weights is None
+            else [_float_manifest(value) for value in request.raw_weights],
             "retained_harmonics": list(request.retained_harmonics),
             "target_harmonic": request.target_harmonic,
         },
@@ -345,6 +356,7 @@ def _request_manifest(request: R2BoundRequest) -> dict[str, Any]:
                 sampling.first_derivative_bound_signal_per_s
             ),
             "implementation": sampling.implementation,
+            "quadrature_decomposition_target": sampling.quadrature_decomposition_target,
             "panel_second_derivative_bound": [
                 _float_manifest(value) for value in sampling.panel_second_derivative_bound
             ],
@@ -379,7 +391,7 @@ def _safe_manifest(request: Any) -> dict[str, Any]:
         # UNKNOWN documents need a stable input binding even for malformed
         # requests.  The repr is inert JSON text and carries no proof authority.
         return {
-            "model": "r2-finite-record-component-bounds-v2",
+            "model": "r2-finite-record-component-bounds-v4",
             "malformed_request_repr": repr(request),
         }
 
@@ -418,6 +430,24 @@ def _composite_trapezoid_weights(
         + (panels[-1],)
     )
     return tuple(value / (2 * duration) for value in numerators)
+
+
+def _effective_weights(request: R2BoundRequest) -> tuple[Fraction, ...]:
+    """Return the single weight vector authorized by the estimator contract.
+
+    Discrete WLS weights are declared data.  Continuous-lock-in trapezoid
+    weights are instead derived from the exact binary-rational timestamps, so
+    a caller cannot introduce a second, inconsistently rounded quadrature
+    rule.
+    """
+
+    sampling = request.sampling
+    assert sampling is not None
+    if sampling.implementation == "trapezoidal_continuous_lockin":
+        return _composite_trapezoid_weights(request.sample_times_s)
+    weights = request.raw_weights
+    assert isinstance(weights, tuple)
+    return _normalized_weight_fractions(weights)
 
 
 def _validate_evidence(
@@ -513,7 +543,6 @@ def _validate_request(request: Any) -> str | None:
     ):
         return "complete_rr_intervals_invalid"
     sample_times = request.sample_times_s
-    weights = request.raw_weights
     if (
         not isinstance(sample_times, tuple)
         or not 2 <= len(sample_times) <= MAX_SAMPLES
@@ -523,12 +552,6 @@ def _validate_request(request: Any) -> str | None:
         or sample_times[-1] > request.right_r_peak_time_s
     ):
         return "sample_geometry_invalid"
-    if (
-        not isinstance(weights, tuple)
-        or len(weights) != len(sample_times)
-        or not all(_positive(value) for value in weights)
-    ):
-        return "raw_weights_invalid"
     harmonics = request.retained_harmonics
     if (
         not isinstance(harmonics, tuple)
@@ -617,19 +640,54 @@ def _validate_request(request: Any) -> str | None:
     }:
         return "sampling_implementation_unsupported"
     if sampling.implementation == "discrete_wls":
+        weights = request.raw_weights
+        if (
+            not isinstance(weights, tuple)
+            or len(weights) != len(sample_times)
+            or not all(_positive(value) for value in weights)
+        ):
+            return "raw_weights_invalid"
         if sampling.panel_second_derivative_bound:
             return "discrete_wls_must_not_declare_quadrature_panels"
-    elif (
-        sample_times[0] != request.left_r_peak_time_s
-        or sample_times[-1] != request.right_r_peak_time_s
-        or len(sampling.panel_second_derivative_bound) != len(sample_times) - 1
-        or not all(_nonnegative(value) for value in sampling.panel_second_derivative_bound)
-    ):
-        return "quadrature_panel_contract_invalid"
-    if sampling.implementation == "trapezoidal_continuous_lockin" and _normalized_weight_fractions(
-        weights
-    ) != _composite_trapezoid_weights(sample_times):
-        return "trapezoidal_weights_must_match_composite_rule"
+        if sampling.quadrature_decomposition_target != "not_applicable":
+            return "discrete_wls_quadrature_target_must_be_not_applicable"
+        indices = request.sample_indices
+        start_sample = request.window_start_sample
+        end_sample = request.window_end_sample_exclusive
+        int64_max = 2**63 - 1
+        if (
+            type(indices) is not tuple
+            or len(indices) != len(sample_times)
+            or any(type(value) is not int for value in indices)
+            or any(right <= left for left, right in zip(indices, indices[1:], strict=False))
+        ):
+            return "discrete_wls_exact_sample_indices_invalid"
+        if (
+            type(start_sample) is not int
+            or type(end_sample) is not int
+            or not 0 <= start_sample < end_sample <= int64_max
+            or indices[0] < start_sample
+            or indices[-1] >= end_sample
+        ):
+            return "discrete_wls_integer_window_geometry_invalid"
+    else:
+        if request.raw_weights is not None:
+            return "trapezoidal_weights_must_be_derived"
+        if (
+            request.sample_indices is not None
+            or request.window_start_sample is not None
+            or request.window_end_sample_exclusive is not None
+        ):
+            return "continuous_lockin_forbids_discrete_integer_geometry"
+        if sampling.quadrature_decomposition_target != "nominal_retained_front_end_reconstruction":
+            return "quadrature_decomposition_target_invalid"
+        if (
+            sample_times[0] != request.left_r_peak_time_s
+            or sample_times[-1] != request.right_r_peak_time_s
+            or len(sampling.panel_second_derivative_bound) != len(sample_times) - 1
+            or not all(_nonnegative(value) for value in sampling.panel_second_derivative_bound)
+        ):
+            return "quadrature_panel_contract_invalid"
     reason = _validate_evidence(sampling.evidence, request, "sampling")
     if reason is not None:
         return reason
@@ -747,16 +805,69 @@ def _relaxation_upper(time: Fraction, alpha: Fraction, damping: Fraction) -> Fra
     return Fraction(1, 1) / denominator_lower
 
 
+def _verified_hermitian_ldl_shift(
+    matrix: list[list[acb]],
+    shift: Fraction,
+) -> dict[str, Any] | None:
+    """Certify ``matrix - shift I`` positive definite by interval LDL*.
+
+    The exact matrix represented by the ACB entries is Hermitian.  Recursive
+    ball operations enclose its unique unpivoted LDL* factors.  A strictly
+    positive lower endpoint for every real pivot proves positive definiteness
+    by Sylvester's criterion.  Failure is only an unresolved certificate, not
+    evidence of singularity.
+    """
+
+    size = len(matrix)
+    lower = [[acb(0) for _ in range(size)] for _ in range(size)]
+    pivots: list[arb] = []
+    pivot_claims: list[list[str]] = []
+    shift_ball = _arb_fraction(shift)
+
+    for column in range(size):
+        pivot = matrix[column][column] - shift_ball
+        for previous in range(column):
+            pivot -= (
+                lower[column][previous] * pivots[previous] * lower[column][previous].conjugate()
+            )
+        if not pivot.imag.contains(0):
+            return None
+        real_pivot = pivot.real
+        enclosure = _outer_dyadic(real_pivot)
+        if enclosure is None or enclosure[0] <= 0:
+            return None
+        pivots.append(real_pivot)
+        pivot_claims.append([_rat(enclosure[0]), _rat(enclosure[1])])
+
+        for row in range(column + 1, size):
+            numerator = matrix[row][column]
+            for previous in range(column):
+                numerator -= (
+                    lower[row][previous] * pivots[previous] * lower[column][previous].conjugate()
+                )
+            lower[row][column] = numerator / real_pivot
+
+    return {
+        "shift": _rat(shift),
+        "pivot_intervals": pivot_claims,
+        "criterion": "all_interval_ldl_star_pivot_lower_bounds_strictly_positive",
+    }
+
+
 def _discrete_wls_gram_proof(
     request: R2BoundRequest,
     weights: tuple[Fraction, ...],
 ) -> tuple[dict[str, Any] | None, Fraction | None, str | None]:
-    times = tuple(_fraction(value) for value in request.sample_times_s)
-    left = _fraction(request.left_r_peak_time_s)
-    duration = _fraction(request.right_r_peak_time_s) - left
-    turns = Fraction(2 * request.complete_rr_intervals, 1) / duration
+    indices = request.sample_indices
+    start = request.window_start_sample
+    end = request.window_end_sample_exclusive
+    assert indices is not None and start is not None and end is not None
+    span = end - start
     harmonics = request.retained_harmonics
-    phases = tuple(arb.pi() * _arb_fraction(turns * (time - left)) for time in times)
+    phase_turns = tuple(
+        Fraction(2 * request.complete_rr_intervals * (index - start), span) for index in indices
+    )
+    phases = tuple(arb.pi() * _arb_fraction(turns) for turns in phase_turns)
 
     gram: list[list[acb]] = []
     for row_index, row_harmonic in enumerate(harmonics):
@@ -797,24 +908,44 @@ def _discrete_wls_gram_proof(
 
     lambda_lower = min(lower_claims)
     lambda_upper = max(upper_claims)
-    if lambda_lower <= 0:
-        return None, None, "gram_not_positive_by_gershgorin"
     threshold = _fraction(request.gram_min_eigenvalue_threshold)
-    if lambda_lower < threshold:
-        return None, None, "gram_min_below_threshold"
-    condition = lambda_upper / lambda_lower
-    if condition > _fraction(request.gram_condition_number_max):
-        return None, None, "gram_condition_above_threshold"
-    row_norm = _upper_claim(arb(1) / _arb_fraction(lambda_lower).sqrt())
+    condition_max = _fraction(request.gram_condition_number_max)
+    required_lower = max(threshold, lambda_upper / condition_max)
+
+    if lambda_lower >= required_lower:
+        certified_lower = lambda_lower
+        method = "hermitian_gershgorin_v1"
+        positivity_proof: dict[str, Any] = {
+            "rows": rows,
+        }
+    else:
+        ldl_proof = _verified_hermitian_ldl_shift(gram, required_lower)
+        if ldl_proof is None:
+            return None, None, "gram_thresholds_not_certified"
+        certified_lower = required_lower
+        method = "verified_hermitian_ldl_shift_v1"
+        positivity_proof = {
+            "gershgorin_rows": rows,
+            "shifted_ldl_star": ldl_proof,
+        }
+
+    condition = lambda_upper / certified_lower
+    row_norm = _upper_claim(arb(1) / _arb_fraction(certified_lower).sqrt())
     if row_norm is None:
         return None, None, "gram_row_norm_nonfinite"
     transfer_lower = _fraction(request.delay.nominal_transfer_magnitude_lower_bound)  # type: ignore[union-attr]
     amplification = row_norm / transfer_lower
     return (
         {
-            "method": "hermitian_gershgorin_v1",
-            "rows": rows,
-            "lambda_min_lower": _rat(lambda_lower),
+            "method": method,
+            "phase_geometry": {
+                "formula": "2*pi*N*(sample_index-window_start)/(window_end-window_start)",
+                "window_start_sample": start,
+                "window_end_sample_exclusive": end,
+                "sample_indices": list(indices),
+            },
+            **positivity_proof,
+            "lambda_min_lower": _rat(certified_lower),
             "lambda_max_upper": _rat(lambda_upper),
             "condition_number_upper": _rat(condition),
             "wls_row_norm_upper": _rat(row_norm),
@@ -1017,6 +1148,7 @@ def _sampling_proof(
     return (
         {
             "implementation": sampling.implementation,
+            "quadrature_decomposition_target": sampling.quadrature_decomposition_target,
             "per_sample_output_error_upper": [_rat(value) for value in per_sample],
             "weighted_residual_upper": _rat(sampling_norm),
             "coefficient_radius_upper": _rat(sampling_radius),
@@ -1071,7 +1203,7 @@ def _compute_proof(
     request: R2BoundRequest,
     precision: int,
 ) -> tuple[dict[str, Any] | None, str | None]:
-    weights = _normalized_weight_fractions(request.raw_weights)
+    weights = _effective_weights(request)
     gram, amplification, reason = _gram_proof(request, weights)
     if reason is not None or gram is None or amplification is None:
         return None, reason or "gram_unknown"
@@ -1098,6 +1230,12 @@ def _compute_proof(
     return (
         {
             "precision_bits": precision,
+            "weight_contract": (
+                "derived_composite_trapezoid_from_exact_timestamps"
+                if request.sampling is not None
+                and request.sampling.implementation == "trapezoidal_continuous_lockin"
+                else "normalized_declared_discrete_weights"
+            ),
             "normalized_weights": [_rat(value) for value in weights],
             "gram": gram,
             "dynamic": dynamic,

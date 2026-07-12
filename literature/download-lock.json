@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "verified_on": "2026-07-11",
-  "max_file_bytes": 104857600,
+  "max_file_bytes": 100000000,
   "total_bytes": 80854524,
   "validation": "PDF header and EOF marker plus Poppler pdfinfo parse",
   "files": [

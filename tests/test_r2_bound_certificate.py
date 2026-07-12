@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import replace
 from fractions import Fraction
 
@@ -51,16 +52,15 @@ def _request(
         implementation = "discrete_wls"
     count = len(sample_times)
     if trapezoidal:
-        panels = tuple(
-            right - left for left, right in zip(sample_times[:-1], sample_times[1:], strict=True)
-        )
-        raw_weights = (
-            (panels[0],)
-            + tuple(panels[index - 1] + panels[index] for index in range(1, count - 1))
-            + (panels[-1],)
-        )
+        raw_weights = None
+        sample_indices = None
+        window_start_sample = None
+        window_end_sample_exclusive = None
     else:
         raw_weights = (1.0,) * count
+        sample_indices = tuple(range(8, 16))
+        window_start_sample = 8
+        window_end_sample_exclusive = 16
     if front_end_mode == "identity":
         history_output = None
         dwell_output = None
@@ -119,6 +119,9 @@ def _request(
             adc_quantization_step=1.0e-3,
             first_derivative_bound_signal_per_s=2.0,
             implementation=implementation,
+            quadrature_decomposition_target=(
+                "nominal_retained_front_end_reconstruction" if trapezoidal else "not_applicable"
+            ),
             panel_second_derivative_bound=second_derivatives,
             evidence=_evidence("sampling"),
         ),
@@ -131,6 +134,9 @@ def _request(
             ecg_to_rpeak_channel_alignment_included=True,
             evidence=_evidence("delay"),
         ),
+        sample_indices=sample_indices,
+        window_start_sample=window_start_sample,
+        window_end_sample_exclusive=window_end_sample_exclusive,
     )
 
 
@@ -186,7 +192,7 @@ def test_singular_aliasing_gram_is_unknown_not_an_exclusion() -> None:
     certificate = certify_r2_bounds(request)
 
     assert certificate.relation is R2BoundRelation.UNKNOWN
-    assert certificate.reason == "gram_not_positive_by_gershgorin"
+    assert certificate.reason == "gram_thresholds_not_certified"
     assert "REJECT" not in certificate.to_json()
 
 
@@ -198,7 +204,7 @@ def test_gram_threshold_and_condition_are_fail_closed() -> None:
     assert too_strict_minimum.relation is R2BoundRelation.UNKNOWN
     assert too_strict_minimum.reason == "gram_min_below_threshold"
     assert too_strict_condition.relation is R2BoundRelation.UNKNOWN
-    assert too_strict_condition.reason == "gram_condition_above_threshold"
+    assert too_strict_condition.reason == "gram_thresholds_not_certified"
 
 
 def test_trapezoidal_quadrature_has_positive_replayable_radius() -> None:
@@ -216,6 +222,168 @@ def test_trapezoidal_quadrature_has_positive_replayable_radius() -> None:
     assert gram["wls_row_norm_upper"] == "1"
     assert Fraction(sampling["quadrature_coefficient_radius_upper"]) > 0
     assert replay_r2_bound_certificate(request, certificate).valid
+
+
+def test_continuous_lockin_derives_non_dyadic_composite_weights_internally() -> None:
+    base = _request(trapezoidal=True)
+    sample_times = (2.0, 2.1, 2.35, 3.0, 3.4, 4.0)
+    count = len(sample_times)
+    request = replace(
+        base,
+        sample_times_s=sample_times,
+        raw_weights=None,
+        sampling=replace(
+            base.sampling,
+            timestamp_error_s=(1.0e-4,) * count,
+            interpolation_error_bound=(2.0e-4,) * count,
+            anti_alias_error_bound=(1.0e-4,) * count,
+            panel_second_derivative_bound=(3.0,) * (count - 1),
+        ),
+    )
+
+    certificate = certify_r2_bounds(request)
+
+    assert certificate.relation is R2BoundRelation.CERTIFIED_BOUND
+    proof = _proof(certificate.to_json())
+    assert proof["weight_contract"] == "derived_composite_trapezoid_from_exact_timestamps"
+    times = tuple(Fraction.from_float(value) for value in sample_times)
+    panels = tuple(right - left for left, right in zip(times[:-1], times[1:], strict=True))
+    duration = times[-1] - times[0]
+    numerators = (
+        (panels[0],)
+        + tuple(panels[index - 1] + panels[index] for index in range(1, count - 1))
+        + (panels[-1],)
+    )
+    expected = tuple(value / (2 * duration) for value in numerators)
+    assert tuple(Fraction(value) for value in proof["normalized_weights"]) == expected
+    assert replay_r2_bound_certificate(request, certificate).valid
+
+
+def test_verified_ldl_fallback_certifies_pd_gram_when_gershgorin_is_inconclusive() -> None:
+    base = _request()
+    normalized_times = (0.0, 0.6066357757671799, 0.7294965609839984, 1.0)
+    sample_times = tuple(2.0 + 2.0 * value for value in normalized_times)
+    raw_weights = (
+        0.2366375673036639,
+        0.4070329125623949,
+        0.3551374630569152,
+        0.0011920570770259239,
+    )
+    count = len(sample_times)
+    window_start_sample = 1_234_567
+    integer_span = 10**12
+    window_end_sample_exclusive = window_start_sample + integer_span
+    sample_indices = tuple(
+        window_start_sample + min(round(value * integer_span), integer_span - 1)
+        for value in normalized_times
+    )
+    request = replace(
+        base,
+        complete_rr_intervals=1,
+        sample_times_s=sample_times,
+        raw_weights=raw_weights,
+        retained_harmonics=(0, 1, 2),
+        target_harmonic=1,
+        gram_min_eigenvalue_threshold=0.05,
+        gram_condition_number_max=50.0,
+        sample_indices=sample_indices,
+        window_start_sample=window_start_sample,
+        window_end_sample_exclusive=window_end_sample_exclusive,
+        sampling=replace(
+            base.sampling,
+            timestamp_error_s=(1.0e-4,) * count,
+            interpolation_error_bound=(2.0e-4,) * count,
+            anti_alias_error_bound=(1.0e-4,) * count,
+        ),
+    )
+
+    certificate = certify_r2_bounds(request)
+
+    assert certificate.relation is R2BoundRelation.CERTIFIED_BOUND
+    gram = _proof(certificate.to_json())["gram"]
+    assert gram["method"] == "verified_hermitian_ldl_shift_v1"
+    assert min(Fraction(row["eigenvalue_interval"][0]) for row in gram["gershgorin_rows"]) < 0
+    assert all(
+        Fraction(interval[0]) > 0 for interval in gram["shifted_ldl_star"]["pivot_intervals"]
+    )
+    assert Fraction(gram["lambda_min_lower"]) >= Fraction.from_float(0.05)
+    assert Fraction(gram["condition_number_upper"]) <= 50
+    assert replay_r2_bound_certificate(request, certificate).valid
+
+
+def test_discrete_wls_requires_exact_integer_phase_geometry() -> None:
+    base = _request()
+    time_only = replace(
+        base,
+        sample_indices=None,
+        window_start_sample=None,
+        window_end_sample_exclusive=None,
+    )
+
+    certificate = certify_r2_bounds(time_only)
+
+    assert certificate.relation is R2BoundRelation.UNKNOWN
+    assert certificate.reason == "discrete_wls_exact_sample_indices_invalid"
+
+
+def test_continuous_lockin_rejects_discrete_integer_geometry() -> None:
+    base = _request(trapezoidal=True)
+    mixed = replace(
+        base,
+        sample_indices=tuple(range(len(base.sample_times_s))),
+        window_start_sample=0,
+        window_end_sample_exclusive=len(base.sample_times_s),
+    )
+
+    certificate = certify_r2_bounds(mixed)
+
+    assert certificate.relation is R2BoundRelation.UNKNOWN
+    assert certificate.reason == "continuous_lockin_forbids_discrete_integer_geometry"
+
+
+def test_large_indices_use_exact_integer_phase_not_binary64_time_reconstruction() -> None:
+    base = _request()
+    start = 1_234_567
+    end = start + 1000
+    indices = tuple(start + 125 * index for index in range(8))
+    sampling_frequency = 250.0
+    sample_times = tuple(value / sampling_frequency for value in indices)
+    count = len(indices)
+    request = replace(
+        base,
+        left_r_peak_time_s=start / sampling_frequency,
+        right_r_peak_time_s=end / sampling_frequency,
+        sample_times_s=sample_times,
+        raw_weights=(1.0,) * count,
+        sample_indices=indices,
+        window_start_sample=start,
+        window_end_sample_exclusive=end,
+        sampling=replace(
+            base.sampling,
+            timestamp_error_s=(1.0e-4,) * count,
+            interpolation_error_bound=(2.0e-4,) * count,
+            anti_alias_error_bound=(1.0e-4,) * count,
+        ),
+    )
+    shifted_times = replace(
+        request,
+        sample_times_s=tuple(math.nextafter(value, math.inf) for value in sample_times),
+    )
+
+    exact_certificate = certify_r2_bounds(request)
+    shifted_certificate = certify_r2_bounds(shifted_times)
+
+    assert exact_certificate.relation is R2BoundRelation.CERTIFIED_BOUND
+    assert shifted_certificate.relation is R2BoundRelation.CERTIFIED_BOUND
+    exact_gram = _proof(exact_certificate.to_json())["gram"]
+    shifted_gram = _proof(shifted_certificate.to_json())["gram"]
+    assert exact_gram == shifted_gram
+    assert exact_gram["phase_geometry"] == {
+        "formula": "2*pi*N*(sample_index-window_start)/(window_end-window_start)",
+        "window_start_sample": start,
+        "window_end_sample_exclusive": end,
+        "sample_indices": list(indices),
+    }
 
 
 def test_later_window_reduces_conservative_history_and_dwell_envelopes() -> None:
@@ -458,7 +626,20 @@ def test_continuous_lockin_requires_exact_composite_trapezoid_weights() -> None:
 
     certificate = certify_r2_bounds(wrong)
     assert certificate.relation is R2BoundRelation.UNKNOWN
-    assert certificate.reason == "trapezoidal_weights_must_match_composite_rule"
+    assert certificate.reason == "trapezoidal_weights_must_be_derived"
+
+
+def test_continuous_quadrature_binds_the_nominal_residual_decomposition() -> None:
+    request = _request(trapezoidal=True)
+    ambiguous = replace(
+        request.sampling,
+        quadrature_decomposition_target="actual_signal",
+    )
+
+    certificate = certify_r2_bounds(replace(request, sampling=ambiguous))
+
+    assert certificate.relation is R2BoundRelation.UNKNOWN
+    assert certificate.reason == "quadrature_decomposition_target_invalid"
 
 
 def test_continuous_lockin_does_not_reuse_an_aliased_discrete_gram() -> None:

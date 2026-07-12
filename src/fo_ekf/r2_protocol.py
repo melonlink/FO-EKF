@@ -135,6 +135,9 @@ _RADIUS_SOURCE_FIELDS = (
 _MISSING = object()
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _GIT_COMMIT_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+MAX_PROTOCOL_NODES = 200_000
+MAX_PROTOCOL_DEPTH = 64
+MAX_PROTOCOL_TEXT_BYTES = 16_000_000
 
 
 def load_r2_protocol(path: str | Path) -> dict[str, Any]:
@@ -142,6 +145,40 @@ def load_r2_protocol(path: str | Path) -> dict[str, Any]:
 
     with Path(path).open("rb") as stream:
         return tomllib.load(stream)
+
+
+def _protocol_resource_reason(value: Any) -> str | None:
+    """Validate a bounded plain TOML-like tree without recursive descent."""
+
+    if type(value) is not dict:
+        return "root:not_plain_dict"
+    stack: list[tuple[Any, int]] = [(value, 0)]
+    nodes = 0
+    text_bytes = 0
+    while stack:
+        item, depth = stack.pop()
+        nodes += 1
+        if nodes > MAX_PROTOCOL_NODES:
+            return "root:resource_nodes"
+        if depth > MAX_PROTOCOL_DEPTH:
+            return "root:resource_depth"
+        if type(item) is dict:
+            for key, child in item.items():
+                if type(key) is not str:
+                    return "root:key_type_invalid"
+                text_bytes += len(key.encode("utf-8"))
+                stack.append((child, depth + 1))
+        elif type(item) is list:
+            stack.extend((child, depth + 1) for child in item)
+        elif type(item) is str:
+            text_bytes += len(item.encode("utf-8"))
+        elif item is None or type(item) in {bool, int, float, datetime, date, time}:
+            pass
+        else:
+            return "root:value_type_invalid"
+        if text_bytes > MAX_PROTOCOL_TEXT_BYTES:
+            return "root:resource_text_bytes"
+    return None
 
 
 def _canonical_object(
@@ -174,6 +211,10 @@ def _canonical_object(
 
 def canonical_protocol_sha256(config: Mapping[str, Any]) -> str:
     """Hash only the preregistered protocol, excluding run-time results."""
+
+    resource_reason = _protocol_resource_reason(config)
+    if resource_reason is not None:
+        raise ValueError(resource_reason)
 
     protocol_only = {
         str(key): value for key, value in config.items() if str(key) != "window_result"
@@ -244,17 +285,32 @@ def _upward(value: float) -> float:
 
 
 def _upward_sum(values: Sequence[float]) -> float:
-    return _upward(math.fsum(values))
+    frozen = tuple(values)
+    try:
+        result = math.fsum(frozen)
+    except OverflowError:
+        return math.inf
+    if result == 0.0 and any(value > 0.0 for value in frozen):
+        return math.nextafter(0.0, math.inf)
+    return _upward(result)
 
 
 def _upward_product(left: float, right: float) -> float:
     if left == 0.0 or right == 0.0:
         return 0.0
-    return _upward(left * right)
+    result = left * right
+    if result == 0.0 and left > 0.0 and right > 0.0:
+        return math.nextafter(0.0, math.inf)
+    return _upward(result)
 
 
 def _upward_ratio(numerator: float, denominator: float) -> float:
-    return _upward(numerator / denominator)
+    if numerator == 0.0:
+        return 0.0
+    result = numerator / denominator
+    if result == 0.0 and numerator > 0.0 and denominator > 0.0:
+        return math.nextafter(0.0, math.inf)
+    return _upward(result)
 
 
 def _downward(value: float) -> float:
@@ -427,6 +483,7 @@ def _validate_freeze_and_hash(
         reasons.append("protocol.allowed_result_statuses:invalid")
     if isinstance(statuses, list) and "REJECT_MODEL" in statuses:
         reasons.append("protocol.allowed_result_statuses:reject_forbidden")
+    _require_true(protocol, "bound_engine_required", "protocol", reasons)
 
 
 def _validate_data_boundary(table: Mapping[str, Any], reasons: list[str]) -> None:
@@ -439,12 +496,48 @@ def _validate_data_boundary(table: Mapping[str, Any], reasons: list[str]) -> Non
             reasons.append(f"data_boundary.{key}:invalid")
     _require_false(table, "copy_raw_ecg_into_repository", "data_boundary", reasons)
     _require_true(table, "patient_level_split_required", "data_boundary", reasons)
+    if (
+        table.get("split_contract", _MISSING)
+        != "calibration_subject_disjoint_then_within_subject_time"
+    ):
+        reasons.append("data_boundary.split_contract:invalid")
+    _require_true(
+        table,
+        "calibration_subject_disjoint_from_evaluation",
+        "data_boundary",
+        reasons,
+    )
+    _require_true(
+        table,
+        "identification_validation_same_subject",
+        "data_boundary",
+        reasons,
+    )
     _require_true(
         table,
         "calibration_disjoint_from_identification",
         "data_boundary",
         reasons,
     )
+    _require_true(
+        table,
+        "calibration_disjoint_from_validation",
+        "data_boundary",
+        reasons,
+    )
+    _require_true(
+        table,
+        "identification_disjoint_from_validation",
+        "data_boundary",
+        reasons,
+    )
+    _require_true(
+        table,
+        "subject_specific_identification_precedes_validation",
+        "data_boundary",
+        reasons,
+    )
+    _require_true(table, "record_interval_hashes_required", "data_boundary", reasons)
     split_ids: list[str] = []
     for key in ("calibration_split_id", "identification_split_id", "validation_split_id"):
         _require_nonempty(table, key, "data_boundary", reasons)
@@ -454,6 +547,11 @@ def _validate_data_boundary(table: Mapping[str, Any], reasons: list[str]) -> Non
     if len(split_ids) == 3 and len(set(split_ids)) != 3:
         reasons.append("data_boundary:split_ids_not_distinct")
     _require_sha256(table, "split_manifest_sha256", "data_boundary", reasons)
+    _require_sha256(table, "record_interval_manifest_sha256", "data_boundary", reasons)
+    _require_true(table, "temporal_guard_provided", "data_boundary", reasons)
+    temporal_guard = table.get("minimum_temporal_guard_s", _MISSING)
+    if not _is_finite_nonnegative(temporal_guard):
+        reasons.append("data_boundary.minimum_temporal_guard_s:invalid")
 
 
 def _validate_units(table: Mapping[str, Any], reasons: list[str]) -> None:
@@ -877,6 +975,16 @@ def _validate_bound_specific_gates(
                 "bounds.sampling",
                 reasons,
             )
+            if (
+                sampling.get("quadrature_decomposition_target", _MISSING)
+                != "nominal_retained_front_end_reconstruction"
+            ):
+                reasons.append("bounds.sampling.quadrature_decomposition_target:invalid")
+        elif (
+            implementation == "discrete_wls"
+            and sampling.get("quadrature_decomposition_target", _MISSING) != "not_applicable"
+        ):
+            reasons.append("bounds.sampling.quadrature_decomposition_target:invalid")
         if sampling.get("missing_sample_policy", _MISSING) != "reject_window":
             reasons.append("bounds.sampling.missing_sample_policy:invalid")
 
@@ -908,6 +1016,12 @@ def _validate_bound_specific_gates(
             reasons.append("bounds.measurement_noise.bound_type:invalid")
         elif not _is_finite_nonnegative(measurement.get(field_by_type[bound_type], _MISSING)):
             reasons.append(f"bounds.measurement_noise.{field_by_type[bound_type]}:invalid")
+        if (
+            bound_type == "continuous_l2"
+            and isinstance(sampling, Mapping)
+            and sampling.get("implementation") != "trapezoidal_continuous_lockin"
+        ):
+            reasons.append("bounds.measurement_noise.continuous_l2:requires_continuous_lockin")
 
     model = bounds.get("model_residual", {})
     if isinstance(model, Mapping):
@@ -1345,6 +1459,41 @@ def _validate_window_results(
             "record_manifest_id",
         ):
             _require_nonempty(result, key, prefix, reasons)
+        _require_sha256(result, "record_manifest_sha256", prefix, reasons)
+        _require_sha256(result, "estimator_manifest_sha256", prefix, reasons)
+        deterministic_result = (
+            result.get("result_status") == R2ProtocolStatus.PASS_DETERMINISTIC.value
+        )
+        if deterministic_result:
+            for key in (
+                "wls_execution_sha256",
+                "wls_window_sha256",
+                "wls_sample_index_sha256",
+                "wls_digital_sample_sha256",
+                "wls_time_seconds_sha256",
+                "wls_normalized_weights_sha256",
+                "wls_interval_certificate_sha256",
+            ):
+                _require_sha256(result, key, prefix, reasons)
+            if result.get("wls_exact_sample_functional_coverage", _MISSING) is not True:
+                reasons.append(f"{prefix}.wls_exact_sample_functional_coverage:must_be_true")
+            wls_start = result.get("wls_window_start_sample", _MISSING)
+            wls_end = result.get("wls_window_end_sample_exclusive", _MISSING)
+            if (
+                type(wls_start) is not int
+                or type(wls_end) is not int
+                or not 0 <= wls_start < wls_end <= 2**63 - 1
+            ):
+                reasons.append(f"{prefix}.wls_integer_window_geometry:invalid")
+            exact_functional_radius = _window_numeric(
+                result,
+                "wls_exact_functional_radius_upper",
+                prefix,
+                reasons,
+                positive=True,
+            )
+        else:
+            exact_functional_radius = None
 
         window_id = result.get("window_id", _MISSING)
 
@@ -1558,6 +1707,12 @@ def _validate_window_results(
             if value is not None:
                 radius_values[field] = value
         all_radii_present = len(radius_values) == len(_RADIUS_FIELDS)
+        if (
+            exact_functional_radius is not None
+            and "radius_sampling" in radius_values
+            and radius_values["radius_sampling"] < exact_functional_radius
+        ):
+            reasons.append(f"{prefix}.radius_sampling:below_exact_functional_radius")
 
         transfer_lower = (
             delay.get("nominal_transfer_magnitude_lower_bound", _MISSING)
@@ -1726,11 +1881,12 @@ def _validate_window_results(
 def validate_r2_protocol(config: Mapping[str, Any]) -> R2ProtocolValidation:
     """Validate one parsed protocol with exclusion taking strict precedence."""
 
-    if not isinstance(config, Mapping):
+    resource_reason = _protocol_resource_reason(config)
+    if resource_reason is not None:
         empty_hash = canonical_protocol_sha256({})
         return R2ProtocolValidation(
             R2ProtocolStatus.NOT_CERTIFIABLE,
-            ("root:not_mapping",),
+            (resource_reason,),
             empty_hash,
         )
 

@@ -269,6 +269,7 @@ def disk_order_intervals(
     if grid_size < 33:
         raise ValueError("grid_size must be at least 33")
     centers, radii = inverse_response_disks(measured_responses, response_errors)
+
     def residual(order: float) -> float:
         ratio = order_invariant(order, frequencies)
         center_residual = centers[2] - centers[0] - ratio * (centers[1] - centers[0])

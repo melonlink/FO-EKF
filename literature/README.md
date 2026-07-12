@@ -9,4 +9,7 @@ Download the curated set from the repository root:
 .\.venv\Scripts\python.exe scripts\download_literature.py
 ```
 
-The helper refuses any individual response larger than 100 MiB. Larger data, models, or software require explicit user approval before download. A manifest entry with `download=0` records metadata only; it must not be fetched from an unofficial mirror.
+The helper refuses any individual response larger than 100,000,000 bytes
+(100 decimal MB). Larger data, models, or software require explicit user
+approval before download. A manifest entry with `download=0` records metadata
+only; it must not be fetched from an unofficial mirror.

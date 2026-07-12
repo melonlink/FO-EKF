@@ -4,8 +4,8 @@
 
 [protocol]
 protocol_id = "UNSET"
-version = "0.1.0"
-title = "FO-ECG R2 data-to-disk protocol"
+version = "0.4.0"
+title = "FO-ECG R2 v4 exact-index data-to-disk protocol"
 frozen = false
 frozen_at_utc = ""
 frozen_before_target_ecg_access = false
@@ -14,6 +14,9 @@ config_sha256 = ""
 owner = ""
 requested_output_semantics = "deterministic" # deterministic | probabilistic
 allowed_result_statuses = ["PASS_DETERMINISTIC", "PASS_PROBABILISTIC", "NOT_CERTIFIABLE", "EXCLUDE_PROTOCOL"]
+bound_engine_required = true
+baseline_t1_certificate_sha256 = ""
+baseline_t1_input_sha256 = ""
 
 [data_boundary]
 raw_data_root_env = "ECG_DATA_DIR"
@@ -24,8 +27,18 @@ calibration_split_id = ""
 identification_split_id = ""
 validation_split_id = ""
 patient_level_split_required = true
-calibration_disjoint_from_identification = false
+split_contract = "calibration_subject_disjoint_then_within_subject_time"
+calibration_subject_disjoint_from_evaluation = true
+identification_validation_same_subject = true
+calibration_disjoint_from_identification = true
+calibration_disjoint_from_validation = true
+identification_disjoint_from_validation = true
+subject_specific_identification_precedes_validation = true
+record_interval_hashes_required = true
+minimum_temporal_guard_s = 0.0
+temporal_guard_provided = false
 split_manifest_sha256 = ""
+record_interval_manifest_sha256 = ""
 
 [units]
 signal_unit = "UNSET" # e.g. mV or adc_count
@@ -52,6 +65,8 @@ q_bounds_independent_of_target_fit = false
 q_bounds_unit = "same_as_signal"
 q_abs_lower_by_harmonic = []
 q_abs_upper_by_harmonic = []
+t1_rate_ids = []
+damping_anchor_rate_id = ""
 
 [estimator]
 kind = "delayed_causal_weighted_least_squares"
@@ -245,6 +260,7 @@ missing_sample_policy = "reject_window"
 first_derivative_bound_signal_per_s = 0.0
 first_derivative_bound_provided = false
 implementation = "discrete_wls" # discrete_wls | trapezoidal_continuous_lockin
+quadrature_decomposition_target = "not_applicable" # not_applicable | nominal_retained_front_end_reconstruction
 second_derivative_bound_signal_per_s2 = 0.0
 second_derivative_bound_provided = false
 quadrature_radius = 0.0
@@ -305,7 +321,7 @@ calibration_method = ""
 calibration_split_id = ""
 independent_of_identification_fit = false
 uses_target_fit_residuals = false
-bound_type = "UNSET" # weighted_l2 | continuous_l2 | linfinity
+bound_type = "UNSET" # weighted_l2 | continuous_l2 (continuous lock-in only) | linfinity
 weighted_l2_bound = 0.0
 continuous_l2_bound_signal_sqrt_s = 0.0
 linfinity_bound = 0.0
@@ -394,6 +410,19 @@ subject_pseudonym = "UNSET"
 lead_id = "UNSET"
 physical_gain_id = "UNSET"
 record_manifest_id = "UNSET"
+record_manifest_sha256 = ""
+estimator_manifest_sha256 = ""
+wls_execution_sha256 = ""
+wls_window_sha256 = ""
+wls_window_start_sample = 0
+wls_window_end_sample_exclusive = 0
+wls_sample_index_sha256 = ""
+wls_digital_sample_sha256 = ""
+wls_time_seconds_sha256 = ""
+wls_normalized_weights_sha256 = ""
+wls_interval_certificate_sha256 = ""
+wls_exact_sample_functional_coverage = false
+wls_exact_functional_radius_upper = 0.0
 protocol_sha256 = ""
 result_sha256 = ""
 left_r_peak_time_s = 0.0

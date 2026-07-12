@@ -29,6 +29,16 @@ outputs/
 data/processed/
 notebooks/.ipynb_checkpoints/
 
+# LaTeX build intermediates and local visual-QA renders.
+paper/*.aux
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/**/*.qa.png
+paper/build/
+
 # Literature PDFs are downloaded locally from the tracked manifest.
 # Keeping them out of the public repository avoids accidental redistribution.
 literature/papers/*.pdf
@@ -40,6 +50,10 @@ PUBLIC/
 data/raw/
 *.dat
 *.hea
+*.ecg
+*.atr
+*.qrs
+*.ann
 *.mat
 *.h5
 *.hdf5

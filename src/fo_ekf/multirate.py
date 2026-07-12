@@ -24,12 +24,43 @@ class MultiRateRecovery:
     invariant: complex
 
 
+@dataclass(frozen=True)
+class ReferencePairRecovery:
+    """Parameters recovered from one exact response pair with a common gauge."""
+
+    order: float
+    damping_ratio: float
+    damping: float
+    morphology: complex
+    quotient: complex
+    frequency_ratio: float
+
+
+@dataclass(frozen=True)
+class ReferencePairConsistency:
+    """Numerical audit of the exact reference-pair consistency theorem."""
+
+    recoveries: tuple[ReferencePairRecovery, ...]
+    maximum_order_spread: float
+    maximum_damping_spread: float
+    consistent: bool
+
+
 def _three_frequencies(frequencies: Sequence[float]) -> tuple[float, float, float]:
     values = tuple(float(value) for value in frequencies)
     if len(values) != 3:
         raise ValueError("exactly three frequencies are required")
     if not (0.0 < values[0] < values[1] < values[2]):
         raise ValueError("frequencies must satisfy 0 < nu_1 < nu_2 < nu_3")
+    return values
+
+
+def _two_frequencies(frequencies: Sequence[float]) -> tuple[float, float]:
+    values = tuple(float(value) for value in frequencies)
+    if len(values) != 2:
+        raise ValueError("exactly two frequencies are required")
+    if not (0.0 < values[0] < values[1]):
+        raise ValueError("frequencies must satisfy 0 < nu_1 < nu_2")
     return values
 
 
@@ -51,6 +82,143 @@ def harmonic_response(
         raise ValueError("morphology coefficient must be nonzero")
     fractional_frequency = frequency**order * cmath.exp(0.5j * math.pi * order)
     return morphology / (damping + fractional_frequency)
+
+
+def recover_reference_pair(
+    responses: Sequence[complex],
+    frequencies: Sequence[float],
+    *,
+    order_bounds: tuple[float, float] = (1.0e-6, 1.0),
+    tolerance: float = 1.0e-13,
+    max_iterations: int = 200,
+) -> ReferencePairRecovery:
+    """Invert the common-gauge quotient of two exact complex responses.
+
+    This is an exact-model diagnostic.  Noisy responses must first be handled
+    as disks by the certified set-membership layer; applying this point inverse
+    to disk centres does not create a certificate.
+    """
+
+    nu_1, nu_2 = _two_frequencies(frequencies)
+    values = tuple(complex(value) for value in responses)
+    if len(values) != 2:
+        raise ValueError("exactly two responses are required")
+    if any(value == 0.0 for value in values):
+        raise ValueError("responses must be nonzero")
+    lower, upper = (float(value) for value in order_bounds)
+    if not 0.0 < lower < upper <= 1.0:
+        raise ValueError("order bounds must satisfy 0 < lower < upper <= 1")
+    if tolerance <= 0.0 or max_iterations <= 0:
+        raise ValueError("solver resources must be positive")
+
+    inverse_1, inverse_2 = (1.0 / value for value in values)
+    difference = inverse_2 - inverse_1
+    if difference == 0.0:
+        raise ValueError("inverse responses do not provide separated excitation")
+    quotient = inverse_1 / difference
+    ratio = nu_2 / nu_1
+    image_boundary = 1.0 / (ratio - 1.0)
+    slack = 32.0 * tolerance * max(1.0, abs(quotient), abs(image_boundary))
+    if quotient.imag >= 0.0 or quotient.real < image_boundary - slack:
+        raise ValueError("pair quotient lies outside the physical quotient image")
+
+    def residual(candidate: float) -> float:
+        angle = 0.5 * math.pi * candidate
+        return (
+            math.expm1(candidate * math.log(ratio))
+            * (quotient.real + quotient.imag / math.tan(angle))
+            - 1.0
+        )
+
+    residual_lower = residual(lower)
+    residual_upper = residual(upper)
+    if residual_lower > slack or residual_upper < -slack:
+        raise ValueError("pair order lies outside the selected order interval")
+    if abs(residual_lower) <= slack:
+        order = lower
+    elif abs(residual_upper) <= slack:
+        order = upper
+    else:
+        left, right = lower, upper
+        for _ in range(max_iterations):
+            middle = 0.5 * (left + right)
+            value = residual(middle)
+            if abs(value) <= tolerance or right - left <= tolerance:
+                order = middle
+                break
+            if value < 0.0:
+                left = middle
+            else:
+                right = middle
+        else:
+            raise RuntimeError("pair-quotient bisection did not converge")
+
+    radial_increment = math.expm1(order * math.log(ratio))
+    damping_ratio = -radial_increment * quotient.imag / math.sin(0.5 * math.pi * order)
+    if damping_ratio <= 0.0:
+        raise ValueError("recovered damping ratio is not positive")
+    damping = damping_ratio * nu_1**order
+    morphology = values[0] * (damping + nu_1**order * cmath.exp(0.5j * math.pi * order))
+    predicted = harmonic_response(order, damping, morphology, nu_2)
+    if abs(predicted - values[1]) > 256.0 * tolerance * max(1.0, abs(values[1])):
+        raise ValueError("pair reconstruction exceeds numerical tolerance")
+    return ReferencePairRecovery(
+        order=order,
+        damping_ratio=damping_ratio,
+        damping=damping,
+        morphology=morphology,
+        quotient=quotient,
+        frequency_ratio=ratio,
+    )
+
+
+def evaluate_reference_pair_consistency(
+    responses: Sequence[complex],
+    frequencies: Sequence[float],
+    *,
+    order_bounds: tuple[float, float] = (1.0e-6, 1.0),
+    solver_tolerance: float = 1.0e-13,
+    consistency_tolerance: float = 1.0e-9,
+) -> ReferencePairConsistency:
+    """Check whether all exact reference pairs recover common parameters.
+
+    With three or more rates, equality of every recovered ``(alpha, lambda)``
+    is necessary and sufficient for the declared single-harmonic model.  This
+    routine is a floating-point audit of that theorem, not a noisy-data test.
+    """
+
+    values = tuple(complex(value) for value in responses)
+    rates = tuple(float(value) for value in frequencies)
+    if len(values) != len(rates) or len(values) < 3:
+        raise ValueError("at least three paired responses and frequencies are required")
+    if any(right <= left for left, right in zip(rates, rates[1:], strict=False)):
+        raise ValueError("frequencies must be strictly increasing")
+    if consistency_tolerance <= 0.0:
+        raise ValueError("consistency tolerance must be positive")
+
+    recoveries = tuple(
+        recover_reference_pair(
+            (values[0], values[index]),
+            (rates[0], rates[index]),
+            order_bounds=order_bounds,
+            tolerance=solver_tolerance,
+        )
+        for index in range(1, len(values))
+    )
+    orders = tuple(value.order for value in recoveries)
+    dampings = tuple(value.damping for value in recoveries)
+    order_spread = max(orders) - min(orders)
+    damping_spread = max(dampings) - min(dampings)
+    scale = max(1.0, max(abs(value) for value in dampings))
+    return ReferencePairConsistency(
+        recoveries=recoveries,
+        maximum_order_spread=order_spread,
+        maximum_damping_spread=damping_spread,
+        consistent=(
+            order_spread <= consistency_tolerance
+            and damping_spread <= consistency_tolerance * scale
+        ),
+    )
 
 
 def order_invariant(order: float, frequencies: Sequence[float]) -> float:
