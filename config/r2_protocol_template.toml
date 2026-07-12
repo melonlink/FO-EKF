@@ -1,0 +1,433 @@
+# R2 finite-record data-to-disk preregistration template.
+# A numeric placeholder is invalid until the adjacent provided flag is true.
+# Never populate a bound from the target fit residuals.
+
+[protocol]
+protocol_id = "UNSET"
+version = "0.1.0"
+title = "FO-ECG R2 data-to-disk protocol"
+frozen = false
+frozen_at_utc = ""
+frozen_before_target_ecg_access = false
+git_commit = ""
+config_sha256 = ""
+owner = ""
+requested_output_semantics = "deterministic" # deterministic | probabilistic
+allowed_result_statuses = ["PASS_DETERMINISTIC", "PASS_PROBABILISTIC", "NOT_CERTIFIABLE", "EXCLUDE_PROTOCOL"]
+
+[data_boundary]
+raw_data_root_env = "ECG_DATA_DIR"
+processed_data_root_env = "ECG_PROCESSED_DIR"
+output_root_env = "ECG_OUTPUT_DIR"
+copy_raw_ecg_into_repository = false
+calibration_split_id = ""
+identification_split_id = ""
+validation_split_id = ""
+patient_level_split_required = true
+calibration_disjoint_from_identification = false
+split_manifest_sha256 = ""
+
+[units]
+signal_unit = "UNSET" # e.g. mV or adc_count
+physical_time_unit = "s"
+phase_unit = "rad"
+frequency_unit = "rad/s"
+dimensionless_time_symbol = "xi"
+tau_star_s = 0.0
+tau_star_provided = false
+lambda_dimensionless = true
+q_z_epsilon_same_signal_unit = true
+
+[model]
+alpha_interval = [0.0, 0.0]
+alpha_interval_provided = false
+lambda_interval = [0.0, 0.0]
+lambda_interval_provided = false
+principal_fractional_branch = true
+common_alpha_across_rates = true
+common_positive_lambda_or_preregistered_drift = true
+common_q_or_preregistered_restitution = true
+q_magnitude_bounds_source = ""
+q_bounds_independent_of_target_fit = false
+q_bounds_unit = "same_as_signal"
+q_abs_lower_by_harmonic = []
+q_abs_upper_by_harmonic = []
+
+[estimator]
+kind = "delayed_causal_weighted_least_squares"
+output_only_after_right_r_peak = true
+uses_samples_after_right_anchor = false
+phase_model = "constant_rate_between_window_anchors"
+signal_representation = "UNSET" # real_two_sided_fourier | delayed_causal_analytic
+retained_harmonics = []
+retained_harmonics_provided = false
+include_dc_if_real_signal = false
+include_negative_harmonics_if_real_signal = false
+weights_sum_to_one = false
+weight_rule = "UNSET"
+gram_positive_definite_required = true
+gram_min_eigenvalue_threshold = 0.0
+gram_condition_number_max = 0.0
+gram_thresholds_provided = false
+coefficient_level_filter_correction = true
+require_nonzero_nominal_transfer = true
+
+[window_design]
+left_anchor = "R_peak"
+right_anchor = "R_peak"
+same_subject_required = true
+same_lead_required = true
+same_physical_gain_required = true
+complete_rr_intervals = 0
+complete_rr_intervals_provided = false
+burn_in_s_min = 0.0
+burn_in_provided = false
+dwell_s_min = 0.0
+dwell_provided = false
+fixed_seconds_window_allowed = false
+per_window_amplitude_normalization = false
+per_window_free_phase_alignment = false
+window_selection_uses_target_fit_quality = false
+maximum_observed_rr_phase_deviation_rad = 0.0
+phase_deviation_threshold_provided = false
+
+[preprocessing]
+identity_front_end = true
+all_steps_causal = true
+uses_filtfilt_or_centered_smoothing = false
+same_chain_and_state_policy_across_windows = true
+pipeline_manifest = ""
+pipeline_manifest_sha256 = ""
+filter_state_policy = "continuous_from_record_start" # continuous_from_record_start | restored_certified_state | zero_state_with_tail_bound
+nominal_transfer_source = ""
+nominal_transfer_calibrated = false
+relative_ecg_rpeak_timing_calibrated = false
+
+[evidence_policy]
+target_fit_residuals_may_set_bounds = false
+post_hoc_bound_tuning_allowed = false
+post_hoc_window_exclusion_allowed = false
+deterministic_source_kinds = ["sensor_spec", "independent_bounded_calibration", "proved_engineering_envelope", "observable_window_geometry"]
+probabilistic_source_kinds = ["gaussian_model", "bootstrap", "empirical_quantile", "confidence_interval", "prediction_interval"]
+probabilistic_terms_require_failure_probability = true
+bound_numeric_scope = "uniform_all_windows_satisfying_frozen_design"
+joint_probability_method = "deterministic_zero" # deterministic_zero | union_bound | directly_calibrated_joint_bound
+
+[bounds.history]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET" # deterministic | probabilistic
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+record_origin_s = 0.0
+rate_segment_start_s = 0.0
+initial_state_abs_bound = 0.0
+new_input_sup_bound = 0.0
+pre_record_history_coefficient = 0.0
+input_and_state_unit = "same_as_signal"
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.dwell]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+previous_input_sup_bound = 0.0
+new_input_sup_bound = 0.0
+burn_in_s = 0.0
+window_duration_s = 0.0
+input_unit = "same_as_signal"
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.hrv]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+phase_defined_operationally_from_r_peaks = true
+r_peak_timing_error_s = 0.0
+r_peak_timing_error_provided = false
+latent_physiological_phase_claimed = false
+latent_phase_bound_rad = 0.0
+latent_phase_bound_provided = false
+observed_rr_phase_deviation_rule = "sup_unwrapped_difference_from_nominal_rate"
+q_harmonic_envelope_provided = false
+computed_input_mismatch_bound = 0.0
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.phase_anchor]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+common_radian_gauge_absorbed_into_q = true
+rate_specific_anchor_error_bound_rad = 0.0
+phase_error_disjoint_from_hrv_term = false
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.window_leakage]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "observable_window_geometry"
+source_reference = ""
+calibration_method = "compute_WLS_alias_factors"
+independent_of_identification_fit = true
+uses_target_fit_residuals = false
+alias_factors_computed = false
+noninteger_phase_length_retained = true
+explicit_omitted_harmonics = []
+explicit_omitted_harmonic_bounds = []
+harmonic_tail_absolute_sum_bound = 0.0
+harmonic_tail_bound_provided = false
+front_end_transfer_envelope_provided = false
+computed_coefficient_radius = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.sampling]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+sample_rate_hz = 0.0
+sample_rate_provided = false
+anti_alias_certified = false
+anti_alias_residual_bound = 0.0
+adc_quantization_step = 0.0
+timestamp_jitter_s = 0.0
+r_peak_endpoint_interpolation_bound = 0.0
+missing_sample_policy = "reject_window"
+first_derivative_bound_signal_per_s = 0.0
+first_derivative_bound_provided = false
+implementation = "discrete_wls" # discrete_wls | trapezoidal_continuous_lockin
+second_derivative_bound_signal_per_s2 = 0.0
+second_derivative_bound_provided = false
+quadrature_radius = 0.0
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.delay]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+relative_amplitude_error_bound = 0.0
+relative_group_delay_error_s = 0.0
+residual_phase_calibration_error_rad = 0.0
+ecg_to_rpeak_channel_alignment_included = false
+nominal_transfer_magnitude_lower_bound = 0.0
+target_harmonic_abs_upper_bound = 0.0
+computed_coefficient_radius = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.filter_initialization]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+filter_start_time_s = 0.0
+pre_start_input_abs_bound = 0.0
+impulse_response_tail_integral_bound = 0.0
+restored_filter_state_certified = false
+computed_coefficient_radius = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.measurement_noise]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+bound_type = "UNSET" # weighted_l2 | continuous_l2 | linfinity
+weighted_l2_bound = 0.0
+continuous_l2_bound_signal_sqrt_s = 0.0
+linfinity_bound = 0.0
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[bounds.model_residual]
+required = true
+applicability_decided = false
+applicable = true
+provided = false
+semantics = "UNSET"
+source_kind = "UNSET"
+source_reference = ""
+calibration_method = ""
+calibration_split_id = ""
+independent_of_identification_fit = false
+uses_target_fit_residuals = false
+residual_location = "UNSET" # output | dynamics_input
+output_weighted_l2_bound = 0.0
+dynamics_input_sup_bound = 0.0
+applicability_domain = ""
+computed_w_norm_bound = 0.0
+radius_unit = "same_as_signal"
+failure_probability = 0.0
+
+[decision_thresholds]
+deterministic_total_radius_max = 0.0
+deterministic_relative_radius_max = 0.0
+thresholds_provided = false
+target_harmonic_abs_lower_bound = 0.0
+target_lower_bound_provided = false
+minimum_energy_snr = 0.0
+minimum_energy_snr_provided = false
+maximum_joint_failure_probability = 0.0
+probability_threshold_provided = false
+minimum_burn_in_s = 0.0
+minimum_dwell_s = 0.0
+dwell_thresholds_provided = false
+
+[decision_rules]
+missing_required_bound = "NOT_CERTIFIABLE"
+bound_uses_target_fit_residuals = "NOT_CERTIFIABLE"
+nonfinite_bound = "NOT_CERTIFIABLE"
+mixed_or_unresolved_units = "NOT_CERTIFIABLE"
+probabilistic_term_in_deterministic_request = "NOT_CERTIFIABLE"
+unknown_harmonic_tail = "NOT_CERTIFIABLE"
+unknown_antialias_or_derivative_bound = "NOT_CERTIFIABLE"
+unknown_relative_delay = "NOT_CERTIFIABLE"
+gram_singular_or_ill_conditioned = "NOT_CERTIFIABLE"
+total_radius_above_threshold = "NOT_CERTIFIABLE"
+acausal_preprocessing = "EXCLUDE_PROTOCOL"
+per_window_amplitude_normalization = "EXCLUDE_PROTOCOL"
+per_window_free_phase_alignment = "EXCLUDE_PROTOCOL"
+r2_alone_may_return_reject_model = false
+r1_empty_joint_set_required_for_model_rejection = true
+
+[probability_accounting]
+term_failure_probabilities = []
+joint_failure_probability = 0.0
+joint_failure_probability_provided = false
+simultaneous_coverage_method = "UNSET"
+coverage_scope = "simultaneous_all_selected_rate_harmonic_disks"
+deterministic_terms_have_zero_failure_probability = true
+probabilistic_result_label_required = true
+direct_joint_reference = ""
+direct_joint_calibration_split_id = ""
+direct_joint_independent_of_identification_fit = false
+direct_joint_evidence_sha256 = ""
+
+[audit_outputs]
+write_raw_ecg = false
+write_window_manifest = true
+write_bound_breakdown = true
+write_gram_diagnostics = true
+write_filter_transfer_diagnostics = true
+write_probability_accounting = true
+write_input_and_result_hashes = true
+preserve_excluded_and_not_certifiable_rows = true
+
+[[window_result]]
+window_id = "UNSET"
+rate_id = "UNSET"
+subject_pseudonym = "UNSET"
+lead_id = "UNSET"
+physical_gain_id = "UNSET"
+record_manifest_id = "UNSET"
+protocol_sha256 = ""
+result_sha256 = ""
+left_r_peak_time_s = 0.0
+right_r_peak_time_s = 0.0
+complete_rr_intervals = 0
+window_duration_s = 0.0
+nominal_rate_rad_s = 0.0
+sample_count = 0
+# Certified lower/upper bounds, not unconstrained point estimates.
+gram_min_eigenvalue = 0.0 # outward-certified lower bound
+gram_condition_number = 0.0 # outward-certified upper bound
+gram_bounds_outward_certified = false
+gram_certificate_sha256 = ""
+wls_row_norm_upper_bound = 0.0
+target_harmonic = 0
+nominal_transfer_real = 0.0
+nominal_transfer_imag = 0.0
+z_tilde_real = 0.0
+z_tilde_imag = 0.0
+radius_history = 0.0
+radius_dwell = 0.0
+radius_hrv = 0.0
+radius_phase_anchor = 0.0
+radius_window_leakage = 0.0
+radius_sampling = 0.0
+radius_quadrature = 0.0
+radius_delay = 0.0
+radius_filter_initialization = 0.0
+radius_measurement_noise = 0.0
+radius_model_residual = 0.0
+radius_total_deterministic = 0.0
+radius_total_probabilistic = 0.0
+joint_failure_probability = 0.0
+minimum_burn_in_pass = false
+minimum_snr_pass = false
+result_status = "NOT_CERTIFIABLE"
+reason_codes = ["TEMPLATE_NOT_FILLED"]

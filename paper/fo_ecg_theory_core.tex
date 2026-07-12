@@ -375,21 +375,178 @@ form the conservative projection onto \(\beta\).
 
 \begin{remark}[Certified algorithm boundary]
 Fixed-parameter disk intersection with an annulus has finite planar geometry.
-In exact or outward-rounded interval arithmetic, inclusion-monotone outer
-disks certify exclusion and uniform inner cores certify inclusion.  The
-current ordinary-floating implementation now requires an inward guard before
-promoting inner inclusion, but it still has no outward-rounding proof for
-outer exclusion.  It is an auditable prototype, not a machine certificate;
-unresolved boxes remain unknown, and a finite grid is never a complete
-projection certificate.
+The current \texttt{certified\_set.py} implementation embeds numerical inputs
+in containing Python-FLINT Arb/ACB balls, preserves immutable rate identifiers
+and the anchored damping gauge, and uses three fast outer-exclusion tests
+followed by a bounded Cartesian \(q\)-box cover.  Ordinary floating-point
+geometry may only propose an inner witness; Arb/ACB inequalities verify it
+before inclusion is issued.  Thus every issued outer exclusion or uniform
+inner inclusion is a machine certificate.  Precision, \(q\)-box, branch, or
+leaf-budget exhaustion remains unknown, so this certified core is not a
+guaranteed finite exact projector.
+\end{remark}
+
+\begin{assumption}[Certification coordinates]
+\label{ass:cert-coordinates}
+Every rate has an immutable identifier shared by all harmonics, and harmonic
+frequencies are derived from one rate-indexed base-frequency vector rather
+than independently sorted arrays.  Rate-dependent damping is written
+\(\lambda_r=\bar\lambda+\delta\lambda_r\), with one preregistered reference
+rate satisfying \(\delta\lambda_{r_0}=0\).  This anchor removes the translation
+gauge between \(\bar\lambda\) and the offsets.  All numerical inputs are
+embedded in containing real or complex balls.
+\end{assumption}
+
+\begin{lemma}[Anchored damping gauge is lossless]
+\label{lem:anchored-damping}
+For a fixed reference rate \(r_0\), the map
+\[
+ (\lambda_r)_r\longmapsto
+ \left(\bar\lambda=\lambda_{r_0},\quad
+ \delta\lambda_r=\lambda_r-\lambda_{r_0}\right)_r
+\]
+is a bijection between positive physical rate dampings and anchored
+coordinates satisfying \(\delta\lambda_{r_0}=0\) and
+\(\bar\lambda+\delta\lambda_r>0\).  It leaves every denominator
+\(d_{r,m}\), hence the feasible set and its order projection, unchanged.
+\end{lemma}
+\begin{proof}
+The displayed construction gives the anchored coordinates of any physical
+damping vector.  Conversely,
+\(\lambda_r=\bar\lambda+\delta\lambda_r\) is the unique inverse, because the
+anchor forces \(\bar\lambda=\lambda_{r_0}\).  Substitution preserves every
+model denominator exactly.
+\end{proof}
+
+\begin{theorem}[Parameter-box disk hull and core]
+\label{thm:hull-core}
+Let \(B\) be a compact box in the anchored certification coordinates and write
+\[
+ c_{r,m}(x)=d_{r,m}(x)\widetilde Z_{r,m},\qquad
+ s_{r,m}(x)=|d_{r,m}(x)|\epsilon_{r,m}+\rho^q_{r,m}.
+\]
+Choose \(x^0\in B\) and define the exact mathematical reference
+\(c^0_{r,m}=c_{r,m}(x^0)\); it need not be machine-representable.  Suppose
+rigorous ball evaluation encloses \(c^0_{r,m}\) in a containing complex ball
+and certifies bounds
+\[
+ e_{r,m}\ge\sup_{x\in B}|c_{r,m}(x)-c^0_{r,m}|,\quad
+ s^-_{r,m}\le\inf_{x\in B}s_{r,m}(x),\quad
+ s^+_{r,m}\ge\sup_{x\in B}s_{r,m}(x).
+\]
+Then
+\begin{align}
+ \bigcup_{x\in B}\mathcal Q_{r,m}(x)
+ &\subseteq
+ \mathcal D(c^0_{r,m},e_{r,m}+s^+_{r,m})
+ =:\mathcal Q^{\rm out}_{r,m}(B),\label{eq:outer-disk}\\
+ \mathcal D(c^0_{r,m},s^-_{r,m}-e_{r,m})
+ =:\mathcal Q^{\rm in}_{r,m}(B)
+ &\subseteq
+ \bigcap_{x\in B}\mathcal Q_{r,m}(x),\label{eq:inner-disk}
+\end{align}
+whenever \(s^-_{r,m}-e_{r,m}\ge0\) is certified.  If its sign is
+undetermined, no inner disk may be issued.
+\end{theorem}
+\begin{proof}
+For \(q\in\mathcal Q_{r,m}(x)\),
+\[
+ |q-c^0_{r,m}|
+ \le |q-c_{r,m}(x)|+|c_{r,m}(x)-c^0_{r,m}|
+ \le s^+_{r,m}+e_{r,m},
+\]
+which proves \eqref{eq:outer-disk}.  Conversely, if
+\(|q-c^0_{r,m}|\le s^-_{r,m}-e_{r,m}\), then for every \(x\in B\),
+\[
+ |q-c_{r,m}(x)|
+ \le |q-c^0_{r,m}|+|c^0_{r,m}-c_{r,m}(x)|
+ \le (s^-_{r,m}-e_{r,m})+e_{r,m}
+ =s^-_{r,m}\le s_{r,m}(x),
+\]
+which proves \eqref{eq:inner-disk}.
+In a machine proof, every comparison involving \(c^0_{r,m}\) is evaluated
+against its entire containing ball; this can only make the test more
+conservative.
+\end{proof}
+
+\begin{proposition}[Finite Cartesian \(q\)-box exclusion certificate]
+\label{prop:qbox-cover}
+Fix a harmonic \(m\).  Let \(C_{r,m}\subset\C\) be a containing complex
+center ball and let \(R_{r,m}\) be an upper bound for the radius of
+\(\mathcal Q^{\rm out}_{r,m}(B)\).  Suppose a finite exact partition of
+\([-q_{\max,m},q_{\max,m}]^2\) is constructed, and every Cartesian cell
+\(P\) satisfies at least one strictly certified condition
+\[
+ \inf_{q\in P}|q|>q_{\max,m},\qquad
+ \sup_{q\in P}|q|<q_{\min,m},\qquad\text{or}\qquad
+ \inf_{\substack{q\in P\\c\in C_{r,m}}}|q-c|>R_{r,m}
+ \quad\text{for some }r.
+\]
+Then
+\[
+ \left(\bigcap_r\mathcal Q^{\rm out}_{r,m}(B)\right)
+ \cap\Eset_m=\varnothing.
+\]
+\end{proposition}
+\begin{proof}
+The square contains the complete annulus.  By hypothesis, every point of
+every partition cell is either outside the closed annulus or outside at least
+one outer disk, so no point can belong to their joint intersection.  Strict
+inequalities preserve all disk and annulus boundary points; an unresolved
+cell therefore cannot be discarded.
+\end{proof}
+
+\begin{theorem}[Certified projection sandwich]
+\label{thm:projection-sandwich}
+Let a finite branch tree cover the initial compact domain without gaps and
+classify each leaf \(B\) as follows:
+\[
+\begin{array}{ll}
+O:&\text{for some \(m\), the outer disks in \eqref{eq:outer-disk}
+have certified empty intersection with \(\Eset_m\);}\\
+I:&\text{for every \(m\), one rigorously verified witness lies in
+all inner disks in \eqref{eq:inner-disk} and in \(\Eset_m\);}\\
+U:&\text{neither statement has been proved.}
+\end{array}
+\]
+If \(F\) is the exact joint feasible parameter set and
+\[
+ \Aset_{\rm in}=\bigcup_{B\in I}\proj_\beta B,\qquad
+ \Aset_{\rm out}=\bigcup_{B\in I\cup U}\proj_\beta B,
+\]
+then
+\begin{equation}
+ \boxed{\Aset_{\rm in}\subseteq\proj_\beta F
+ \subseteq\Aset_{\rm out}}.
+ \label{eq:sandwich}
+\end{equation}
+Only when \(U=\varnothing\) may the computed projection be called exact.
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:hull-core} makes every \(O\) leaf disjoint from \(F\) and
+every \(I\) leaf a subset of \(F\).  Since \(I\cup O\cup U\) covers the initial
+domain, removing only \(O\) leaves cannot remove a feasible point, which gives
+the outer inclusion in \eqref{eq:sandwich}; projecting the \(I\) leaves gives
+the inner inclusion.
+\end{proof}
+
+\begin{remark}[Finite-resource completeness]
+Ball arithmetic certifies every issued inequality.  It does not remove
+dependency inflation or guarantee finite decisions at tangencies.  Precision
+exhaustion, branch or leaf budgets, degenerate boundaries, and unsupported
+input domains must remain \(U\).  Positive-separation infeasible boxes are
+asymptotically excludable under convergent inclusion functions; finite
+classification of every boundary box is neither assumed nor claimed.
 \end{remark}
 
 \section{R2: finite-record data-to-disk theorem}
 
-Let \(t_n\) be samples in one rate window, \(w_n>0\),
-\(\sum_nw_n=1\), and let \(\widehat\phi_n\) be an R-peak-anchored phase.
-The window spans \(N\) complete detected R--R intervals and is released only
-after its right R-peak anchor arrives; it is delayed-causal, not zero-delay.
+Let \(t_n\) be samples in one rate window \([a,b]\), \(w_n>0\),
+\(\sum_nw_n=1\).  The endpoints span \(N\) complete detected R--R intervals;
+put \(T=b-a\), \(\widehat\omega_r=2\pi N/T\), and use the fixed nominal
+constant-rate WLS phase
+\(\widehat\phi_n=\widehat\omega_r(t_n-a)\).  The window is released only after
+its right R-peak anchor arrives; it is delayed-causal, not zero-delay.
 No rate window is independently rephased or rescaled.  For included harmonics
 \(k\in\Mset\), define
 \[
@@ -457,11 +614,13 @@ calibrated term \(C_{\rm pre}M_{\alpha,\lambda}(S+s)\) is mandatory.  For a
 nonidentity causal front end with impulse response \(h\), replace each
 time-domain envelope \(B\) by \(|h|*B\) before taking its weighted norm.
 
-Define the operational R--R phase by linear interpolation between detected
-R peaks.  Relative to the fixed nominal phase, let its total certified error
-be \(\Delta_\phi(s)\), including the observable warp, R-time error, and any
-claimed latent-phase discrepancy.  If \(|R_j-\widehat R_j|\le\Delta_R\), the
-detection part can be bounded within beat \(j\) by
+Define a separate operational beatwise R--R phase by linear interpolation
+between detected R peaks.  It is not the WLS basis above: its deviation from
+the fixed nominal phase is propagated as an HRV perturbation.  Let the total
+certified phase error be \(\Delta_\phi(s)\), including the observable warp,
+R-time error, and any claimed latent-phase discrepancy.  If
+\(|R_j-\widehat R_j|\le\Delta_R\), the detection part can be bounded within
+beat \(j\) by
 \[
  \Delta_{\phi,R,j}\le
  \frac{2\pi\Delta_R}{\widehat T_j-2\Delta_R},\qquad
@@ -484,6 +643,14 @@ When \(\Delta U\le\overline{\Delta U}\), complete monotonicity gives
 Thus HRV is propagated through the fractional dynamics; it is not merely an
 output-phasor rotation.
 
+Any remaining rate-specific anchor mismatch that is not already included in
+\(\Delta_\phi\) must have an independently certified output-residual envelope
+\(B_{\rm phase}(s)\), with disjoint provenance and
+\[
+ \bar r_{\rm phase}\ge
+ \left(\sum_n w_n B_{\rm phase}(s_n)^2\right)^{1/2}.
+\]
+
 For the discrete WLS estimator, define
 \[
  a_m=\sqrt{(G^{-1})_{mm}},\qquad
@@ -494,7 +661,8 @@ A sufficient coefficient-level radius is
  \epsilon_{r,m}
  &=\frac{a_m}{|\widehat H_m|}
    (\bar r_{\rm hist}+\bar r_{\rm dwell}+\bar r_{\rm HRV}
-   +\bar r_{\rm sample}+\bar r_{\rm model}+\bar r_{\rm noise})
+   +\bar r_{\rm phase}+\bar r_{\rm sample}
+   +\bar r_{\rm model}+\bar r_{\rm noise})
    \notag\\
  &\quad+\epsilon^{\rm omitted}_{r,m}
    +\epsilon^{\rm delay}_{r,m}
@@ -568,7 +736,7 @@ may not, because its phase depends on heart rate.  Deterministic noise obeys
 \[
  \|\boldsymbol v\|_W\le\bar v_W
  \Longrightarrow
- \bar r_{\rm noise}\le\bar v_W,
+ \bar r_{\rm noise}:=\bar v_W,
 \]
 For normalized time weights and \(\|v\|_{L_2(a,b)}\le N_2\), one may take
 \(\bar v_W\le N_2/\sqrt T\).  A Gaussian or RMS SNR gives a confidence disk,
@@ -603,6 +771,13 @@ bound linear extraction, leakage, sampling, calibration, noise, and
 initialization terms.  The triangle inequality and Theorem~\ref{thm:wls}
 give \eqref{eq:total-radius}.
 \end{proof}
+
+For probabilistic components, the coverage event must be declared
+simultaneously over every selected rate--harmonic disk used by R1.  Unless a
+direct joint calibration is supplied, its failure budget includes all error
+terms, windows, rates, and harmonics through a preregistered union bound.  An
+empty R1 set obtained from such disks is therefore a confidence-qualified
+rejection, not a deterministic contradiction.
 
 \begin{corollary}[Certified minimum burn-in]
 Let \(\epsilon_{\rm rest}\) contain every radius term except history and
@@ -810,25 +985,31 @@ leaves the local regime.
 \section{Gate status and claim boundary}
 
 \begin{center}
-\begin{tabular}{lll}
+\begin{tabular}{@{}p{0.08\linewidth}p{0.36\linewidth}p{0.48\linewidth}@{}}
 \toprule
 Gate & Current status & Blocking item\\
 \midrule
 R0 & pass & assumptions and compact-prior checks\\
-R1 & analytic pass; code open & directed rounding and complete projection\\
-R2 & protocol fail & independent bounds in Remark~\ref{rem:r2-gap}\\
+R1 & certified core pass; exact closure open & unresolved leaves and finite budgets\\
+R2 & protocol tooling pass; calibration open & independent bounds in Remark~\ref{rem:r2-gap}\\
 R3 & theorem pass & globally certified numerical optimizer\\
 R4 & narrow pass & no claim of generic set/design novelty\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\paragraph{Result semantics.}
-\texttt{PASS} requires a certified protocol and a sufficiently narrow nonempty
-joint set.  \texttt{REJECT} means the declared surrogate and uncertainty set
-have empty joint feasibility.  \texttt{NOT\_CERTIFIABLE} covers missing
-protocol bounds, singular fast certificates, unresolved global boxes, and
-nonempty but overly wide order sets.
+\paragraph{Result semantics.}\mbox{}\par
+R2 returns one of
+\begin{center}
+\texttt{PASS\_DETERMINISTIC}, \texttt{PASS\_PROBABILISTIC},\\
+\texttt{NOT\_CERTIFIABLE}, \texttt{EXCLUDE\_PROTOCOL}.
+\end{center}
+Downstream \texttt{REJECT\_MODEL} requires R2 disks with declared simultaneous
+coverage and an R1 proof that the entire preregistered joint domain is empty,
+with no unknown leaf.  A probabilistic disk yields only a
+confidence-qualified rejection.  Missing protocol bounds, singular
+certificates, unresolved global boxes, and nonempty but overly wide order sets
+remain \texttt{NOT\_CERTIFIABLE}.
 
 \paragraph{Excluded claim.}
 The theory outputs an order set.  It does not prove stability of an observer

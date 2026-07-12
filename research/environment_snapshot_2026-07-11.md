@@ -26,10 +26,22 @@ Branch policy:
   - WFDB 4.3.1
   - pytest 8.4.2
   - Ruff 0.15.21
-- Installation: editable project with `.[dev]`
-- Bootstrap validation: 2 tests passed; Ruff check and format check passed.
+- Certification extra:
+  - python-flint 0.9.0
+  - Arb/ACB rigorous ball arithmetic
+  - official self-test: 227 tests and 3,092 doctests passed
+- Installation target: editable project with `.[dev,cert]`
+- Current repository validation: 107 tests passed, including 21 R1-CERT
+  tests and 53 R2 protocol/adversarial tests; full Ruff lint and the scoped
+  format check for all files changed in this stage passed. The repository-wide
+  format check still flags the pre-existing `src/fo_ekf/certificate.py`, which
+  this checkpoint deliberately leaves untouched.
+- Theory manuscript: `pdflatex` built 12 pages with no unresolved
+  references, warnings, or overfull/underfull boxes.
 
 The project environment is intentionally lightweight. It does not duplicate the existing PyTorch installation.
+The certification wheel was 9.15 MiB; the earlier 0.8.0 wheel used during
+version discovery was 10.4 MB. Both were below the 100 MB approval threshold.
 
 ## Existing PyTorch environment
 

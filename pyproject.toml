@@ -25,6 +25,9 @@ dev = [
   "pytest-cov>=5,<7",
   "ruff>=0.12,<1",
 ]
+cert = [
+  "python-flint==0.9.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
