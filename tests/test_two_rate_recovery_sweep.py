@@ -31,6 +31,9 @@ def test_deterministic_two_rate_and_three_rate_sweep_reuses_frozen_commit(
     assert summary["design"]["order_values"][0] == 0.05
     assert summary["design"]["order_values"][-1] == 1.0
     assert summary["design"]["damping_values"] == [0.01, 0.1, 1.0, 10.0, 100.0]
+    assert len(summary["design"]["base_frequency_morphology_pairs"]) == 3
+    assert summary["design"]["pairing_rule"].startswith("paired by")
+    assert "paired base-frequency/morphology" in summary["design"]["generator"]
     assert summary["claim_boundary"]["analytical_proof_replaced"] is False
     assert summary["determinism"] == {
         "case_serialization_repeats": 2,

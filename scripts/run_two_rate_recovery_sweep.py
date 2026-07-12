@@ -463,14 +463,23 @@ def run_two_rate_recovery_sweep(
             "purpose": "floating-point audit of exact-model global inverse identities",
         },
         "design": {
-            "generator": "fixed Cartesian grid; no PRNG",
+            "generator": (
+                "fixed Cartesian product of order x damping x rate ratio x "
+                "paired base-frequency/morphology condition; no PRNG"
+            ),
             "seed": None,
             "case_count": len(rows),
             "order_values": list(ORDER_VALUES),
             "damping_values": list(DAMPING_VALUES),
             "frequency_ratios": list(RATE_RATIOS),
-            "base_frequencies": list(BASE_FREQUENCIES),
-            "morphology_values": [_complex_record(value) for value in MORPHOLOGY_VALUES],
+            "base_frequency_morphology_pairs": [
+                {
+                    "base_frequency": frequency,
+                    "morphology": _complex_record(morphology),
+                }
+                for frequency, morphology in zip(BASE_FREQUENCIES, MORPHOLOGY_VALUES, strict=True)
+            ],
+            "pairing_rule": "paired by the shared condition index, not a Cartesian cross",
             "common_gains": [_complex_record(value) for value in COMMON_GAINS],
             "order_bounds": list(ORDER_BOUNDS),
             "solver_tolerance": SOLVER_TOLERANCE,
