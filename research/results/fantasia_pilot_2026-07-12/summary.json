@@ -1,0 +1,76 @@
+{
+  "calibration_record_count": 2,
+  "coefficient_count": 5577,
+  "config_sha256": "83ea10fcbe9824960f8e1d309eea242e5a64f2f0bd2a6f7fb2b8e769c81bb289",
+  "decision": {
+    "confirmatory_rate_response_evidence": "NOT_SUPPORTED",
+    "distinct_fractional_order_evidence": "NOT_SUPPORTED",
+    "pipeline_feasibility": "PASS",
+    "reason": "4/4 profiled fractional fits reached the alpha=1 boundary; 0/4 materially improved on both the nested alpha=1 and constant baselines; among 2 locked records, 1 beat the constant baseline and 1 beat the rate-shuffle control.",
+    "recommended_use": "Use this bundle to validate segmentation and leakage controls only; use a controlled multi-rate protocol with certified R2 primitives for theory testing."
+  },
+  "evidence_scope": "Subject-specific temporal held-out feasibility; not a certified R2 result, not prospective validation, and not a cardiac-digital-twin claim.",
+  "fractional_alpha_boundary_hit_count": 4,
+  "fractional_materially_better_than_alpha_one_and_constant_count": 0,
+  "implementation_sha256": "8bda0793202aa7c57e6adb0888741efef4b482115e6d4ed2a4d736cfb7b2cea7",
+  "locked_engineering_validation_record_count": 2,
+  "locked_fractional_better_than_constant_count": 1,
+  "locked_fractional_better_than_rate_shuffle_count": 1,
+  "manifest_sha256": "bdce44a2b5d87478dff2d82a22016cb924212ccd08a82c9d77dc3de4498c9621",
+  "material_improvement_threshold_fraction": 0.001,
+  "r2_status": "NOT_CERTIFIABLE",
+  "record_count": 4,
+  "runtime_environment": {
+    "flint": "3.6.0",
+    "numpy": "2.4.6",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.4",
+    "python_flint": "0.9.0",
+    "scipy": "1.17.1",
+    "wfdb": "4.3.1"
+  },
+  "validation_comparisons": {
+    "f1o01": {
+      "alpha_one_rmse_mV": 0.020851022430583614,
+      "constant_rmse_mV": 0.020973742058983454,
+      "fractional_rmse_mV": 0.020851022430584256,
+      "fractional_vs_alpha_one_ratio": 1.0000000000000309,
+      "fractional_vs_constant_ratio": 0.994148892074,
+      "fractional_vs_rate_shuffle_ratio": 0.9967227712692028,
+      "rate_shuffle_rmse_mV": 0.020919580681429666
+    },
+    "f1y01": {
+      "alpha_one_rmse_mV": 0.05663067930433649,
+      "constant_rmse_mV": 0.056638170444335105,
+      "fractional_rmse_mV": 0.05663067930091832,
+      "fractional_vs_alpha_one_ratio": 0.9999999999396411,
+      "fractional_vs_constant_ratio": 0.9998677368396963,
+      "fractional_vs_rate_shuffle_ratio": 0.9989844179975824,
+      "rate_shuffle_rmse_mV": 0.05668825086824865
+    },
+    "f2o01": {
+      "alpha_one_rmse_mV": 0.00971428232413577,
+      "constant_rmse_mV": 0.009458422635083905,
+      "fractional_rmse_mV": 0.009714282324137164,
+      "fractional_vs_alpha_one_ratio": 1.0000000000001437,
+      "fractional_vs_constant_ratio": 1.0270509892531345,
+      "fractional_vs_rate_shuffle_ratio": 1.0272444441728525,
+      "rate_shuffle_rmse_mV": 0.009456641385838014
+    },
+    "f2y01": {
+      "alpha_one_rmse_mV": 0.019044421401909845,
+      "constant_rmse_mV": 0.019295797213192353,
+      "fractional_rmse_mV": 0.01904442141050994,
+      "fractional_vs_alpha_one_ratio": 1.0000000004515808,
+      "fractional_vs_constant_ratio": 0.9869725101323853,
+      "fractional_vs_rate_shuffle_ratio": 0.9876988067953438,
+      "rate_shuffle_rmse_mV": 0.019281608198253135
+    }
+  },
+  "window_count": 1859,
+  "wls_execution_record_count": 1859,
+  "wls_execution_replay_match_count": 1859,
+  "wls_execution_rounding_scope": "Arb enclosure covers the joint solve and identity-H division relative to recorded binary64 G and b; their accumulation and all R2 primitives remain open.",
+  "wls_solve_rounding_enclosed_count": 1859,
+  "wls_solve_rounding_maximum_absolute_error_upper_bound": 3.616468081368432e-15
+}

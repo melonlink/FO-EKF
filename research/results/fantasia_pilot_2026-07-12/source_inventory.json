@@ -1,0 +1,112 @@
+{
+  "dataset": {
+    "derived_content_notice": "The repository bundle contains no waveform samples, but serialized WLS execution records retain selected beat-sample indices derived from the database annotations; the dataset attribution and license boundary remain.",
+    "doi": "10.13026/C2RG61",
+    "file_license": "Open Data Commons Attribution License v1.0",
+    "landing_url": "https://physionet.org/content/fantasia/1.0.0/",
+    "name": "Fantasia Database",
+    "required_citations": [
+      "Iyengar et al., Am J Physiol 271 (1996), R1078-R1084",
+      "Goldberger et al., Circulation 101 (2000), e215-e220"
+    ],
+    "selected_files_match_upstream_sha256_manifest": true,
+    "upstream_sha256_manifest_url": "https://physionet.org/files/fantasia/1.0.0/SHA256SUMS.txt",
+    "version": "1.0.0"
+  },
+  "files": [
+    {
+      "bytes": 123,
+      "extension": "hea",
+      "path_relative_to_ECG_DATA_DIR": "f1y01.hea",
+      "record": "f1y01",
+      "sha256": "519eff62d1ad082ea1f3ed68e4e90dc474dc35f7c99757b1d00cdaf1738bc9c2"
+    },
+    {
+      "bytes": 7225084,
+      "extension": "dat",
+      "path_relative_to_ECG_DATA_DIR": "f1y01.dat",
+      "record": "f1y01",
+      "sha256": "c992e4e69b1869e2da1f94e00a8cca070bc099cfc58911dd5a65aa436003b9bd"
+    },
+    {
+      "bytes": 17430,
+      "extension": "ecg",
+      "path_relative_to_ECG_DATA_DIR": "f1y01.ecg",
+      "record": "f1y01",
+      "sha256": "7f1da797a9292ca296ac93affec2bf16f43f0c88cf2a2f5850a3336c3b2d59f0"
+    },
+    {
+      "bytes": 123,
+      "extension": "hea",
+      "path_relative_to_ECG_DATA_DIR": "f1o01.hea",
+      "record": "f1o01",
+      "sha256": "c0ad734a39b077e5fe5bb3a0f910aa5128f2655f57247219bf02b734a2f0c2ea"
+    },
+    {
+      "bytes": 7251612,
+      "extension": "dat",
+      "path_relative_to_ECG_DATA_DIR": "f1o01.dat",
+      "record": "f1o01",
+      "sha256": "5758cb184d4f529383fdafd4dca68478d654e511f15621ff00d04a17c01f80aa"
+    },
+    {
+      "bytes": 14340,
+      "extension": "ecg",
+      "path_relative_to_ECG_DATA_DIR": "f1o01.ecg",
+      "record": "f1o01",
+      "sha256": "480a47fd00aba1cf11129e67160b2349afb63b573214a63b89641d14f7a3c808"
+    },
+    {
+      "bytes": 158,
+      "extension": "hea",
+      "path_relative_to_ECG_DATA_DIR": "f2y01.hea",
+      "record": "f2y01",
+      "sha256": "4074b8fe12804229305d6e84c92453205dab5cce704856dadfc16e94ad6435a0"
+    },
+    {
+      "bytes": 7958808,
+      "extension": "dat",
+      "path_relative_to_ECG_DATA_DIR": "f2y01.dat",
+      "record": "f2y01",
+      "sha256": "aec272b391cb2f43785272901233ce87d10ae72486c53108f78a365cecaa7a63"
+    },
+    {
+      "bytes": 16214,
+      "extension": "ecg",
+      "path_relative_to_ECG_DATA_DIR": "f2y01.ecg",
+      "record": "f2y01",
+      "sha256": "e8632c4adf93a08819d126781a489287c6687d894ca4321bc6adc3b3ac5cc75d"
+    },
+    {
+      "bytes": 157,
+      "extension": "hea",
+      "path_relative_to_ECG_DATA_DIR": "f2o01.hea",
+      "record": "f2o01",
+      "sha256": "3d57d614f597f324e5798dca285fc4029c2afb036b65925a60f233d5512acb6d"
+    },
+    {
+      "bytes": 7887636,
+      "extension": "dat",
+      "path_relative_to_ECG_DATA_DIR": "f2o01.dat",
+      "record": "f2o01",
+      "sha256": "ee9f7a8f92a4e8d9aa8f209ba3e4d112a7b4090ea08f0de4be02b1656646199a"
+    },
+    {
+      "bytes": 14486,
+      "extension": "ecg",
+      "path_relative_to_ECG_DATA_DIR": "f2o01.ecg",
+      "record": "f2o01",
+      "sha256": "2eb9fd71ef5fc197782ce510358c42233db8192f73d697f26e01c57fd276dbe4"
+    }
+  ],
+  "raw_data_copied_into_repository": false,
+  "record_sha256": {
+    "f1o01": "39e0b5aee6dd15eeef2a66724da222c277c7abac26f74b114a841e73c5208af3",
+    "f1y01": "0fd1bcddea76742c4fe66def666ecbdc57192aea73e41e9f1171ef925e2ae543",
+    "f2o01": "4638d926c355d8062ac586de127795d8064071dfafd446a4dcdfb19e63c3f73c",
+    "f2y01": "86d978ea035b260764c9b0ab4e35ea573dd2203c1d07cb781783f10f69489178"
+  },
+  "selected_files_only": true,
+  "source_root_policy": "resolved externally through ECG_DATA_DIR",
+  "unique_source_bytes": 30386171
+}

@@ -1,0 +1,76 @@
+{
+  "alpha_bounds": [
+    0.05,
+    1.0
+  ],
+  "beat_symbols": [
+    "N",
+    "S",
+    "V"
+  ],
+  "blindness_scope": "The code/configuration hash is common to all records and no outcome-dependent adaptation is made on f2 records; source metadata may be known during preflight.",
+  "coefficient_convention": "ECG(t)=dc+2*Re(sum_h Z_h exp(i*h*phase(t))); therefore a real term A*cos(h*phase)+B*sin(h*phase) has positive-frequency Z_h=(A-i*B)/2.",
+  "config_sha256": "83ea10fcbe9824960f8e1d309eea242e5a64f2f0bd2a6f7fb2b8e769c81bb289",
+  "evidence_scope": "Subject-specific temporal held-out feasibility; not a certified R2 result, not prospective validation, and not a cardiac-digital-twin claim.",
+  "fractional_model": "Z_(w,h)=q_h/[lambda+(i*2*pi*h*f_w*tau_star)^alpha] on the principal branch; tau_star=1 second is frozen, alpha/lambda are dimensionless and shared within one subject, and q_h is harmonic-specific.",
+  "front_end": "identity",
+  "guard_end_seconds": 2100.0,
+  "harmonics": [
+    1,
+    2,
+    3
+  ],
+  "identification_end_seconds": 1800.0,
+  "ignored_nonbeat_symbols": [
+    "+"
+  ],
+  "implementation_manifest": {
+    "algorithm": "locked-fantasia-rate-response-pilot-v2",
+    "implementation_sha256": "8bda0793202aa7c57e6adb0888741efef4b482115e6d4ed2a4d736cfb7b2cea7",
+    "source_sha256": {
+      "scripts/run_fantasia_pilot.py": "18c9a80d19f96b4cf1af35d89447ff845122365e23a6e13b65e3ec01613b99f5",
+      "src/fo_ekf/fantasia_pilot.py": "38a7d55ed191be58639fac68d21adc6bfb90affd8b9889655df17da168e0a4a2",
+      "src/fo_ekf/wls_execution.py": "45d6926f2dcf564b58b85b1089b18e9511321e744ab79ff3a2bc39817fa49e5d"
+    }
+  },
+  "lambda_bounds": [
+    0.001,
+    1000.0
+  ],
+  "normalization": "none",
+  "parameter_units": {
+    "alpha": "dimensionless",
+    "f_w": "Hz",
+    "lambda": "dimensionless",
+    "q_h": "mV",
+    "tau_star": "seconds"
+  },
+  "phase_anchor": "whole_window_linear_WFDB_endpoint_R_annotations",
+  "real_ecg_reconstruction": "y=Z_0+2*Re(sum_{m>0} Z_m*exp(i*m*phi))",
+  "record_roles": {
+    "f1o01": "engineering_calibration",
+    "f1y01": "engineering_calibration",
+    "f2o01": "locked_engineering_validation",
+    "f2y01": "locked_engineering_validation"
+  },
+  "records": [
+    "f1y01",
+    "f1o01",
+    "f2y01",
+    "f2o01"
+  ],
+  "rr_intervals_per_window": 16,
+  "runtime_environment": {
+    "flint": "3.6.0",
+    "numpy": "2.4.6",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.4",
+    "python_flint": "0.9.0",
+    "scipy": "1.17.1",
+    "wfdb": "4.3.1"
+  },
+  "sample_selection": "all_if_span_le_4096_else_floor_j_span_over_4096_for_j_0_to_4095",
+  "shuffle_seed": 20260712,
+  "tau_star_seconds": 1.0,
+  "wls_weights": "raw_identity_normalized_once"
+}

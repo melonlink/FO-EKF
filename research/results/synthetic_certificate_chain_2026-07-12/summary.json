@@ -1,0 +1,132 @@
+{
+  "artifact_files": {
+    "artifacts.json": "8764174da8a2364d2219e03ae9eba6a41bdea6ed677663fc56f13a3501c102da"
+  },
+  "claim_boundary": "This closes the frozen synthetic integer-sample functional and declared R2/T1 bounds only; it is not real-ECG validation or a cardiac digital-twin claim.",
+  "coverage": {
+    "interval_claim_scope": "frozen_mathematical_sample_functional_only",
+    "mathematical_exact_sample_wls_coverage": true,
+    "non_numeric_interval_exclusions": [
+      "acquisition_and_sensor_error",
+      "beat_annotation_and_window_timing_error",
+      "sampling_interpolation_and_quadrature_error",
+      "anti_alias_error",
+      "front_end_calibration_uncertainty",
+      "model_discrepancy_and_physiological_interpretation"
+    ],
+    "uncovered_numeric_term": null
+  },
+  "input_scope": {
+    "code_commit": "82f88c384c383e0cb3c3945e887fc5d9e0c18bcb",
+    "digital_sample_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+    "downloads_performed": false,
+    "generator_contract": {
+      "anti_alias_error": 0.0,
+      "dwell_bound": 0.0,
+      "history_bound": 0.0,
+      "interpolation_error": 0.0,
+      "kind": "direct_steady_state_retained_harmonic",
+      "measurement_noise": 0.0,
+      "model_residual": 0.0,
+      "nonzero_terms": [
+        "ADC quantization",
+        "exact-functional numerical enclosure"
+      ],
+      "scope": "synthetic construction only; zeros are not estimated from ECG",
+      "timestamp_error_s": 0.0
+    },
+    "kind": "deterministic_synthetic_integer_payload",
+    "phase_operator": "2*pi*N*(sample_index-start)/(end-start)",
+    "production_source_manifest_sha256": "f60282a37651ceeca549c71ad6969375e9807af5cd8e49b5c2897c135938c886",
+    "raw_ecg_used": false,
+    "sample_count": 8,
+    "sample_indices": [
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87
+    ],
+    "sample_times_s": [
+      20.0,
+      20.25,
+      20.5,
+      20.75,
+      21.0,
+      21.25,
+      21.5,
+      21.75
+    ],
+    "window_end_sample_exclusive": 88,
+    "window_start_sample": 80
+  },
+  "numeric_radius_contract": {
+    "component_sampling_radius_floor": "10889035741470036178665915771723/21778071482940061661655974875633165533184",
+    "composition": "component_sampling_plus_full_exact_functional_floor",
+    "declared_radius_sampling": "4835703484118307/4835703278458516698824704",
+    "exact_functional_radius_floor": "3450398659667087/81129638414606681695789005144064",
+    "solve_only_floor_added_again": false
+  },
+  "response_disk": {
+    "center_absolute_error": 6.507883949310488e-11,
+    "center_imag": -0.2436352405,
+    "center_real": 0.09990005900000004,
+    "disk_contains_known_response": true,
+    "known_model_response_imag": -0.2436352404978852,
+    "known_model_response_real": 0.09990005893495557,
+    "known_parameters": {
+      "alpha": 0.7,
+      "angular_frequency_rad_s": 6.283185307179586,
+      "lambda": 0.5,
+      "q_imag": -0.2,
+      "q_real": 1.0
+    },
+    "radius": 1.000000042529448e-09,
+    "radius_to_response_magnitude_ratio": 3.797640817215882e-09
+  },
+  "run_id": "synthetic-exact-sample-chain-2026-07-12",
+  "schema": "fo-ekf.synthetic-exact-certificate-chain.v1",
+  "stages": {
+    "exact_interval": {
+      "certificate_sha256": "ab254d883c2dcefe8690aaf4b27549b78124602e01106d9939fb6f2d6777fd6a",
+      "reason": "exact_integer_payload_joint_wls_interval",
+      "relation": "CERTIFIED_INTERVAL",
+      "status": "MATCH"
+    },
+    "protocol": {
+      "canonical_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "status": "PASS_DETERMINISTIC"
+    },
+    "r2_component": {
+      "certificate_sha256": "e88b4a83883cd660ba3a3e5145005ee1b9cff579a55907212a8f0fcb39b92dd3",
+      "relation": "CERTIFIED_BOUND",
+      "valid": true
+    },
+    "r2_t1_bundle": {
+      "certificate_sha256": "0aaa813f47a7a5d80fe837040fb544cc7b4067bb00daa1c3528220ba529aa08e",
+      "reason": "exact_sample_wls_and_r2_family_preserve_robust_t1_witness",
+      "relation": "PRESERVED_ROBUST",
+      "replay_reason": "replay_verified",
+      "replay_valid": true
+    },
+    "wls_execution": {
+      "certification_status": "NOT_CERTIFIABLE",
+      "execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+      "status": "MATCH"
+    }
+  },
+  "summary_sha256": "ad69630e12a7fde03e51874cc2f8a34961f8d699f86d572cf78231a40a92ca7d",
+  "tamper_controls": {
+    "digital_payload_change": {
+      "reason": "wls_execution_record_not_replayable",
+      "relation": "NOT_CERTIFIABLE"
+    },
+    "interval_radius_change_without_valid_seal": {
+      "reason": "wls_interval_certificate_not_replayable",
+      "relation": "NOT_CERTIFIABLE"
+    }
+  }
+}

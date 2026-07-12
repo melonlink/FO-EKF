@@ -1,0 +1,78 @@
+{
+  "overall_status": "NOT_CERTIFIABLE",
+  "prohibition": "Empirical WLS/model-fit intervals must not be relabeled as a certified R2 PASS.",
+  "record_statuses": {
+    "f1o01": {
+      "missing_primitives": [
+        "annotation_timing_error_bound",
+        "hrv_and_whole_window_phase_warp_bound",
+        "measurement_noise_envelope",
+        "model_discrepancy_envelope",
+        "finite_dwell_transient_bound",
+        "prehistory_or_memory_tail_bound",
+        "sampling_and_quadrature_error_bound",
+        "subsampling_anti_alias_error_bound",
+        "omitted_harmonic_tail_and_window_leakage_bound",
+        "adc_gain_and_analog_front_end_calibration_bound",
+        "G_and_b_accumulation_rounding_enclosure",
+        "end_to_end_WLS_interval_enclosure"
+      ],
+      "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+      "status": "NOT_CERTIFIABLE"
+    },
+    "f1y01": {
+      "missing_primitives": [
+        "annotation_timing_error_bound",
+        "hrv_and_whole_window_phase_warp_bound",
+        "measurement_noise_envelope",
+        "model_discrepancy_envelope",
+        "finite_dwell_transient_bound",
+        "prehistory_or_memory_tail_bound",
+        "sampling_and_quadrature_error_bound",
+        "subsampling_anti_alias_error_bound",
+        "omitted_harmonic_tail_and_window_leakage_bound",
+        "adc_gain_and_analog_front_end_calibration_bound",
+        "G_and_b_accumulation_rounding_enclosure",
+        "end_to_end_WLS_interval_enclosure"
+      ],
+      "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+      "status": "NOT_CERTIFIABLE"
+    },
+    "f2o01": {
+      "missing_primitives": [
+        "annotation_timing_error_bound",
+        "hrv_and_whole_window_phase_warp_bound",
+        "measurement_noise_envelope",
+        "model_discrepancy_envelope",
+        "finite_dwell_transient_bound",
+        "prehistory_or_memory_tail_bound",
+        "sampling_and_quadrature_error_bound",
+        "subsampling_anti_alias_error_bound",
+        "omitted_harmonic_tail_and_window_leakage_bound",
+        "adc_gain_and_analog_front_end_calibration_bound",
+        "G_and_b_accumulation_rounding_enclosure",
+        "end_to_end_WLS_interval_enclosure"
+      ],
+      "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+      "status": "NOT_CERTIFIABLE"
+    },
+    "f2y01": {
+      "missing_primitives": [
+        "annotation_timing_error_bound",
+        "hrv_and_whole_window_phase_warp_bound",
+        "measurement_noise_envelope",
+        "model_discrepancy_envelope",
+        "finite_dwell_transient_bound",
+        "prehistory_or_memory_tail_bound",
+        "sampling_and_quadrature_error_bound",
+        "subsampling_anti_alias_error_bound",
+        "omitted_harmonic_tail_and_window_leakage_bound",
+        "adc_gain_and_analog_front_end_calibration_bound",
+        "G_and_b_accumulation_rounding_enclosure",
+        "end_to_end_WLS_interval_enclosure"
+      ],
+      "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+      "status": "NOT_CERTIFIABLE"
+    }
+  }
+}

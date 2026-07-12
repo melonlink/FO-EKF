@@ -1,0 +1,1661 @@
+{
+  "baseline_t1_certificate": {
+    "algorithm": "central-unweighted-gram-selector-taylor2-v2",
+    "attempted_precisions": [
+      128
+    ],
+    "backend": {
+      "flint": "3.6.0",
+      "python_flint": "0.9.0"
+    },
+    "certificate_sha256": "3aa08494338b61bdcbc1d836650a19a0f363f0da1b49c972a710ff9181504b6e",
+    "input_manifest": {
+      "anchor_rate_id": "rest",
+      "harmonics": [
+        {
+          "base_frequencies": [
+            "884279719003555/140737488355328"
+          ],
+          "harmonic_index": 1,
+          "label": "m1",
+          "measured_responses": [
+            [
+              "899819736387513/9007199254740992",
+              "-1097235578320597/4503599627370496"
+            ]
+          ],
+          "morphology_bounds": [
+            "3602879701896397/36028797018963968",
+            "5"
+          ],
+          "morphology_drift_radii": [
+            "0"
+          ],
+          "response_radii": [
+            "7253554917687775/4835703278458516698824704"
+          ]
+        }
+      ],
+      "model": "anchored-forward-disks-principal-branch-v1",
+      "parameter_box": {
+        "damping": [
+          "1/2",
+          "1/2"
+        ],
+        "damping_offsets": [
+          {
+            "interval": [
+              "0",
+              "0"
+            ],
+            "rate_id": "rest"
+          }
+        ],
+        "order": [
+          "3152519739159347/4503599627370496",
+          "3152519739159347/4503599627370496"
+        ]
+      },
+      "rate_ids": [
+        "rest"
+      ]
+    },
+    "input_sha256": "8ffe0027f0a9d28b94b789c5d67a589e8786e483638a9d574ea1c91f0dfc3cca",
+    "precision_bits": 128,
+    "proof": {
+      "center": [
+        "0",
+        "0"
+      ],
+      "conditioning": {
+        "hessian_inf_norm": "1",
+        "inverse_inf_baseline": "1",
+        "lambda_min_lower": "1",
+        "method": "exact-inverse-inf-norm",
+        "selector_gain_squared_upper": "1",
+        "shifted_ldlt_pivots": []
+      },
+      "constraint_margins": [
+        {
+          "lower": "4142428513537221/9007199254740992",
+          "name": "annulus_lower:m1"
+        },
+        {
+          "lower": "8962604830289105/4503599627370496",
+          "name": "annulus_upper:m1"
+        },
+        {
+          "lower": "7022980295421851/2417851639229258349412352",
+          "name": "disk:m1:rest"
+        }
+      ],
+      "contraction_inf_norm": "0",
+      "krawczyk_image": [
+        [
+          "4503599627370495/4503599627370496",
+          "1"
+        ],
+        [
+          "-900719925474099/4503599627370496",
+          "-3602879701896395/18014398509481984"
+        ]
+      ],
+      "preconditioner_c": [
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "predictor": {
+        "alpha_center": "3152519739159347/4503599627370496",
+        "half_width": "0",
+        "residual": {
+          "direct_image": [
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ],
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ]
+          ],
+          "predictor_image": [
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ],
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ]
+          ],
+          "remainder_radius": [
+            "0",
+            "0"
+          ],
+          "second_derivative_abs_upper": [
+            "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+            "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+          ],
+          "selected_image": [
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ],
+            [
+              "-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+              "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+            ]
+          ]
+        },
+        "selector": {
+          "direct_image": [
+            [
+              "4503599627370495/4503599627370496",
+              "1"
+            ],
+            [
+              "-900719925474099/4503599627370496",
+              "-3602879701896395/18014398509481984"
+            ]
+          ],
+          "predictor_image": [
+            [
+              "4503599627370495/4503599627370496",
+              "1"
+            ],
+            [
+              "-900719925474099/4503599627370496",
+              "-3602879701896395/18014398509481984"
+            ]
+          ],
+          "remainder_radius": [
+            "0",
+            "0"
+          ],
+          "second_derivative_abs_upper": [
+            "5928228492432301/4503599627370496",
+            "6095937373181855/1125899906842624"
+          ],
+          "selected_image": [
+            [
+              "4503599627370495/4503599627370496",
+              "1"
+            ],
+            [
+              "-900719925474099/4503599627370496",
+              "-3602879701896395/18014398509481984"
+            ]
+          ]
+        }
+      },
+      "selector_image": [
+        [
+          "4503599627370495/4503599627370496",
+          "1"
+        ],
+        [
+          "-900719925474099/4503599627370496",
+          "-3602879701896395/18014398509481984"
+        ]
+      ],
+      "selector_margin": "4",
+      "variable_box": [
+        [
+          "-5",
+          "5"
+        ],
+        [
+          "-5",
+          "5"
+        ]
+      ],
+      "variables": [
+        "q_re:m1",
+        "q_im:m1"
+      ]
+    },
+    "reason": "arb_parametric_gram_tube",
+    "relation": "ROBUST_INNER",
+    "schema": "fo-ekf.parametric-gram-krawczyk-taylor2.v2"
+  },
+  "code_commit": "82f88c384c383e0cb3c3945e887fc5d9e0c18bcb",
+  "digital_samples_int64": [
+    199800118,
+    487270481,
+    -199800118,
+    -487270481,
+    199800118,
+    487270481,
+    -199800118,
+    -487270481
+  ],
+  "production_source_manifest": [
+    {
+      "path": "pyproject.toml",
+      "sha256": "f7c9b7971812ce1edb80aee2430b819fae12d72309d4c727428c886040d21360"
+    },
+    {
+      "path": "requirements-repro-lock.txt",
+      "sha256": "eac204b34ecf543cbe93ee71205161cebc1edb2899946320cef1bcd0bfd9719b"
+    },
+    {
+      "path": "config/r2_protocol_template.toml",
+      "sha256": "6062ad2b04c814b9303b31147b0e3203dc458a6c696ff5b51cc183bfa1682dd9"
+    },
+    {
+      "path": "scripts/run_synthetic_certificate_chain.py",
+      "sha256": "b9e106090001e62ebc87d5b2c74fd24dd8fe0b98f0fec97f92e61d3d27f8b673"
+    },
+    {
+      "path": "src/fo_ekf/__init__.py",
+      "sha256": "681faa1566a8aab354fa5aeb8a65e54a7a2ff11897dc14d267797aff90eb2c6b"
+    },
+    {
+      "path": "src/fo_ekf/caputo.py",
+      "sha256": "aeec8cdbe0cecb92b2fcbe0f1c61b0cfa347353df2d41218908f4ccf9279a8e1"
+    },
+    {
+      "path": "src/fo_ekf/certificate.py",
+      "sha256": "ec7471f867726cc2e701fe3029c8335415b63047cf5bdee41984a7b425ef445a"
+    },
+    {
+      "path": "src/fo_ekf/certified_set.py",
+      "sha256": "8f8dc5cab0962245de133b63b1e4469f68258146c6079fc02a7452cd5b085c54"
+    },
+    {
+      "path": "src/fo_ekf/fantasia_pilot.py",
+      "sha256": "38a7d55ed191be58639fac68d21adc6bfb90affd8b9889655df17da168e0a4a2"
+    },
+    {
+      "path": "src/fo_ekf/joint_set.py",
+      "sha256": "eeaf43516d6c31e41e7ed8b93b44007d5670ec3369581b93bc3b21ac99edbdd4"
+    },
+    {
+      "path": "src/fo_ekf/margin_transfer.py",
+      "sha256": "da6697cc75d4d4d668a98816ef68d748199f9944200ad626e030ea5f6d1fd8b5"
+    },
+    {
+      "path": "src/fo_ekf/multirate.py",
+      "sha256": "8a60aa5dc6a8c0adb823b641425bccbfcafdc947a85c94f4d6e1ccc1aeed9434"
+    },
+    {
+      "path": "src/fo_ekf/paths.py",
+      "sha256": "53d271386d02851afed28fed70e3f5301ff319064aff791ca84226da03483e96"
+    },
+    {
+      "path": "src/fo_ekf/r2_bound_certificate.py",
+      "sha256": "b4bbeca27aed8ecf1f481ed6849018e858a929cebf37c031907439d57c363080"
+    },
+    {
+      "path": "src/fo_ekf/r2_protocol.py",
+      "sha256": "e76217c1428c5733327e2d073195d576af4074c3ca837f76fe87966ac896e9c1"
+    },
+    {
+      "path": "src/fo_ekf/r2_t1_bundle.py",
+      "sha256": "d0a158d214d1bba89f4f8985101a492e920e89614938d6992ef1f8be5a148463"
+    },
+    {
+      "path": "src/fo_ekf/synthetic_certificate_case.py",
+      "sha256": "04cce44d342974aec1b9a070f056ffeb887f2f73c99fb2e65fbd4de19443b4b4"
+    },
+    {
+      "path": "src/fo_ekf/tube_certificate.py",
+      "sha256": "a32968899a781e04fbfb4713e3bc368733df775670e05db679cea6753a465951"
+    },
+    {
+      "path": "src/fo_ekf/wls_execution.py",
+      "sha256": "45d6926f2dcf564b58b85b1089b18e9511321e744ab79ff3a2bc39817fa49e5d"
+    },
+    {
+      "path": "src/fo_ekf/wls_interval_certificate.py",
+      "sha256": "685015b8ff2ae2f169987f2aa719d6d0708fcb123ca3648577da9e372160524c"
+    }
+  ],
+  "production_source_manifest_sha256": "f60282a37651ceeca549c71ad6969375e9807af5cd8e49b5c2897c135938c886",
+  "protocol": {
+    "audit_outputs": {
+      "preserve_excluded_and_not_certifiable_rows": true,
+      "write_bound_breakdown": true,
+      "write_filter_transfer_diagnostics": true,
+      "write_gram_diagnostics": true,
+      "write_input_and_result_hashes": true,
+      "write_probability_accounting": true,
+      "write_raw_ecg": false,
+      "write_window_manifest": true
+    },
+    "bounds": {
+      "delay": {
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-delay-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_coefficient_radius": 0.0,
+        "ecg_to_rpeak_channel_alignment_included": true,
+        "evidence_sha256": "6e16db102267e6e7de7f08f9c28836861561b6ac5a9aec0d26e263c37267f54e",
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "nominal_transfer_magnitude_lower_bound": 1.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "relative_amplitude_error_bound": 0.0,
+        "relative_group_delay_error_s": 0.0,
+        "required": true,
+        "residual_phase_calibration_error_rad": 0.0,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/delay",
+        "target_harmonic_abs_upper_bound": 2.0,
+        "uses_target_fit_residuals": false
+      },
+      "dwell": {
+        "applicability_decided": true,
+        "applicable": true,
+        "burn_in_s": 12.0,
+        "calibration_method": "direct-construction-dwell-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_w_norm_bound": 5e-324,
+        "evidence_sha256": "72d8d10863238361fc2c227fd5d4a55f897dae036a74cd2bc2fb7d7cded70105",
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "input_unit": "same_as_signal",
+        "new_input_sup_bound": 0.0,
+        "previous_input_sup_bound": 0.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/dwell",
+        "uses_target_fit_residuals": false,
+        "window_duration_s": 2.0
+      },
+      "filter_initialization": {
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-filter_initialization-upper-bound",
+        "computed_coefficient_radius": 0.0,
+        "failure_probability": 0.0,
+        "filter_start_time_s": 0.0,
+        "impulse_response_tail_integral_bound": 0.0,
+        "independent_of_identification_fit": true,
+        "pre_start_input_abs_bound": 0.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "restored_filter_state_certified": false,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/filter_initialization",
+        "uses_target_fit_residuals": false
+      },
+      "history": {
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-history-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_w_norm_bound": 5e-324,
+        "evidence_sha256": "259aa8ef98a8b91de574cd904138ef643240c23080cf24da4793a6f10a43fa9d",
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "initial_state_abs_bound": 0.0,
+        "input_and_state_unit": "same_as_signal",
+        "new_input_sup_bound": 0.0,
+        "pre_record_history_coefficient": 0.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "rate_segment_start_s": 0.0,
+        "record_origin_s": 0.0,
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/history",
+        "uses_target_fit_residuals": false
+      },
+      "hrv": {
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-hrv-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_input_mismatch_bound": 0.0,
+        "computed_w_norm_bound": 0.0,
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "latent_phase_bound_provided": false,
+        "latent_phase_bound_rad": 0.0,
+        "latent_physiological_phase_claimed": false,
+        "observed_rr_phase_deviation_rule": "sup_unwrapped_difference_from_nominal_rate",
+        "phase_defined_operationally_from_r_peaks": true,
+        "provided": true,
+        "q_harmonic_envelope_provided": true,
+        "r_peak_timing_error_provided": true,
+        "r_peak_timing_error_s": 0.0,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/hrv",
+        "uses_target_fit_residuals": false
+      },
+      "measurement_noise": {
+        "applicability_decided": true,
+        "applicable": true,
+        "bound_type": "weighted_l2",
+        "calibration_method": "direct-construction-measurement_noise-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_w_norm_bound": 0.0,
+        "continuous_l2_bound_signal_sqrt_s": 0.0,
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "linfinity_bound": 0.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/measurement_noise",
+        "uses_target_fit_residuals": false,
+        "weighted_l2_bound": 0.0
+      },
+      "model_residual": {
+        "applicability_decided": true,
+        "applicability_domain": "",
+        "applicable": true,
+        "calibration_method": "direct-construction-model_residual-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_w_norm_bound": 0.0,
+        "dynamics_input_sup_bound": 0.0,
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "output_weighted_l2_bound": 0.0,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "residual_location": "output",
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/model_residual",
+        "uses_target_fit_residuals": false
+      },
+      "phase_anchor": {
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-phase_anchor-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "common_radian_gauge_absorbed_into_q": true,
+        "computed_w_norm_bound": 0.0,
+        "failure_probability": 0.0,
+        "independent_of_identification_fit": true,
+        "phase_error_disjoint_from_hrv_term": true,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "rate_specific_anchor_error_bound_rad": 0.0,
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/phase_anchor",
+        "uses_target_fit_residuals": false
+      },
+      "sampling": {
+        "adc_quantization_step": 1e-09,
+        "anti_alias_certified": true,
+        "anti_alias_residual_bound": 0.0,
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-sampling-upper-bound",
+        "calibration_split_id": "calibration-v1",
+        "computed_w_norm_bound": 1e-09,
+        "evidence_sha256": "52630e4131f9862ea34c8ded9741fae2176c56c55c74827b2bd30cd1ef9eb37b",
+        "failure_probability": 0.0,
+        "first_derivative_bound_provided": true,
+        "first_derivative_bound_signal_per_s": 2.0,
+        "implementation": "discrete_wls",
+        "independent_of_identification_fit": true,
+        "missing_sample_policy": "reject_window",
+        "provided": true,
+        "quadrature_decomposition_target": "not_applicable",
+        "quadrature_radius": 0.0,
+        "r_peak_endpoint_interpolation_bound": 0.0,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "sample_rate_hz": 4.0,
+        "sample_rate_provided": true,
+        "second_derivative_bound_provided": false,
+        "second_derivative_bound_signal_per_s2": 0.0,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/sampling",
+        "timestamp_jitter_s": 0.0,
+        "uses_target_fit_residuals": false
+      },
+      "window_leakage": {
+        "alias_factors_computed": true,
+        "applicability_decided": true,
+        "applicable": true,
+        "calibration_method": "direct-construction-window_leakage-upper-bound",
+        "computed_coefficient_radius": 0.0,
+        "explicit_omitted_harmonic_bounds": [],
+        "explicit_omitted_harmonics": [],
+        "failure_probability": 0.0,
+        "front_end_transfer_envelope_provided": true,
+        "harmonic_tail_absolute_sum_bound": 0.0,
+        "harmonic_tail_bound_provided": true,
+        "independent_of_identification_fit": true,
+        "noninteger_phase_length_retained": true,
+        "provided": true,
+        "radius_unit": "same_as_signal",
+        "required": true,
+        "semantics": "deterministic",
+        "source_kind": "proved_engineering_envelope",
+        "source_reference": "synthetic_generator_contract/window_leakage",
+        "uses_target_fit_residuals": false
+      }
+    },
+    "data_boundary": {
+      "calibration_disjoint_from_identification": true,
+      "calibration_disjoint_from_validation": true,
+      "calibration_split_id": "calibration-v1",
+      "calibration_subject_disjoint_from_evaluation": true,
+      "copy_raw_ecg_into_repository": false,
+      "identification_disjoint_from_validation": true,
+      "identification_split_id": "identification-v1",
+      "identification_validation_same_subject": true,
+      "minimum_temporal_guard_s": 1.0,
+      "output_root_env": "ECG_OUTPUT_DIR",
+      "patient_level_split_required": true,
+      "processed_data_root_env": "ECG_PROCESSED_DIR",
+      "raw_data_root_env": "ECG_DATA_DIR",
+      "record_interval_hashes_required": true,
+      "record_interval_manifest_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "split_contract": "calibration_subject_disjoint_then_within_subject_time",
+      "split_manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "subject_specific_identification_precedes_validation": true,
+      "temporal_guard_provided": true,
+      "validation_split_id": "validation-v1"
+    },
+    "decision_rules": {
+      "acausal_preprocessing": "EXCLUDE_PROTOCOL",
+      "bound_uses_target_fit_residuals": "NOT_CERTIFIABLE",
+      "gram_singular_or_ill_conditioned": "NOT_CERTIFIABLE",
+      "missing_required_bound": "NOT_CERTIFIABLE",
+      "mixed_or_unresolved_units": "NOT_CERTIFIABLE",
+      "nonfinite_bound": "NOT_CERTIFIABLE",
+      "per_window_amplitude_normalization": "EXCLUDE_PROTOCOL",
+      "per_window_free_phase_alignment": "EXCLUDE_PROTOCOL",
+      "probabilistic_term_in_deterministic_request": "NOT_CERTIFIABLE",
+      "r1_empty_joint_set_required_for_model_rejection": true,
+      "r2_alone_may_return_reject_model": false,
+      "total_radius_above_threshold": "NOT_CERTIFIABLE",
+      "unknown_antialias_or_derivative_bound": "NOT_CERTIFIABLE",
+      "unknown_harmonic_tail": "NOT_CERTIFIABLE",
+      "unknown_relative_delay": "NOT_CERTIFIABLE"
+    },
+    "decision_thresholds": {
+      "deterministic_relative_radius_max": 1000.0,
+      "deterministic_total_radius_max": 100.0,
+      "dwell_thresholds_provided": true,
+      "maximum_joint_failure_probability": 0.0,
+      "minimum_burn_in_s": 10.0,
+      "minimum_dwell_s": 14.0,
+      "minimum_energy_snr": 20.0,
+      "minimum_energy_snr_provided": true,
+      "probability_threshold_provided": true,
+      "target_harmonic_abs_lower_bound": 0.2,
+      "target_lower_bound_provided": true,
+      "thresholds_provided": true
+    },
+    "estimator": {
+      "coefficient_level_filter_correction": true,
+      "gram_condition_number_max": 2.0,
+      "gram_min_eigenvalue_threshold": 0.5,
+      "gram_positive_definite_required": true,
+      "gram_thresholds_provided": true,
+      "include_dc_if_real_signal": true,
+      "include_negative_harmonics_if_real_signal": true,
+      "kind": "delayed_causal_weighted_least_squares",
+      "output_only_after_right_r_peak": true,
+      "phase_model": "constant_rate_between_window_anchors",
+      "require_nonzero_nominal_transfer": true,
+      "retained_harmonics": [
+        -1,
+        0,
+        1
+      ],
+      "retained_harmonics_provided": true,
+      "signal_representation": "real_two_sided_fourier",
+      "uses_samples_after_right_anchor": false,
+      "weight_rule": "normalized_identity",
+      "weights_sum_to_one": true
+    },
+    "evidence_policy": {
+      "bound_numeric_scope": "uniform_all_windows_satisfying_frozen_design",
+      "deterministic_source_kinds": [
+        "sensor_spec",
+        "independent_bounded_calibration",
+        "proved_engineering_envelope",
+        "observable_window_geometry"
+      ],
+      "joint_probability_method": "deterministic_zero",
+      "post_hoc_bound_tuning_allowed": false,
+      "post_hoc_window_exclusion_allowed": false,
+      "probabilistic_source_kinds": [
+        "gaussian_model",
+        "bootstrap",
+        "empirical_quantile",
+        "confidence_interval",
+        "prediction_interval"
+      ],
+      "probabilistic_terms_require_failure_probability": true,
+      "target_fit_residuals_may_set_bounds": false
+    },
+    "model": {
+      "alpha_interval": [
+        0.6,
+        0.9
+      ],
+      "alpha_interval_provided": true,
+      "common_alpha_across_rates": true,
+      "common_positive_lambda_or_preregistered_drift": true,
+      "common_q_or_preregistered_restitution": true,
+      "damping_anchor_rate_id": "rest",
+      "lambda_interval": [
+        0.4,
+        1.2
+      ],
+      "lambda_interval_provided": true,
+      "principal_fractional_branch": true,
+      "q_abs_lower_by_harmonic": [
+        0.1,
+        0.0,
+        0.1
+      ],
+      "q_abs_upper_by_harmonic": [
+        5.0,
+        2.0,
+        5.0
+      ],
+      "q_bounds_independent_of_target_fit": true,
+      "q_bounds_unit": "same_as_signal",
+      "q_magnitude_bounds_source": "independent synthetic calibration",
+      "t1_rate_ids": [
+        "rest"
+      ]
+    },
+    "preprocessing": {
+      "all_steps_causal": true,
+      "filter_state_policy": "continuous_from_record_start",
+      "identity_front_end": true,
+      "nominal_transfer_calibrated": false,
+      "nominal_transfer_source": "",
+      "pipeline_manifest": "identity-front-end-v1",
+      "pipeline_manifest_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "relative_ecg_rpeak_timing_calibrated": true,
+      "same_chain_and_state_policy_across_windows": true,
+      "uses_filtfilt_or_centered_smoothing": false
+    },
+    "probability_accounting": {
+      "coverage_scope": "simultaneous_all_selected_rate_harmonic_disks",
+      "deterministic_terms_have_zero_failure_probability": true,
+      "direct_joint_calibration_split_id": "",
+      "direct_joint_evidence_sha256": "",
+      "direct_joint_independent_of_identification_fit": false,
+      "direct_joint_reference": "",
+      "joint_failure_probability": 0.0,
+      "joint_failure_probability_provided": true,
+      "probabilistic_result_label_required": true,
+      "simultaneous_coverage_method": "deterministic_zero",
+      "term_failure_probabilities": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "protocol": {
+      "allowed_result_statuses": [
+        "PASS_DETERMINISTIC",
+        "PASS_PROBABILISTIC",
+        "NOT_CERTIFIABLE",
+        "EXCLUDE_PROTOCOL"
+      ],
+      "baseline_t1_certificate_sha256": "3aa08494338b61bdcbc1d836650a19a0f363f0da1b49c972a710ff9181504b6e",
+      "baseline_t1_input_sha256": "8ffe0027f0a9d28b94b789c5d67a589e8786e483638a9d574ea1c91f0dfc3cca",
+      "bound_engine_required": true,
+      "config_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "frozen": true,
+      "frozen_at_utc": "2026-07-12T00:00:00Z",
+      "frozen_before_target_ecg_access": true,
+      "git_commit": "82f88c384c383e0cb3c3945e887fc5d9e0c18bcb",
+      "owner": "synthetic-certificate-runner",
+      "protocol_id": "r2-synthetic-exact-chain",
+      "requested_output_semantics": "deterministic",
+      "title": "FO-ECG R2 v4 exact-index data-to-disk protocol",
+      "version": "0.4.0"
+    },
+    "units": {
+      "dimensionless_time_symbol": "xi",
+      "frequency_unit": "rad/s",
+      "lambda_dimensionless": true,
+      "phase_unit": "rad",
+      "physical_time_unit": "s",
+      "q_z_epsilon_same_signal_unit": true,
+      "signal_unit": "mV",
+      "tau_star_provided": true,
+      "tau_star_s": 1.0
+    },
+    "window_design": {
+      "burn_in_provided": true,
+      "burn_in_s_min": 10.0,
+      "complete_rr_intervals": 2,
+      "complete_rr_intervals_provided": true,
+      "dwell_provided": true,
+      "dwell_s_min": 14.0,
+      "fixed_seconds_window_allowed": false,
+      "left_anchor": "R_peak",
+      "maximum_observed_rr_phase_deviation_rad": 0.2,
+      "per_window_amplitude_normalization": false,
+      "per_window_free_phase_alignment": false,
+      "phase_deviation_threshold_provided": true,
+      "right_anchor": "R_peak",
+      "same_lead_required": true,
+      "same_physical_gain_required": true,
+      "same_subject_required": true,
+      "window_selection_uses_target_fit_quality": false
+    },
+    "window_result": [
+      {
+        "complete_rr_intervals": 2,
+        "estimator_manifest_sha256": "8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e",
+        "gram_bounds_outward_certified": true,
+        "gram_certificate_sha256": "e88b4a83883cd660ba3a3e5145005ee1b9cff579a55907212a8f0fcb39b92dd3",
+        "gram_condition_number": 1.0000000000000002,
+        "gram_min_eigenvalue": 0.9999999999999999,
+        "joint_failure_probability": 0.0,
+        "lead_id": "synthetic-lead-II",
+        "left_r_peak_time_s": 20.0,
+        "minimum_burn_in_pass": true,
+        "minimum_snr_pass": true,
+        "nominal_rate_rad_s": 6.283185307179586,
+        "nominal_transfer_imag": 0.0,
+        "nominal_transfer_real": 1.0,
+        "physical_gain_id": "synthetic-gain-001",
+        "protocol_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+        "radius_delay": 0.0,
+        "radius_dwell": 1e-323,
+        "radius_filter_initialization": 0.0,
+        "radius_history": 1e-323,
+        "radius_hrv": 0.0,
+        "radius_measurement_noise": 0.0,
+        "radius_model_residual": 0.0,
+        "radius_phase_anchor": 0.0,
+        "radius_quadrature": 0.0,
+        "radius_sampling": 1.0000000425294478e-09,
+        "radius_total_deterministic": 1.000000042529448e-09,
+        "radius_total_probabilistic": 0.0,
+        "radius_window_leakage": 0.0,
+        "rate_id": "rest",
+        "reason_codes": [],
+        "record_manifest_id": "synthetic-record-manifest-001",
+        "record_manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "result_sha256": "8369df3a73cccd0cc548cfa864f0756169386207f3bfdb0bf5b97b14d5c3a856",
+        "result_status": "PASS_DETERMINISTIC",
+        "right_r_peak_time_s": 22.0,
+        "sample_count": 8,
+        "subject_pseudonym": "synthetic-subject-001",
+        "target_harmonic": 1,
+        "window_duration_s": 2.0,
+        "window_id": "window-001",
+        "wls_digital_sample_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+        "wls_exact_functional_radius_upper": 4.2529447031849126e-17,
+        "wls_exact_sample_functional_coverage": true,
+        "wls_execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+        "wls_interval_certificate_sha256": "ab254d883c2dcefe8690aaf4b27549b78124602e01106d9939fb6f2d6777fd6a",
+        "wls_normalized_weights_sha256": "65c5345153d2f48b057ce282be27f774447677c4afb9cde391a88c6bd1acdb29",
+        "wls_row_norm_upper_bound": 1.0000000000000004,
+        "wls_sample_index_sha256": "f724dd9aa330e0a3d4efe7cc960541b0a2782fcaf2789f7ddbe988f5dae04162",
+        "wls_time_seconds_sha256": "27ce6e39b1bbaff3356c3b9aa8a92a3d258dde1d9294ffe187109788ffa7386d",
+        "wls_window_end_sample_exclusive": 88,
+        "wls_window_sha256": "97dfc489782958487d86805480b2a8a4eaf46b110fcfea293d9eea84055da0b0",
+        "wls_window_start_sample": 80,
+        "z_tilde_imag": -0.2436352405,
+        "z_tilde_real": 0.09990005900000004
+      }
+    ]
+  },
+  "r2_component_certificate": {
+    "algorithm": "arb-mode-separated-exact-index-r2-bounds-v4",
+    "attempted_precisions": [
+      128
+    ],
+    "certificate_sha256": "e88b4a83883cd660ba3a3e5145005ee1b9cff579a55907212a8f0fcb39b92dd3",
+    "environment": {
+      "flint": "3.6.0",
+      "python_flint": "0.9.0"
+    },
+    "input_manifest": {
+      "alpha_interval": [
+        "5404319552844595/9007199254740992",
+        "8106479329266893/9007199254740992"
+      ],
+      "calibration_split_id": "calibration-v1",
+      "delay": {
+        "ecg_to_rpeak_channel_alignment_included": true,
+        "evidence": {
+          "applicability_domain": "directly generated steady-state retained-harmonic synthetic case; not real ECG",
+          "calibration_split_id": "calibration-v1",
+          "evidence_sha256": "6e16db102267e6e7de7f08f9c28836861561b6ac5a9aec0d26e263c37267f54e",
+          "independent_of_identification_fit": true,
+          "numeric_scope": "uniform_all_windows_satisfying_frozen_design",
+          "signal_unit": "mV",
+          "source_kind": "proved_engineering_envelope",
+          "source_reference": "synthetic_generator_contract/delay",
+          "time_unit": "s",
+          "uses_target_fit_residuals": false
+        },
+        "nominal_transfer_magnitude_lower_bound": "1",
+        "relative_amplitude_error_bound": "0",
+        "relative_group_delay_error_s": "0",
+        "residual_phase_calibration_error_rad": "0",
+        "target_harmonic_abs_upper_bound": "2"
+      },
+      "dwell": {
+        "evidence": {
+          "applicability_domain": "directly generated steady-state retained-harmonic synthetic case; not real ECG",
+          "calibration_split_id": "calibration-v1",
+          "evidence_sha256": "72d8d10863238361fc2c227fd5d4a55f897dae036a74cd2bc2fb7d7cded70105",
+          "independent_of_identification_fit": true,
+          "numeric_scope": "uniform_all_windows_satisfying_frozen_design",
+          "signal_unit": "mV",
+          "source_kind": "proved_engineering_envelope",
+          "source_reference": "synthetic_generator_contract/dwell",
+          "time_unit": "s",
+          "uses_target_fit_residuals": false
+        },
+        "new_input_sup_bound": "0",
+        "preconvolved_output_envelope": null,
+        "previous_input_sup_bound": "0"
+      },
+      "dynamic_front_end_mode": "identity",
+      "estimator_manifest_sha256": "8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e",
+      "frozen_before_target_ecg_access": true,
+      "geometry": {
+        "complete_rr_intervals": 2,
+        "left_r_peak_time_s": "20",
+        "raw_weights": [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "retained_harmonics": [
+          -1,
+          0,
+          1
+        ],
+        "right_r_peak_time_s": "22",
+        "sample_indices": [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87
+        ],
+        "sample_times_s": [
+          "20",
+          "81/4",
+          "41/2",
+          "83/4",
+          "21",
+          "85/4",
+          "43/2",
+          "87/4"
+        ],
+        "target_harmonic": 1,
+        "window_end_sample_exclusive": 88,
+        "window_start_sample": 80
+      },
+      "gram_thresholds": {
+        "maximum_condition_number": "2",
+        "minimum_eigenvalue": "1/2"
+      },
+      "history": {
+        "evidence": {
+          "applicability_domain": "directly generated steady-state retained-harmonic synthetic case; not real ECG",
+          "calibration_split_id": "calibration-v1",
+          "evidence_sha256": "259aa8ef98a8b91de574cd904138ef643240c23080cf24da4793a6f10a43fa9d",
+          "independent_of_identification_fit": true,
+          "numeric_scope": "uniform_all_windows_satisfying_frozen_design",
+          "signal_unit": "mV",
+          "source_kind": "proved_engineering_envelope",
+          "source_reference": "synthetic_generator_contract/history",
+          "time_unit": "s",
+          "uses_target_fit_residuals": false
+        },
+        "initial_state_abs_bound": "0",
+        "new_input_sup_bound": "0",
+        "pre_record_history_coefficient": "0",
+        "preconvolved_output_envelope": null,
+        "rate_segment_start_s": "0",
+        "record_origin_s": "0"
+      },
+      "identification_split_id": "identification-v1",
+      "lambda_interval": [
+        "3602879701896397/9007199254740992",
+        "5404319552844595/4503599627370496"
+      ],
+      "model": "r2-finite-record-component-bounds-v4",
+      "protocol_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "record_manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sampling": {
+        "adc_quantization_step": "4835703278458517/4835703278458516698824704",
+        "anti_alias_error_bound": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "evidence": {
+          "applicability_domain": "directly generated steady-state retained-harmonic synthetic case; not real ECG",
+          "calibration_split_id": "calibration-v1",
+          "evidence_sha256": "52630e4131f9862ea34c8ded9741fae2176c56c55c74827b2bd30cd1ef9eb37b",
+          "independent_of_identification_fit": true,
+          "numeric_scope": "uniform_all_windows_satisfying_frozen_design",
+          "signal_unit": "mV",
+          "source_kind": "proved_engineering_envelope",
+          "source_reference": "synthetic_generator_contract/sampling",
+          "time_unit": "s",
+          "uses_target_fit_residuals": false
+        },
+        "first_derivative_bound_signal_per_s": "2",
+        "implementation": "discrete_wls",
+        "interpolation_error_bound": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "panel_second_derivative_bound": [],
+        "quadrature_decomposition_target": "not_applicable",
+        "timestamp_error_s": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      },
+      "signal_unit": "mV",
+      "tau_star_s": "1",
+      "window_id": "window-001"
+    },
+    "input_sha256": "38d997dbff2a66c2407375c015d50eb354b0f98b1422d0598e671f3641cf42e0",
+    "precision_bits": 128,
+    "proof": {
+      "delay": {
+        "chord_method": "exact_zero",
+        "chord_upper": "0",
+        "coefficient_radius_upper": "0",
+        "nominal_rate_rad_s_upper": "7074237752028441/1125899906842624",
+        "phase_error_rad_upper": "0",
+        "relative_transfer_error_upper": "0"
+      },
+      "dynamic": {
+        "dwell": {
+          "coefficient": "0",
+          "coefficient_radius_upper": "4503599627370497/911538712573752842426782752859677773850199784985792622718146407170887258590638016488952397378652867560324736041925982334382221227214279035483801616582432772011525526217827529506531107381223952764452290715900479586245384485644604244665028634016216141654548674372952638143670597724849760504261340328602898679115567105544128168593021011492864",
+          "front_end_output_envelope_by_sample": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "input_envelope_diagnostic_by_sample": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "relaxation_upper_by_sample": [
+            "2535301200456458802993406410752/8654683004380021479048883572029",
+            "10141204801825835211973625643008/34801857175321938637608760294517",
+            "10141204801825835211973625643008/34984080213146405595626497659519",
+            "5070602400912917605986812821504/17582708248150655999569813159513",
+            "5070602400912917605986812821504/17672940473417501789446391244301",
+            "79228162514264337593543950336/277542875479974074441281293991",
+            "2535301200456458802993406410752/8926062982103056926304666065847",
+            "2535301200456458802993406410752/8970546560948359996226336771409"
+          ],
+          "weighted_residual_upper": "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+        },
+        "dynamic_front_end_mode": "identity",
+        "history": {
+          "coefficient": "0",
+          "coefficient_radius_upper": "4503599627370497/911538712573752842426782752859677773850199784985792622718146407170887258590638016488952397378652867560324736041925982334382221227214279035483801616582432772011525526217827529506531107381223952764452290715900479586245384485644604244665028634016216141654548674372952638143670597724849760504261340328602898679115567105544128168593021011492864",
+          "front_end_output_envelope_by_sample": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "input_envelope_diagnostic_by_sample": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "relaxation_upper_by_sample": [
+            "2535301200456458802993406410752/8654683004380021479048883572029",
+            "10141204801825835211973625643008/34801857175321938637608760294517",
+            "10141204801825835211973625643008/34984080213146405595626497659519",
+            "5070602400912917605986812821504/17582708248150655999569813159513",
+            "5070602400912917605986812821504/17672940473417501789446391244301",
+            "79228162514264337593543950336/277542875479974074441281293991",
+            "2535301200456458802993406410752/8926062982103056926304666065847",
+            "2535301200456458802993406410752/8970546560948359996226336771409"
+          ],
+          "weighted_residual_upper": "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784"
+        },
+        "input_envelope_diagnostic": "simon-hyperbolic-gamma-unit-v1",
+        "output_bound_source": "identity_front_end_from_input_envelope"
+      },
+      "gram": {
+        "coefficient_amplification_upper": "4503599627370497/4503599627370496",
+        "condition_number_upper": "2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947623966037054152923",
+        "lambda_max_upper": "2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848",
+        "lambda_min_lower": "2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848",
+        "method": "hermitian_gershgorin_v1",
+        "nominal_transfer_magnitude_lower": "1",
+        "phase_geometry": {
+          "formula": "2*pi*N*(sample_index-window_start)/(window_end-window_start)",
+          "sample_indices": [
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87
+          ],
+          "window_end_sample_exclusive": 88,
+          "window_start_sample": 80
+        },
+        "rows": [
+          {
+            "eigenvalue_interval": [
+              "2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848",
+              "2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848"
+            ],
+            "harmonic": -1,
+            "offdiagonal_radius_upper": "289312793861925/2993155353253689176481146537402947624255349848014848"
+          },
+          {
+            "eigenvalue_interval": [
+              "47890485652059026823698344598447161984979004650894303/47890485652059026823698344598447161988085597568237568",
+              "47890485652059026823698344598447161991192190485580833/47890485652059026823698344598447161988085597568237568"
+            ],
+            "harmonic": 0,
+            "offdiagonal_radius_upper": "3106592917343265/47890485652059026823698344598447161988085597568237568"
+          },
+          {
+            "eigenvalue_interval": [
+              "2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848",
+              "2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848"
+            ],
+            "harmonic": 1,
+            "offdiagonal_radius_upper": "289312793861925/2993155353253689176481146537402947624255349848014848"
+          }
+        ],
+        "wls_row_norm_upper": "4503599627370497/4503599627370496"
+      },
+      "normalized_weights": [
+        "1/8",
+        "1/8",
+        "1/8",
+        "1/8",
+        "1/8",
+        "1/8",
+        "1/8",
+        "1/8"
+      ],
+      "omitted_r2_components": [
+        "hrv",
+        "phase_anchor",
+        "window_leakage_and_harmonic_tail",
+        "filter_initialization",
+        "measurement_noise",
+        "model_residual"
+      ],
+      "partial_radius_upper": "227884678143438322525726353194554985948137113366533371334928035964974453886374615780165274148056607679892715558061570323986371536970375687021855417527692400427122617545542882640078923007610623424744306621696920011446333018573056139762559209070012083911557244412608653142192932177494290550575589537868397916027010999632928335462401/455769356286876421213391376429838886925099892492896311359073203585443629295319008244476198689326433780162368020962991167191110613607139517741900808291216386005762763108913764753265553690611976382226145357950239793122692242822302122332514317008108070827274337186476319071835298862424880252130670164301449339557783552772064084296510505746432",
+      "precision_bits": 128,
+      "sampling": {
+        "coefficient_radius_upper": "10889035741470036178665915771723/21778071482940061661655974875633165533184",
+        "implementation": "discrete_wls",
+        "per_sample_output_error_upper": [
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408",
+          "4835703278458517/9671406556917033397649408"
+        ],
+        "quadrature_coefficient_radius_upper": "0",
+        "quadrature_decomposition_target": "not_applicable",
+        "weighted_residual_upper": "2417851639229259/4835703278458516698824704"
+      },
+      "weight_contract": "normalized_declared_discrete_weights"
+    },
+    "reason": "certified_all_requested_components",
+    "relation": "CERTIFIED_BOUND",
+    "schema": "fo-ekf.r2-bound-engine.v4"
+  },
+  "r2_t1_bundle_certificate": {
+    "algorithm": "exact-sample-wls-centre-and-r2-disk-to-frozen-t1-selector-v3",
+    "certificate_sha256": "0aaa813f47a7a5d80fe837040fb544cc7b4067bb00daa1c3528220ba529aa08e",
+    "input_manifest": {
+      "baseline_t1_certificate_json_sha256": "17ad68a7d00bd76ebce61f56dc72bfc0ac6aa553c4de4305cf9e2c0b5fb61c9e",
+      "baseline_t1_certificate_sha256": "3aa08494338b61bdcbc1d836650a19a0f363f0da1b49c972a710ff9181504b6e",
+      "baseline_t1_input_sha256": "8ffe0027f0a9d28b94b789c5d67a589e8786e483638a9d574ea1c91f0dfc3cca",
+      "mathematical_exact_sample_wls_coverage": true,
+      "new_response_family_sha256": "f0cd7ca0924a44b082264daacf7772bcbd1045fee1f8aaef7b399ab6363b4c26",
+      "protocol_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "protocol_status": "PASS_DETERMINISTIC",
+      "selected_results_and_components": [
+        {
+          "component_certificate_sha256": "e88b4a83883cd660ba3a3e5145005ee1b9cff579a55907212a8f0fcb39b92dd3",
+          "component_input_sha256": "38d997dbff2a66c2407375c015d50eb354b0f98b1422d0598e671f3641cf42e0",
+          "external_digital_payload_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+          "harmonic_index": 1,
+          "rate_id": "rest",
+          "record_manifest_id": "synthetic-record-manifest-001",
+          "target_exact_functional_radius_floor": "3450398659667087/81129638414606681695789005144064",
+          "window_id": "window-001",
+          "window_result_sha256": "8369df3a73cccd0cc548cfa864f0756169386207f3bfdb0bf5b97b14d5c3a856",
+          "wls_execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+          "wls_interval_certificate_sha256": "ab254d883c2dcefe8690aaf4b27549b78124602e01106d9939fb6f2d6777fd6a"
+        }
+      ],
+      "semantics": "exact-sample-wls-centres-plus-r2-disks-preserve-frozen-old-t1-selector",
+      "uncovered_numeric_term": null
+    },
+    "input_sha256": "77cede41fa2f33049fc6b1bbfe1b5957246f4ff2927deaa312ffb5f250193b07",
+    "proof": {
+      "certified_margin_transfer_relation": "PRESERVED_ROBUST",
+      "certified_response_disks": [
+        {
+          "center_shift_abs_upper": "5035231319921327/77371252455336267181195264",
+          "harmonic_index": 1,
+          "new_center": [
+            "1799639473946763/18014398509481984",
+            "-8777884626640969/36028797018963968"
+          ],
+          "new_morphology_radius": "0",
+          "new_response_radius": "1208925871029577/1208925819614629174706176",
+          "old_center": [
+            "899819736387513/9007199254740992",
+            "-1097235578320597/4503599627370496"
+          ],
+          "old_morphology_radius": "0",
+          "old_response_radius": "7253554917687775/4835703278458516698824704",
+          "rate_id": "rest",
+          "window_id": "window-001"
+        }
+      ],
+      "embedded_evidence": {
+        "baseline_t1_certificate_json": "{\"algorithm\":\"central-unweighted-gram-selector-taylor2-v2\",\"attempted_precisions\":[128],\"backend\":{\"flint\":\"3.6.0\",\"python_flint\":\"0.9.0\"},\"certificate_sha256\":\"3aa08494338b61bdcbc1d836650a19a0f363f0da1b49c972a710ff9181504b6e\",\"input_manifest\":{\"anchor_rate_id\":\"rest\",\"harmonics\":[{\"base_frequencies\":[\"884279719003555/140737488355328\"],\"harmonic_index\":1,\"label\":\"m1\",\"measured_responses\":[[\"899819736387513/9007199254740992\",\"-1097235578320597/4503599627370496\"]],\"morphology_bounds\":[\"3602879701896397/36028797018963968\",\"5\"],\"morphology_drift_radii\":[\"0\"],\"response_radii\":[\"7253554917687775/4835703278458516698824704\"]}],\"model\":\"anchored-forward-disks-principal-branch-v1\",\"parameter_box\":{\"damping\":[\"1/2\",\"1/2\"],\"damping_offsets\":[{\"interval\":[\"0\",\"0\"],\"rate_id\":\"rest\"}],\"order\":[\"3152519739159347/4503599627370496\",\"3152519739159347/4503599627370496\"]},\"rate_ids\":[\"rest\"]},\"input_sha256\":\"8ffe0027f0a9d28b94b789c5d67a589e8786e483638a9d574ea1c91f0dfc3cca\",\"precision_bits\":128,\"proof\":{\"center\":[\"0\",\"0\"],\"conditioning\":{\"hessian_inf_norm\":\"1\",\"inverse_inf_baseline\":\"1\",\"lambda_min_lower\":\"1\",\"method\":\"exact-inverse-inf-norm\",\"selector_gain_squared_upper\":\"1\",\"shifted_ldlt_pivots\":[]},\"constraint_margins\":[{\"lower\":\"4142428513537221/9007199254740992\",\"name\":\"annulus_lower:m1\"},{\"lower\":\"8962604830289105/4503599627370496\",\"name\":\"annulus_upper:m1\"},{\"lower\":\"7022980295421851/2417851639229258349412352\",\"name\":\"disk:m1:rest\"}],\"contraction_inf_norm\":\"0\",\"krawczyk_image\":[[\"4503599627370495/4503599627370496\",\"1\"],[\"-900719925474099/4503599627370496\",\"-3602879701896395/18014398509481984\"]],\"preconditioner_c\":[[\"1\",\"0\"],[\"0\",\"1\"]],\"predictor\":{\"alpha_center\":\"3152519739159347/4503599627370496\",\"half_width\":\"0\",\"residual\":{\"direct_image\":[[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"],[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"]],\"predictor_image\":[[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"],[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"]],\"remainder_radius\":[\"0\",\"0\"],\"second_derivative_abs_upper\":[\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"],\"selected_image\":[[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"],[\"-1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\",\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"]]},\"selector\":{\"direct_image\":[[\"4503599627370495/4503599627370496\",\"1\"],[\"-900719925474099/4503599627370496\",\"-3602879701896395/18014398509481984\"]],\"predictor_image\":[[\"4503599627370495/4503599627370496\",\"1\"],[\"-900719925474099/4503599627370496\",\"-3602879701896395/18014398509481984\"]],\"remainder_radius\":[\"0\",\"0\"],\"second_derivative_abs_upper\":[\"5928228492432301/4503599627370496\",\"6095937373181855/1125899906842624\"],\"selected_image\":[[\"4503599627370495/4503599627370496\",\"1\"],[\"-900719925474099/4503599627370496\",\"-3602879701896395/18014398509481984\"]]}},\"selector_image\":[[\"4503599627370495/4503599627370496\",\"1\"],[\"-900719925474099/4503599627370496\",\"-3602879701896395/18014398509481984\"]],\"selector_margin\":\"4\",\"variable_box\":[[\"-5\",\"5\"],[\"-5\",\"5\"]],\"variables\":[\"q_re:m1\",\"q_im:m1\"]},\"reason\":\"arb_parametric_gram_tube\",\"relation\":\"ROBUST_INNER\",\"schema\":\"fo-ekf.parametric-gram-krawczyk-taylor2.v2\"}",
+        "margin_transfer_certificate_json": "{\"algorithm\":\"frozen-selector-monotone-transfer-v1\",\"backend\":{\"flint\":\"3.6.0\",\"python_flint\":\"0.9.0\"},\"certificate_sha256\":\"980d8633ede088edca6c6487d4103de84eb8a6503316d6bb75ffa1f377384a5e\",\"input_manifest\":{\"baseline_certificate_json_sha256\":\"17ad68a7d00bd76ebce61f56dc72bfc0ac6aa553c4de4305cf9e2c0b5fb61c9e\",\"perturbations\":[{\"center_shift_abs_upper\":\"5035231319921327/77371252455336267181195264\",\"harmonic_index\":1,\"new_morphology_radius\":\"0\",\"new_response_radius\":\"1208925871029577/1208925819614629174706176\",\"old_morphology_radius\":\"0\",\"old_response_radius\":\"7253554917687775/4835703278458516698824704\",\"rate_id\":\"rest\"}],\"semantics\":\"frozen-old-selector-forall-bounded-center-shifts\"},\"input_sha256\":\"d4f28d303d32cb85194c880425cd8cef5dbee247fd7cd3a1eddeee1010f04e6d\",\"precision_bits\":128,\"proof\":{\"baseline_relation\":\"ROBUST_INNER\",\"per_disk\":[{\"adverse_coefficient\":\"43720854257032799/77371252455336267181195264\",\"adverse_load_abs_upper\":\"381284328731586443323070300098863/174224571863520493293247799005065324265472\",\"baseline_margin_abs_lower\":\"7022980295421851/2417851639229258349412352\",\"center_shift_abs_upper\":\"5035231319921327/77371252455336267181195264\",\"denominator_abs\":[\"8720880120274735/2251799813685248\",\"8720880120274737/2251799813685248\"],\"morphology_radius_delta\":\"0\",\"name\":\"disk:m1:rest\",\"remaining_margin_lower\":\"124774734332288501937444757630673/174224571863520493293247799005065324265472\",\"response_radius_delta\":\"-2417851433569467/4835703278458516698824704\"}],\"semantics\":\"frozen-old-selector-forall-bounded-center-shifts\"},\"reason\":\"strict_margin_preserved\",\"relation\":\"PRESERVED_ROBUST\",\"schema\":\"fo-ekf.r2-to-t1-margin-transfer.v1\"}",
+        "r2_component_certificates": [
+          {
+            "certificate_json": "{\"algorithm\":\"arb-mode-separated-exact-index-r2-bounds-v4\",\"attempted_precisions\":[128],\"certificate_sha256\":\"e88b4a83883cd660ba3a3e5145005ee1b9cff579a55907212a8f0fcb39b92dd3\",\"environment\":{\"flint\":\"3.6.0\",\"python_flint\":\"0.9.0\"},\"input_manifest\":{\"alpha_interval\":[\"5404319552844595/9007199254740992\",\"8106479329266893/9007199254740992\"],\"calibration_split_id\":\"calibration-v1\",\"delay\":{\"ecg_to_rpeak_channel_alignment_included\":true,\"evidence\":{\"applicability_domain\":\"directly generated steady-state retained-harmonic synthetic case; not real ECG\",\"calibration_split_id\":\"calibration-v1\",\"evidence_sha256\":\"6e16db102267e6e7de7f08f9c28836861561b6ac5a9aec0d26e263c37267f54e\",\"independent_of_identification_fit\":true,\"numeric_scope\":\"uniform_all_windows_satisfying_frozen_design\",\"signal_unit\":\"mV\",\"source_kind\":\"proved_engineering_envelope\",\"source_reference\":\"synthetic_generator_contract/delay\",\"time_unit\":\"s\",\"uses_target_fit_residuals\":false},\"nominal_transfer_magnitude_lower_bound\":\"1\",\"relative_amplitude_error_bound\":\"0\",\"relative_group_delay_error_s\":\"0\",\"residual_phase_calibration_error_rad\":\"0\",\"target_harmonic_abs_upper_bound\":\"2\"},\"dwell\":{\"evidence\":{\"applicability_domain\":\"directly generated steady-state retained-harmonic synthetic case; not real ECG\",\"calibration_split_id\":\"calibration-v1\",\"evidence_sha256\":\"72d8d10863238361fc2c227fd5d4a55f897dae036a74cd2bc2fb7d7cded70105\",\"independent_of_identification_fit\":true,\"numeric_scope\":\"uniform_all_windows_satisfying_frozen_design\",\"signal_unit\":\"mV\",\"source_kind\":\"proved_engineering_envelope\",\"source_reference\":\"synthetic_generator_contract/dwell\",\"time_unit\":\"s\",\"uses_target_fit_residuals\":false},\"new_input_sup_bound\":\"0\",\"preconvolved_output_envelope\":null,\"previous_input_sup_bound\":\"0\"},\"dynamic_front_end_mode\":\"identity\",\"estimator_manifest_sha256\":\"8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e\",\"frozen_before_target_ecg_access\":true,\"geometry\":{\"complete_rr_intervals\":2,\"left_r_peak_time_s\":\"20\",\"raw_weights\":[\"1\",\"1\",\"1\",\"1\",\"1\",\"1\",\"1\",\"1\"],\"retained_harmonics\":[-1,0,1],\"right_r_peak_time_s\":\"22\",\"sample_indices\":[80,81,82,83,84,85,86,87],\"sample_times_s\":[\"20\",\"81/4\",\"41/2\",\"83/4\",\"21\",\"85/4\",\"43/2\",\"87/4\"],\"target_harmonic\":1,\"window_end_sample_exclusive\":88,\"window_start_sample\":80},\"gram_thresholds\":{\"maximum_condition_number\":\"2\",\"minimum_eigenvalue\":\"1/2\"},\"history\":{\"evidence\":{\"applicability_domain\":\"directly generated steady-state retained-harmonic synthetic case; not real ECG\",\"calibration_split_id\":\"calibration-v1\",\"evidence_sha256\":\"259aa8ef98a8b91de574cd904138ef643240c23080cf24da4793a6f10a43fa9d\",\"independent_of_identification_fit\":true,\"numeric_scope\":\"uniform_all_windows_satisfying_frozen_design\",\"signal_unit\":\"mV\",\"source_kind\":\"proved_engineering_envelope\",\"source_reference\":\"synthetic_generator_contract/history\",\"time_unit\":\"s\",\"uses_target_fit_residuals\":false},\"initial_state_abs_bound\":\"0\",\"new_input_sup_bound\":\"0\",\"pre_record_history_coefficient\":\"0\",\"preconvolved_output_envelope\":null,\"rate_segment_start_s\":\"0\",\"record_origin_s\":\"0\"},\"identification_split_id\":\"identification-v1\",\"lambda_interval\":[\"3602879701896397/9007199254740992\",\"5404319552844595/4503599627370496\"],\"model\":\"r2-finite-record-component-bounds-v4\",\"protocol_sha256\":\"f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e\",\"record_manifest_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"sampling\":{\"adc_quantization_step\":\"4835703278458517/4835703278458516698824704\",\"anti_alias_error_bound\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"evidence\":{\"applicability_domain\":\"directly generated steady-state retained-harmonic synthetic case; not real ECG\",\"calibration_split_id\":\"calibration-v1\",\"evidence_sha256\":\"52630e4131f9862ea34c8ded9741fae2176c56c55c74827b2bd30cd1ef9eb37b\",\"independent_of_identification_fit\":true,\"numeric_scope\":\"uniform_all_windows_satisfying_frozen_design\",\"signal_unit\":\"mV\",\"source_kind\":\"proved_engineering_envelope\",\"source_reference\":\"synthetic_generator_contract/sampling\",\"time_unit\":\"s\",\"uses_target_fit_residuals\":false},\"first_derivative_bound_signal_per_s\":\"2\",\"implementation\":\"discrete_wls\",\"interpolation_error_bound\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"panel_second_derivative_bound\":[],\"quadrature_decomposition_target\":\"not_applicable\",\"timestamp_error_s\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"]},\"signal_unit\":\"mV\",\"tau_star_s\":\"1\",\"window_id\":\"window-001\"},\"input_sha256\":\"38d997dbff2a66c2407375c015d50eb354b0f98b1422d0598e671f3641cf42e0\",\"precision_bits\":128,\"proof\":{\"delay\":{\"chord_method\":\"exact_zero\",\"chord_upper\":\"0\",\"coefficient_radius_upper\":\"0\",\"nominal_rate_rad_s_upper\":\"7074237752028441/1125899906842624\",\"phase_error_rad_upper\":\"0\",\"relative_transfer_error_upper\":\"0\"},\"dynamic\":{\"dwell\":{\"coefficient\":\"0\",\"coefficient_radius_upper\":\"4503599627370497/911538712573752842426782752859677773850199784985792622718146407170887258590638016488952397378652867560324736041925982334382221227214279035483801616582432772011525526217827529506531107381223952764452290715900479586245384485644604244665028634016216141654548674372952638143670597724849760504261340328602898679115567105544128168593021011492864\",\"front_end_output_envelope_by_sample\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"input_envelope_diagnostic_by_sample\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"relaxation_upper_by_sample\":[\"2535301200456458802993406410752/8654683004380021479048883572029\",\"10141204801825835211973625643008/34801857175321938637608760294517\",\"10141204801825835211973625643008/34984080213146405595626497659519\",\"5070602400912917605986812821504/17582708248150655999569813159513\",\"5070602400912917605986812821504/17672940473417501789446391244301\",\"79228162514264337593543950336/277542875479974074441281293991\",\"2535301200456458802993406410752/8926062982103056926304666065847\",\"2535301200456458802993406410752/8970546560948359996226336771409\"],\"weighted_residual_upper\":\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"},\"dynamic_front_end_mode\":\"identity\",\"history\":{\"coefficient\":\"0\",\"coefficient_radius_upper\":\"4503599627370497/911538712573752842426782752859677773850199784985792622718146407170887258590638016488952397378652867560324736041925982334382221227214279035483801616582432772011525526217827529506531107381223952764452290715900479586245384485644604244665028634016216141654548674372952638143670597724849760504261340328602898679115567105544128168593021011492864\",\"front_end_output_envelope_by_sample\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"input_envelope_diagnostic_by_sample\":[\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\",\"0\"],\"relaxation_upper_by_sample\":[\"2535301200456458802993406410752/8654683004380021479048883572029\",\"10141204801825835211973625643008/34801857175321938637608760294517\",\"10141204801825835211973625643008/34984080213146405595626497659519\",\"5070602400912917605986812821504/17582708248150655999569813159513\",\"5070602400912917605986812821504/17672940473417501789446391244301\",\"79228162514264337593543950336/277542875479974074441281293991\",\"2535301200456458802993406410752/8926062982103056926304666065847\",\"2535301200456458802993406410752/8970546560948359996226336771409\"],\"weighted_residual_upper\":\"1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784\"},\"input_envelope_diagnostic\":\"simon-hyperbolic-gamma-unit-v1\",\"output_bound_source\":\"identity_front_end_from_input_envelope\"},\"gram\":{\"coefficient_amplification_upper\":\"4503599627370497/4503599627370496\",\"condition_number_upper\":\"2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947623966037054152923\",\"lambda_max_upper\":\"2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848\",\"lambda_min_lower\":\"2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848\",\"method\":\"hermitian_gershgorin_v1\",\"nominal_transfer_magnitude_lower\":\"1\",\"phase_geometry\":{\"formula\":\"2*pi*N*(sample_index-window_start)/(window_end-window_start)\",\"sample_indices\":[80,81,82,83,84,85,86,87],\"window_end_sample_exclusive\":88,\"window_start_sample\":80},\"rows\":[{\"eigenvalue_interval\":[\"2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848\",\"2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848\"],\"harmonic\":-1,\"offdiagonal_radius_upper\":\"289312793861925/2993155353253689176481146537402947624255349848014848\"},{\"eigenvalue_interval\":[\"47890485652059026823698344598447161984979004650894303/47890485652059026823698344598447161988085597568237568\",\"47890485652059026823698344598447161991192190485580833/47890485652059026823698344598447161988085597568237568\"],\"harmonic\":0,\"offdiagonal_radius_upper\":\"3106592917343265/47890485652059026823698344598447161988085597568237568\"},{\"eigenvalue_interval\":[\"2993155353253689176481146537402947623966037054152923/2993155353253689176481146537402947624255349848014848\",\"2993155353253689176481146537402947624544662641876773/2993155353253689176481146537402947624255349848014848\"],\"harmonic\":1,\"offdiagonal_radius_upper\":\"289312793861925/2993155353253689176481146537402947624255349848014848\"}],\"wls_row_norm_upper\":\"4503599627370497/4503599627370496\"},\"normalized_weights\":[\"1/8\",\"1/8\",\"1/8\",\"1/8\",\"1/8\",\"1/8\",\"1/8\",\"1/8\"],\"omitted_r2_components\":[\"hrv\",\"phase_anchor\",\"window_leakage_and_harmonic_tail\",\"filter_initialization\",\"measurement_noise\",\"model_residual\"],\"partial_radius_upper\":\"227884678143438322525726353194554985948137113366533371334928035964974453886374615780165274148056607679892715558061570323986371536970375687021855417527692400427122617545542882640078923007610623424744306621696920011446333018573056139762559209070012083911557244412608653142192932177494290550575589537868397916027010999632928335462401/455769356286876421213391376429838886925099892492896311359073203585443629295319008244476198689326433780162368020962991167191110613607139517741900808291216386005762763108913764753265553690611976382226145357950239793122692242822302122332514317008108070827274337186476319071835298862424880252130670164301449339557783552772064084296510505746432\",\"precision_bits\":128,\"sampling\":{\"coefficient_radius_upper\":\"10889035741470036178665915771723/21778071482940061661655974875633165533184\",\"implementation\":\"discrete_wls\",\"per_sample_output_error_upper\":[\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\",\"4835703278458517/9671406556917033397649408\"],\"quadrature_coefficient_radius_upper\":\"0\",\"quadrature_decomposition_target\":\"not_applicable\",\"weighted_residual_upper\":\"2417851639229259/4835703278458516698824704\"},\"weight_contract\":\"normalized_declared_discrete_weights\"},\"reason\":\"certified_all_requested_components\",\"relation\":\"CERTIFIED_BOUND\",\"schema\":\"fo-ekf.r2-bound-engine.v4\"}",
+            "harmonic_index": 1,
+            "rate_id": "rest"
+          }
+        ],
+        "replayed_wls_execution_evidence": [
+          {
+            "exact_functional_scope": "frozen_mathematical_sample_functional_only",
+            "execution_record_json_sha256": "f4fe74339651727c0569bda91580437f80a95e3dd4d5070b3e0e9cbc4bd5e021",
+            "execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+            "external_digital_payload_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+            "harmonic_index": 1,
+            "mathematical_exact_sample_wls_coverage": true,
+            "normalized_weights_sha256": "65c5345153d2f48b057ce282be27f774447677c4afb9cde391a88c6bd1acdb29",
+            "rate_id": "rest",
+            "sample_index_sha256": "f724dd9aa330e0a3d4efe7cc960541b0a2782fcaf2789f7ddbe988f5dae04162",
+            "target_exact_functional_radius_floor": "3450398659667087/81129638414606681695789005144064",
+            "target_harmonic": 1,
+            "time_seconds_sha256": "27ce6e39b1bbaff3356c3b9aa8a92a3d258dde1d9294ffe187109788ffa7386d",
+            "uncovered_numeric_term": null,
+            "window_sha256": "97dfc489782958487d86805480b2a8a4eaf46b110fcfea293d9eea84055da0b0",
+            "wls_interval_certificate_json_sha256": "1f8e87f99ad8187db5a922cf97e2933320652e2bfbbae2b293aac83206fa1593",
+            "wls_interval_certificate_sha256": "ab254d883c2dcefe8690aaf4b27549b78124602e01106d9939fb6f2d6777fd6a"
+          }
+        ]
+      },
+      "high_level_relation": "PRESERVED_ROBUST",
+      "identity": {
+        "calibration_split_id": "calibration-v1",
+        "identification_split_id": "identification-v1",
+        "lead_id": "synthetic-lead-II",
+        "physical_gain_id": "synthetic-gain-001",
+        "signal_unit": "mV",
+        "subject_pseudonym": "synthetic-subject-001"
+      },
+      "mathematical_exact_sample_wls_coverage": true,
+      "protocol_validation": {
+        "canonical_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+        "reasons": [],
+        "status": "PASS_DETERMINISTIC"
+      },
+      "uncovered_numeric_term": null
+    },
+    "reason": "exact_sample_wls_and_r2_family_preserve_robust_t1_witness",
+    "relation": "PRESERVED_ROBUST",
+    "schema": "fo-ekf.r2-t1-evidence-bundle.v3"
+  },
+  "schema": "fo-ekf.synthetic-exact-certificate-artifacts.v1",
+  "wls_execution": {
+    "basis": {
+      "by_harmonic": [
+        {
+          "harmonic": -1,
+          "payload_sha256": "29f753d335dc03de02de25d71bd12300dd1742674bd3e59d919933937c2b6a17"
+        },
+        {
+          "harmonic": 0,
+          "payload_sha256": "afc993ae7eb797587fa0e3b5d2054ff71657c738bf6098399005c60a5db43edf"
+        },
+        {
+          "harmonic": 1,
+          "payload_sha256": "9155dba172cd85710a38aec50601c49b4c37da294bf75049237c8263495504f9"
+        }
+      ],
+      "matrix_payload_sha256": "5cd88c04e977b0e87874a96ac2171ba86b31b130efb065767c648ebfaaf3c7f7",
+      "phase_definition": "phi_n=2*pi*N*(sample_n-a)/(b-a), N=RR_count, n in [a,b)",
+      "retained_basis_definition": "K={-h_max,...,-1,0,1,...,h_max}; Psi_(n,k)=exp(i*k*phi_n)",
+      "shape": [
+        8,
+        3
+      ]
+    },
+    "binding": {
+      "estimator_sha256": "8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e",
+      "protocol_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "record_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "window_sha256": "97dfc489782958487d86805480b2a8a4eaf46b110fcfea293d9eea84055da0b0"
+    },
+    "environment": {
+      "flint": "3.6.0",
+      "numpy": "2.4.6",
+      "python": "3.11.4",
+      "python_flint": "0.9.0"
+    },
+    "estimator": {
+      "estimator_sha256": "8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e",
+      "implementation_source_sha256": "45d6926f2dcf564b58b85b1089b18e9511321e744ab79ff3a2bc39817fa49e5d",
+      "specification": {
+        "algorithm": "whole_window_two_sided_joint_complex_wls",
+        "coefficient_convention": "y=A*cos(m*phi)+B*sin(m*phi) implies positive-frequency C_m=(A-i*B)/2 and C_-m=conj(C_m)",
+        "front_end_correction": "z_tilde_m=C_tilde_m/H_hat_m",
+        "numeric_dtype": "IEEE-754-binary64-little-endian",
+        "phase": "phi_n=2*pi*N*(sample_n-a)/(b-a), N=RR_count, n in [a,b)",
+        "retained_basis": "K={-h_max,...,-1,0,1,...,h_max}; Psi_(n,k)=exp(i*k*phi_n)",
+        "sample_interval": "half-open [first WFDB beat, last WFDB beat)",
+        "schema_version": "fo-ekf-whole-window-joint-complex-wls-execution-v3",
+        "solver": "C_tilde=numpy.linalg.solve(G,b)",
+        "statistics": "G=Psi^* W Psi; b=Psi^* W y",
+        "weights": "fixed raw identity weights, normalized once so sum_n w_n=1"
+      }
+    },
+    "execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+    "front_end": {
+      "H_hat_by_harmonic": [
+        {
+          "harmonic": 1,
+          "imag": 0.0,
+          "real": 1.0
+        }
+      ],
+      "mode": "identity"
+    },
+    "payload_hashes": {
+      "basis_matrix_sha256": "5cd88c04e977b0e87874a96ac2171ba86b31b130efb065767c648ebfaaf3c7f7",
+      "combined_payload_sha256": "fccd1bf39dc6734bb094cdcd6b52d4a0b823bcb08b6f54b273aee655135cc3be",
+      "digital_sample_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+      "normalized_weights_sha256": "65c5345153d2f48b057ce282be27f774447677c4afb9cde391a88c6bd1acdb29",
+      "phase_sha256": "6e7cd0930c131ffeafc2b19f1e034e34d28169a7d2ff659a405b64a2058e500b",
+      "physical_sample_sha256": "9443cf4b0667a4e8604743e01e406231a0bbcfb35f093f915c781add2666b1ce",
+      "raw_weights_sha256": "fe5b7d5309402fa73f02fe2905b3d9eeb69d9c468cf3a1b6cfc35f01f27b43ab",
+      "sample_index_sha256": "f724dd9aa330e0a3d4efe7cc960541b0a2782fcaf2789f7ddbe988f5dae04162",
+      "time_seconds_sha256": "27ce6e39b1bbaff3356c3b9aa8a92a3d258dde1d9294ffe187109788ffa7386d"
+    },
+    "result": {
+      "C_tilde": [
+        {
+          "harmonic": -1,
+          "imag": 0.2436352405,
+          "real": 0.09990005900000004
+        },
+        {
+          "harmonic": 0,
+          "imag": 0.0,
+          "real": -9.405101302125607e-18
+        },
+        {
+          "harmonic": 1,
+          "imag": -0.2436352405,
+          "real": 0.09990005900000004
+        }
+      ],
+      "C_tilde_sha256": "3aeeac5983ec2823444bb420d8ebe78845d220d45904558cac615e62f4fbb613",
+      "certification_status": "NOT_CERTIFIABLE",
+      "coefficient_convention": "y=A*cos(m*phi)+B*sin(m*phi) implies positive-frequency C_m=(A-i*B)/2 and C_-m=conj(C_m)",
+      "front_end_formula": "z_tilde_m=C_tilde_m/H_hat_m",
+      "joint_formula": "C_tilde=numpy.linalg.solve(G,b)",
+      "joint_solve_rounding_enclosure": {
+        "C_tilde_component_absolute_error_upper_bounds": [
+          {
+            "dyadic_denominator": "1298074214633706907132624082305024",
+            "dyadic_numerator": "8054534306303595",
+            "float_upper": 6.2049875234417464e-18
+          },
+          {
+            "dyadic_denominator": "46768052394588893382517914646921056628989841375232",
+            "dyadic_numerator": "5482585544942579",
+            "float_upper": 1.1722928931667292e-34
+          },
+          {
+            "dyadic_denominator": "1298074214633706907132624082305024",
+            "dyadic_numerator": "8054534306303595",
+            "float_upper": 6.2049875234417464e-18
+          }
+        ],
+        "environment": {
+          "flint": "3.6.0",
+          "python_flint": "0.9.0"
+        },
+        "exclusions": [
+          "G_and_b_accumulation_rounding",
+          "annotation_timing_error",
+          "sampling_and_quadrature_error",
+          "measurement_error",
+          "front_end_calibration_error"
+        ],
+        "maximum_absolute_error_upper_bound": 6.2049875234417464e-18,
+        "maximum_absolute_error_upper_bound_dyadic": {
+          "denominator": "1298074214633706907132624082305024",
+          "numerator": "8054534306303595"
+        },
+        "precision_bits": 128,
+        "scope": "joint_solve_and_H_division_relative_to_recorded_binary64_G_b_H",
+        "status": "ENCLOSED",
+        "z_tilde_component_absolute_error_upper_bounds": [
+          {
+            "dyadic_denominator": "1298074214633706907132624082305024",
+            "dyadic_numerator": "8054534306303595",
+            "float_upper": 6.2049875234417464e-18
+          }
+        ]
+      },
+      "maximum_conjugate_symmetry_error": 0.0,
+      "z_tilde": [
+        {
+          "harmonic": 1,
+          "imag": -0.2436352405,
+          "real": 0.09990005900000004
+        }
+      ],
+      "z_tilde_sha256": "69a063384a26c520306a19b32e20c74567c6c302c9355238f5e314750c99627d"
+    },
+    "schema_version": "fo-ekf-whole-window-joint-complex-wls-execution-v3",
+    "sufficient_statistics": {
+      "G": [
+        [
+          {
+            "imag": 0.0,
+            "real": 1.0
+          },
+          {
+            "imag": 5.551115123125783e-17,
+            "real": -5.35782974626967e-17
+          },
+          {
+            "imag": 6.123233995736766e-17,
+            "real": 0.0
+          }
+        ],
+        [
+          {
+            "imag": -5.551115123125783e-17,
+            "real": -5.35782974626967e-17
+          },
+          {
+            "imag": 0.0,
+            "real": 1.0
+          },
+          {
+            "imag": 5.551115123125783e-17,
+            "real": -5.35782974626967e-17
+          }
+        ],
+        [
+          {
+            "imag": -6.123233995736766e-17,
+            "real": 0.0
+          },
+          {
+            "imag": -5.551115123125783e-17,
+            "real": -5.35782974626967e-17
+          },
+          {
+            "imag": 0.0,
+            "real": 1.0
+          }
+        ]
+      ],
+      "G_sha256": "568814e0acf739bf449f478b8f520fd611e843007947a7d15f154dba12a6325d",
+      "b": [
+        {
+          "imag": 0.2436352405,
+          "real": 0.09990005900000005
+        },
+        {
+          "imag": 0.0,
+          "real": 6.938893903907228e-18
+        },
+        {
+          "imag": -0.2436352405,
+          "real": 0.09990005900000005
+        }
+      ],
+      "b_sha256": "69fb5ac585524fc94408b35522759e1ab68db5ed145b92d98e06ad0585750d58",
+      "definition": "G=Psi^* W Psi; b=Psi^* W y"
+    },
+    "weights": {
+      "count": 8,
+      "normalization": "w_n=w_raw_n/sum_j(w_raw_j)",
+      "normalized_payload_sha256": "65c5345153d2f48b057ce282be27f774447677c4afb9cde391a88c6bd1acdb29",
+      "normalized_sum": 1.0,
+      "raw_definition": "identity raw weights w_raw_n=1",
+      "raw_payload_sha256": "fe5b7d5309402fa73f02fe2905b3d9eeb69d9c468cf3a1b6cfc35f01f27b43ab",
+      "raw_sum": 8.0
+    },
+    "window": {
+      "adc_gain": 1000000000.0,
+      "baseline": 0,
+      "beat_samples": [
+        80,
+        84,
+        88
+      ],
+      "end_sample_exclusive": 88,
+      "full_span_sample_count": 8,
+      "positive_harmonics": [
+        1
+      ],
+      "retained_harmonics": [
+        -1,
+        0,
+        1
+      ],
+      "rr_interval_count": 2,
+      "sample_count": 8,
+      "sample_selection": "all half-open samples when span<=4096; otherwise a+floor(j*(b-a)/4096), j=0,...,4095",
+      "sampling_frequency_hz": 4.0,
+      "start_sample_inclusive": 80
+    }
+  },
+  "wls_interval_certificate": {
+    "binding": {
+      "digital_sample_sha256": "be7edecea3b22d99393b7ecee869a446c38a9b59ead54cfc682bb0557f1fd524",
+      "estimator_sha256": "8c5eac9c9cbfe7ce4ef0e8e3b11ca6a1010b7485020c6eb311e3b3993f28960e",
+      "execution_sha256": "519bd5737d6afbb3f79d34c711323a90cfdd56476d8ca33e9934af3e8c694999",
+      "protocol_sha256": "f21e47b6869bd09aacf2b275e6081f76e0a958222227bf70d92959dc5ddec22e",
+      "record_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "window_sha256": "97dfc489782958487d86805480b2a8a4eaf46b110fcfea293d9eea84055da0b0"
+    },
+    "certificate_sha256": "ab254d883c2dcefe8690aaf4b27549b78124602e01106d9939fb6f2d6777fd6a",
+    "claim_scope": "frozen_mathematical_sample_functional_only",
+    "coverage": [
+      "digital_to_physical_binary64_conversion_rounding",
+      "phase_and_complex_exponential_rounding",
+      "G_and_b_direct_accumulation_rounding",
+      "verified_joint_linear_solve_rounding",
+      "front_end_binary64_division_rounding"
+    ],
+    "environment": {
+      "flint": "3.6.0",
+      "numpy": "2.4.6",
+      "python": "3.11.4",
+      "python_flint": "0.9.0"
+    },
+    "exclusions": [
+      "acquisition_and_sensor_error",
+      "beat_annotation_and_window_timing_error",
+      "sampling_interpolation_and_quadrature_error",
+      "anti_alias_error",
+      "front_end_calibration_uncertainty",
+      "model_discrepancy_and_physiological_interpretation"
+    ],
+    "implementation": {
+      "algorithm": "arb-direct-exact-payload-joint-complex-wls-v1",
+      "implementation_sha256": "fb5dfe2bafee33f945ada80acfe0fe80622a192387447b962cc35997be871a90",
+      "implementation_source_sha256": "685015b8ff2ae2f169987f2aa719d6d0708fcb123ca3648577da9e372160524c"
+    },
+    "mathematical_contract": {
+      "adc_gain_exact_dyadic": {
+        "denominator": "1",
+        "numerator": "1000000000"
+      },
+      "baseline": 0,
+      "basis": "complete contiguous two-sided Psi_(n,k)=exp(i*k*phi_n)",
+      "end_sample_exclusive": 88,
+      "front_end_exact_dyadics": [
+        {
+          "harmonic": 1,
+          "imag": {
+            "denominator": "1",
+            "numerator": "0"
+          },
+          "real": {
+            "denominator": "1",
+            "numerator": "1"
+          }
+        }
+      ],
+      "phase": "phi_n=2*pi*N*(sample_index_n-a)/(b-a)",
+      "physical_samples": "y_n=(digital_n-baseline)/exact_binary64(adc_gain)",
+      "positive_harmonics": [
+        1
+      ],
+      "retained_harmonics": [
+        -1,
+        0,
+        1
+      ],
+      "rr_interval_count": 2,
+      "sample_count": 8,
+      "sample_payload": "selected exact signed int64 digital values in deterministic order",
+      "solve": "ACB verified linear solve followed by exact_binary64(H_hat_m) division",
+      "start_sample_inclusive": 80,
+      "statistics": "G=Psi^* W Psi and b=Psi^* W y accumulated in ACB",
+      "weights": "uniform exact rational w_n=1/sample_count"
+    },
+    "numeric_proof": {
+      "all_solution_components_finite": true,
+      "determinant_zero_excluded": true,
+      "gram_shape": [
+        3,
+        3
+      ],
+      "precision_bits": 192
+    },
+    "reason": "exact_integer_payload_joint_wls_interval",
+    "relation": "CERTIFIED_INTERVAL",
+    "response_disks": [
+      {
+        "absolute_error_upper": {
+          "dyadic": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "3450398659667087"
+          },
+          "float_upper": 4.2529447031849126e-17
+        },
+        "center_binary64": {
+          "imag": -0.2436352405,
+          "real": 0.09990005900000004
+        },
+        "harmonic": 1,
+        "radius_floor_semantics": "when this certificate is used as numerical evidence, the declared frozen-sample-functional radius centered at this stored z_tilde must be no smaller than this published certified upper bound; the bound is sufficient and is not asserted to be the minimal true error"
+      }
+    ],
+    "schema_version": "fo-ekf-exact-integer-joint-wls-interval-certificate-v1"
+  }
+}

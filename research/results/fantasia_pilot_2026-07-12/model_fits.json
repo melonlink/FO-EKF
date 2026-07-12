@@ -1,0 +1,878 @@
+{
+  "coefficient_convention": "ECG(t)=dc+2*Re(sum_h Z_h exp(i*h*phase(t))); therefore a real term A*cos(h*phase)+B*sin(h*phase) has positive-frequency Z_h=(A-i*B)/2.",
+  "model_definition": "Z_(w,h)=q_h/[lambda+(i*2*pi*h*f_w*tau_star)^alpha] on the principal branch; tau_star=1 second is frozen, alpha/lambda are dimensionless and shared within one subject, and q_h is harmonic-specific.",
+  "records": [
+    {
+      "harmonics": [
+        1,
+        2,
+        3
+      ],
+      "identification_rate_hz": {
+        "maximum": 1.4209591474245116,
+        "median": 1.28,
+        "minimum": 1.1052777010223818
+      },
+      "identification_window_count": 143,
+      "models": {
+        "alpha_one_nested": {
+          "alpha": 1.0,
+          "identification_sse": 1.2034479846256327,
+          "lambda": 32.811996725895625,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 429,
+              "mae_mV": 0.045559377315838055,
+              "nrmse_energy": 0.6582722402092384,
+              "r2_centered": 0.0008113448902812292,
+              "rmse_mV": 0.052964516965629045,
+              "sse_mV2": 1.2034479846256327
+            },
+            "validation": {
+              "count_complex": 1134,
+              "mae_mV": 0.047253130179105624,
+              "nrmse_energy": 0.7229555633622556,
+              "r2_centered": -0.016911646289867077,
+              "rmse_mV": 0.05663067930433649,
+              "sse_mV2": 3.636776372825666
+            }
+          },
+          "optimizer_message": "Solution found.",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": -2.787156675664075,
+              "real": 1.9097385622078757
+            },
+            {
+              "imag": 0.5839392972244405,
+              "real": -0.49797809640336443
+            },
+            {
+              "imag": 0.800466544752662,
+              "real": 0.5364680391763718
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "constant_fourier": {
+          "identification_sse": 1.2044251888483308,
+          "metrics": {
+            "identification": {
+              "count_complex": 429,
+              "mae_mV": 0.0456014500748577,
+              "nrmse_energy": 0.6585394457263634,
+              "r2_centered": 0.0,
+              "rmse_mV": 0.05298601629414484,
+              "sse_mV2": 1.2044251888483308
+            },
+            "validation": {
+              "count_complex": 1134,
+              "mae_mV": 0.047300922051501146,
+              "nrmse_energy": 0.72305119635491,
+              "r2_centered": -0.017180699440828562,
+              "rmse_mV": 0.056638170444335105,
+              "sse_mV2": 3.637738586353283
+            }
+          },
+          "q": [
+            {
+              "imag": -0.09355224671180379,
+              "real": 0.03529349462140422
+            },
+            {
+              "imag": 0.0203485084021172,
+              "real": -0.005119291834132293
+            },
+            {
+              "imag": 0.00795283273269749,
+              "real": 0.02230832632929267
+            }
+          ]
+        },
+        "fractional_common": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 1.2034479846256327,
+          "lambda": 32.81200082923445,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 429,
+              "mae_mV": 0.045559377317769136,
+              "nrmse_energy": 0.6582722402092384,
+              "r2_centered": 0.0008113448902812292,
+              "rmse_mV": 0.052964516965629045,
+              "sse_mV2": 1.2034479846256327
+            },
+            "validation": {
+              "count_complex": 1134,
+              "mae_mV": 0.047253130181279676,
+              "nrmse_energy": 0.7229555633186188,
+              "r2_centered": -0.01691164616710772,
+              "rmse_mV": 0.05663067930091832,
+              "sse_mV2": 3.6367763723866426
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": -2.7871570595849464,
+              "real": 1.9097387070215697
+            },
+            {
+              "imag": 0.5839393810652063,
+              "real": -0.49797811761260474
+            },
+            {
+              "imag": 0.8004665780038023,
+              "real": 0.5364681310239182
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "rate_shuffle_negative_control": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 1.199905266413158,
+          "lambda": 15.522040542936343,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 429,
+              "mae_mV": 0.04548190562702024,
+              "nrmse_energy": 0.6573026129765275,
+              "r2_centered": 0.0037527631247025184,
+              "rmse_mV": 0.052886500857884745,
+              "sse_mV2": 1.199905266413158
+            },
+            "validation": {
+              "count_complex": 1134,
+              "mae_mV": 0.04725680076917601,
+              "nrmse_energy": 0.7236905303966096,
+              "r2_centered": -0.018980311313858023,
+              "rmse_mV": 0.05668825086824865,
+              "sse_mV2": 3.6441745298926933
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "permutation_definition": "numpy.default_rng(20260712).permutation(n_identification)",
+          "permutation_sha256": "ac60cbf7f5ffd9cd88374cdd33506f9eff92a9daeaee880dd894b5f59190b4f6",
+          "q": [
+            {
+              "imag": -1.1690894926119382,
+              "real": 1.3009318496134992
+            },
+            {
+              "imag": 0.23207832910818485,
+              "real": -0.40887184115197445
+            },
+            {
+              "imag": 0.6655071982933576,
+              "real": 0.15035252759172316
+            }
+          ],
+          "tau_star_seconds": 1.0
+        }
+      },
+      "r2_certification": {
+        "missing_primitives": [
+          "annotation_timing_error_bound",
+          "hrv_and_whole_window_phase_warp_bound",
+          "measurement_noise_envelope",
+          "model_discrepancy_envelope",
+          "finite_dwell_transient_bound",
+          "prehistory_or_memory_tail_bound",
+          "sampling_and_quadrature_error_bound",
+          "subsampling_anti_alias_error_bound",
+          "omitted_harmonic_tail_and_window_leakage_bound",
+          "adc_gain_and_analog_front_end_calibration_bound",
+          "G_and_b_accumulation_rounding_enclosure",
+          "end_to_end_WLS_interval_enclosure"
+        ],
+        "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+        "status": "NOT_CERTIFIABLE"
+      },
+      "record": "f1y01",
+      "role": "engineering_calibration",
+      "source_channel": {
+        "adc_gain": 2000.0,
+        "baseline": 0,
+        "duration_seconds": 7225.084,
+        "name": "ECG",
+        "original_channel_index": 1,
+        "sampling_frequency_hz": 250.0,
+        "signal_samples": 1806271,
+        "units": "mV"
+      },
+      "validation_rate_hz": {
+        "maximum": 1.58102766798419,
+        "median": 1.1699328289516457,
+        "minimum": 1.0482180293501049
+      },
+      "validation_window_count": 378,
+      "window_gram_diagnostics": {
+        "all_full_column_rank": true,
+        "maximum_condition_number_over_all_windows": 1.0000000000000078,
+        "minimum_eigenvalue_over_all_windows": 0.999999999999994
+      }
+    },
+    {
+      "harmonics": [
+        1,
+        2,
+        3
+      ],
+      "identification_rate_hz": {
+        "maximum": 1.1001100110011002,
+        "median": 1.007302946361118,
+        "minimum": 0.9411764705882353
+      },
+      "identification_window_count": 113,
+      "models": {
+        "alpha_one_nested": {
+          "alpha": 1.0,
+          "identification_sse": 0.1375015254418237,
+          "lambda": 0.0010000001032375388,
+          "lambda_boundary_hit": true,
+          "metrics": {
+            "identification": {
+              "count_complex": 339,
+              "mae_mV": 0.017344744401803034,
+              "nrmse_energy": 0.6538671136337111,
+              "r2_centered": 0.004714385272927557,
+              "rmse_mV": 0.02013974229210494,
+              "sse_mV2": 0.1375015254418237
+            },
+            "validation": {
+              "count_complex": 948,
+              "mae_mV": 0.017664259164185656,
+              "nrmse_energy": 0.6845284645213071,
+              "r2_centered": -0.0013684216582179332,
+              "rmse_mV": 0.020851022430583614,
+              "sse_mV2": 0.4121573493078645
+            }
+          },
+          "optimizer_message": "Solution found.",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": 0.14767941876002644,
+              "real": 0.1162086510494885
+            },
+            {
+              "imag": 0.10500994238248502,
+              "real": -0.15736587908749938
+            },
+            {
+              "imag": 0.42699658718466693,
+              "real": -0.09259787283199841
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "constant_fourier": {
+          "identification_sse": 0.13815283111424193,
+          "metrics": {
+            "identification": {
+              "count_complex": 339,
+              "mae_mV": 0.017408338116928775,
+              "nrmse_energy": 0.6554138755565867,
+              "r2_centered": 0.0,
+              "rmse_mV": 0.02018738406191477,
+              "sse_mV2": 0.13815283111424193
+            },
+            "validation": {
+              "count_complex": 948,
+              "mae_mV": 0.017964366512324383,
+              "nrmse_energy": 0.6885572875238641,
+              "r2_centered": -0.013190306281320563,
+              "rmse_mV": 0.020973742058983454,
+              "sse_mV2": 0.41702316744701934
+            }
+          },
+          "q": [
+            {
+              "imag": -0.018276673968832993,
+              "real": 0.023289450744152503
+            },
+            {
+              "imag": 0.012403924398499754,
+              "real": 0.008245550285588045
+            },
+            {
+              "imag": 0.004877340516738947,
+              "real": 0.022392808693364834
+            }
+          ]
+        },
+        "fractional_common": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 0.1375015254418188,
+          "lambda": 0.0010000000000000002,
+          "lambda_boundary_hit": true,
+          "metrics": {
+            "identification": {
+              "count_complex": 339,
+              "mae_mV": 0.017344744401802704,
+              "nrmse_energy": 0.6538671136336993,
+              "r2_centered": 0.004714385272963084,
+              "rmse_mV": 0.02013974229210458,
+              "sse_mV2": 0.1375015254418188
+            },
+            "validation": {
+              "count_complex": 948,
+              "mae_mV": 0.017664259164186024,
+              "nrmse_energy": 0.6845284645213282,
+              "r2_centered": -0.0013684216582798836,
+              "rmse_mV": 0.020851022430584256,
+              "sse_mV2": 0.41215734930789
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": 0.14767941876192525,
+              "real": 0.11620865104708034
+            },
+            {
+              "imag": 0.10500994238120168,
+              "real": -0.15736587908835842
+            },
+            {
+              "imag": 0.42699658718416456,
+              "real": -0.09259787283432382
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "rate_shuffle_negative_control": {
+          "alpha": 0.37348116370203954,
+          "alpha_boundary_hit": false,
+          "identification_sse": 0.1381337671672247,
+          "lambda": 0.0010000000000000002,
+          "lambda_boundary_hit": true,
+          "metrics": {
+            "identification": {
+              "count_complex": 339,
+              "mae_mV": 0.01740554935878854,
+              "nrmse_energy": 0.6553686531519106,
+              "r2_centered": 0.00013799172165684936,
+              "rmse_mV": 0.02018599116791993,
+              "sse_mV2": 0.1381337671672247
+            },
+            "validation": {
+              "count_complex": 948,
+              "mae_mV": 0.017847769571583884,
+              "nrmse_energy": 0.6867791970375736,
+              "r2_centered": -0.007964254722599984,
+              "rmse_mV": 0.020919580681429666,
+              "sse_mV2": 0.4148721553807294
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "permutation_definition": "numpy.default_rng(20260713).permutation(n_identification)",
+          "permutation_sha256": "a5974e16f1a78ff3d5e4335486de95ccb1756e5da5dff1e1e707e7c1bfcd1121",
+          "q": [
+            {
+              "imag": -0.0047012155438474245,
+              "real": 0.05886039956521782
+            },
+            {
+              "imag": 0.038492840290387964,
+              "real": 2.9717021490264606e-05
+            },
+            {
+              "imag": 0.04941483611345682,
+              "real": 0.04797406569688111
+            }
+          ],
+          "tau_star_seconds": 1.0
+        }
+      },
+      "r2_certification": {
+        "missing_primitives": [
+          "annotation_timing_error_bound",
+          "hrv_and_whole_window_phase_warp_bound",
+          "measurement_noise_envelope",
+          "model_discrepancy_envelope",
+          "finite_dwell_transient_bound",
+          "prehistory_or_memory_tail_bound",
+          "sampling_and_quadrature_error_bound",
+          "subsampling_anti_alias_error_bound",
+          "omitted_harmonic_tail_and_window_leakage_bound",
+          "adc_gain_and_analog_front_end_calibration_bound",
+          "G_and_b_accumulation_rounding_enclosure",
+          "end_to_end_WLS_interval_enclosure"
+        ],
+        "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+        "status": "NOT_CERTIFIABLE"
+      },
+      "record": "f1o01",
+      "role": "engineering_calibration",
+      "source_channel": {
+        "adc_gain": 2000.0,
+        "baseline": 0,
+        "duration_seconds": 7251.612,
+        "name": "ECG",
+        "original_channel_index": 1,
+        "sampling_frequency_hz": 250.0,
+        "signal_samples": 1812903,
+        "units": "mV"
+      },
+      "validation_rate_hz": {
+        "maximum": 1.2191405059433098,
+        "median": 0.97489647516592,
+        "minimum": 0.9105394946505805
+      },
+      "validation_window_count": 316,
+      "window_gram_diagnostics": {
+        "all_full_column_rank": true,
+        "maximum_condition_number_over_all_windows": 1.0479829396453415,
+        "minimum_eigenvalue_over_all_windows": 0.9765624999999998
+      }
+    },
+    {
+      "harmonics": [
+        1,
+        2,
+        3
+      ],
+      "identification_rate_hz": {
+        "maximum": 1.2915724895059735,
+        "median": 1.1366865586814436,
+        "minimum": 1.0845986984815619
+      },
+      "identification_window_count": 125,
+      "models": {
+        "alpha_one_nested": {
+          "alpha": 1.0,
+          "identification_sse": 0.133351259993033,
+          "lambda": 2.0045100124975006,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 375,
+              "mae_mV": 0.016673803619284534,
+              "nrmse_energy": 0.6294558163669932,
+              "r2_centered": 0.02452788097851266,
+              "rmse_mV": 0.018857448395300496,
+              "sse_mV2": 0.133351259993033
+            },
+            "validation": {
+              "count_complex": 1068,
+              "mae_mV": 0.01642861854577719,
+              "nrmse_energy": 0.8111662414953061,
+              "r2_centered": -0.204499378492504,
+              "rmse_mV": 0.019044421401909845,
+              "sse_mV2": 0.3873529056178013
+            }
+          },
+          "optimizer_message": "Solution found.",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": -0.07069112260226783,
+              "real": 0.24734524951712625
+            },
+            {
+              "imag": -0.15534647434751964,
+              "real": -0.2002257215663905
+            },
+            {
+              "imag": 0.17504930260447435,
+              "real": -0.1859822713924836
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "constant_fourier": {
+          "identification_sse": 0.13670432746637587,
+          "metrics": {
+            "identification": {
+              "count_complex": 375,
+              "mae_mV": 0.01690161530234146,
+              "nrmse_energy": 0.6373204006295048,
+              "r2_centered": 0.0,
+              "rmse_mV": 0.019093058247532504,
+              "sse_mV2": 0.13670432746637587
+            },
+            "validation": {
+              "count_complex": 1068,
+              "mae_mV": 0.016606519629667527,
+              "nrmse_energy": 0.8218731864708261,
+              "r2_centered": -0.23650668177635104,
+              "rmse_mV": 0.019295797213192353,
+              "sse_mV2": 0.3976460798189414
+            }
+          },
+          "q": [
+            {
+              "imag": -0.034112922646505034,
+              "real": -0.00029126682697722594
+            },
+            {
+              "imag": 0.01212287327248997,
+              "real": -0.012370780787945408
+            },
+            {
+              "imag": 0.009172428041999551,
+              "real": 0.007138690504396545
+            }
+          ]
+        },
+        "fractional_common": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 0.13335125999303313,
+          "lambda": 2.0045119767345243,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 375,
+              "mae_mV": 0.016673803622840738,
+              "nrmse_energy": 0.6294558163669935,
+              "r2_centered": 0.02452788097851155,
+              "rmse_mV": 0.018857448395300506,
+              "sse_mV2": 0.13335125999303313
+            },
+            "validation": {
+              "count_complex": 1068,
+              "mae_mV": 0.016428618552766467,
+              "nrmse_energy": 0.8111662418616131,
+              "r2_centered": -0.20449937958036135,
+              "rmse_mV": 0.01904442141050994,
+              "sse_mV2": 0.3873529059676435
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": -0.07069119078380544,
+              "real": 0.247345248955066
+            },
+            {
+              "imag": -0.15534645032129787,
+              "real": -0.20022574629716544
+            },
+            {
+              "imag": 0.17504932102709073,
+              "real": -0.18598225694285828
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "rate_shuffle_negative_control": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 0.13663504719964292,
+          "lambda": 58.71539100538318,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 375,
+              "mae_mV": 0.01689641909465757,
+              "nrmse_energy": 0.637158886638896,
+              "r2_centered": 0.0005067891267011015,
+              "rmse_mV": 0.019088219557248248,
+              "sse_mV2": 0.13663504719964292
+            },
+            "validation": {
+              "count_complex": 1068,
+              "mae_mV": 0.016596827745315863,
+              "nrmse_energy": 0.8212688283926326,
+              "r2_centered": -0.23468883917926053,
+              "rmse_mV": 0.019281608198253135,
+              "sse_mV2": 0.3970614829112866
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "permutation_definition": "numpy.default_rng(20260714).permutation(n_identification)",
+          "permutation_sha256": "5abf90f452a7acb62de27e322d5fd509ac77895d7bd7564cdc7a2a608fd8e80d",
+          "q": [
+            {
+              "imag": -2.0049929990864515,
+              "real": 0.22981970826772874
+            },
+            {
+              "imag": 0.532813254204446,
+              "real": -0.9020612178691633
+            },
+            {
+              "imag": 0.6946539652136522,
+              "real": 0.21922230103035012
+            }
+          ],
+          "tau_star_seconds": 1.0
+        }
+      },
+      "r2_certification": {
+        "missing_primitives": [
+          "annotation_timing_error_bound",
+          "hrv_and_whole_window_phase_warp_bound",
+          "measurement_noise_envelope",
+          "model_discrepancy_envelope",
+          "finite_dwell_transient_bound",
+          "prehistory_or_memory_tail_bound",
+          "sampling_and_quadrature_error_bound",
+          "subsampling_anti_alias_error_bound",
+          "omitted_harmonic_tail_and_window_leakage_bound",
+          "adc_gain_and_analog_front_end_calibration_bound",
+          "G_and_b_accumulation_rounding_enclosure",
+          "end_to_end_WLS_interval_enclosure"
+        ],
+        "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+        "status": "NOT_CERTIFIABLE"
+      },
+      "record": "f2y01",
+      "role": "locked_engineering_validation",
+      "source_channel": {
+        "adc_gain": 409.6,
+        "baseline": 0,
+        "duration_seconds": 7074.496,
+        "name": "ECG",
+        "original_channel_index": 1,
+        "sampling_frequency_hz": 250.0,
+        "signal_samples": 1768624,
+        "units": "mV"
+      },
+      "validation_rate_hz": {
+        "maximum": 1.4749262536873156,
+        "median": 1.1362022669179728,
+        "minimum": 1.0301313417460727
+      },
+      "validation_window_count": 356,
+      "window_gram_diagnostics": {
+        "all_full_column_rank": true,
+        "maximum_condition_number_over_all_windows": 1.0000000000000078,
+        "minimum_eigenvalue_over_all_windows": 0.999999999999994
+      }
+    },
+    {
+      "harmonics": [
+        1,
+        2,
+        3
+      ],
+      "identification_rate_hz": {
+        "maximum": 1.3508949679162445,
+        "median": 1.0961907371882706,
+        "minimum": 1.0376134889753568
+      },
+      "identification_window_count": 121,
+      "models": {
+        "alpha_one_nested": {
+          "alpha": 1.0,
+          "identification_sse": 0.044064445398250524,
+          "lambda": 0.0010000001107959902,
+          "lambda_boundary_hit": true,
+          "metrics": {
+            "identification": {
+              "count_complex": 363,
+              "mae_mV": 0.009605033229528895,
+              "nrmse_energy": 0.6756911740111434,
+              "r2_centered": 0.011206490344592979,
+              "rmse_mV": 0.01101769743387845,
+              "sse_mV2": 0.044064445398250524
+            },
+            "validation": {
+              "count_complex": 921,
+              "mae_mV": 0.008230808335309167,
+              "nrmse_energy": 0.682935226370318,
+              "r2_centered": -0.0966190791931163,
+              "rmse_mV": 0.00971428232413577,
+              "sse_mV2": 0.08691226586824835
+            }
+          },
+          "optimizer_message": "Solution found.",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": 0.06626132598330343,
+              "real": 0.1073438914598846
+            },
+            {
+              "imag": 0.0006532894184605007,
+              "real": -0.08908922839129488
+            },
+            {
+              "imag": 0.15521533669667995,
+              "real": -0.06077060731992947
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "constant_fourier": {
+          "identification_sse": 0.044563849750193965,
+          "metrics": {
+            "identification": {
+              "count_complex": 363,
+              "mae_mV": 0.0096853062229223,
+              "nrmse_energy": 0.679509358796466,
+              "r2_centered": 0.0,
+              "rmse_mV": 0.01107995606079168,
+              "sse_mV2": 0.044563849750193965
+            },
+            "validation": {
+              "count_complex": 921,
+              "mae_mV": 0.008022258162976604,
+              "nrmse_energy": 0.6649477324071733,
+              "r2_centered": -0.039613204716449246,
+              "rmse_mV": 0.009458422635083905,
+              "sse_mV2": 0.08239427980310203
+            }
+          },
+          "q": [
+            {
+              "imag": -0.015353841773627587,
+              "real": 0.009483230746082646
+            },
+            {
+              "imag": 0.006406029630167885,
+              "real": 7.696690165730033e-05
+            },
+            {
+              "imag": 0.002909930355025304,
+              "real": 0.007359339950633325
+            }
+          ]
+        },
+        "fractional_common": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 0.04406444539825018,
+          "lambda": 0.0010000000000000002,
+          "lambda_boundary_hit": true,
+          "metrics": {
+            "identification": {
+              "count_complex": 363,
+              "mae_mV": 0.009605033229528678,
+              "nrmse_energy": 0.6756911740111409,
+              "r2_centered": 0.01120649034460075,
+              "rmse_mV": 0.011017697433878407,
+              "sse_mV2": 0.04406444539825018
+            },
+            "validation": {
+              "count_complex": 921,
+              "mae_mV": 0.008230808335310827,
+              "nrmse_energy": 0.682935226370416,
+              "r2_centered": -0.09661907919343116,
+              "rmse_mV": 0.009714282324137164,
+              "sse_mV2": 0.0869122658682733
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "q": [
+            {
+              "imag": 0.06626132598502504,
+              "real": 0.10734389145882235
+            },
+            {
+              "imag": 0.0006532894177492992,
+              "real": -0.08908922839129728
+            },
+            {
+              "imag": 0.15521533669635615,
+              "real": -0.06077060732076394
+            }
+          ],
+          "tau_star_seconds": 1.0
+        },
+        "rate_shuffle_negative_control": {
+          "alpha": 1.0,
+          "alpha_boundary_hit": true,
+          "identification_sse": 0.0442690645452774,
+          "lambda": 14.171551861590125,
+          "lambda_boundary_hit": false,
+          "metrics": {
+            "identification": {
+              "count_complex": 363,
+              "mae_mV": 0.00964899800452581,
+              "nrmse_energy": 0.6772581881375129,
+              "r2_centered": 0.006614895404436605,
+              "rmse_mV": 0.011043248881319242,
+              "sse_mV2": 0.0442690645452774
+            },
+            "validation": {
+              "count_complex": 921,
+              "mae_mV": 0.007983652829833165,
+              "nrmse_energy": 0.664822506701725,
+              "r2_centered": -0.03922167307569313,
+              "rmse_mV": 0.009456641385838014,
+              "sse_mV2": 0.08236324906261713
+            }
+          },
+          "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+          "optimizer_success": true,
+          "permutation_definition": "numpy.default_rng(20260715).permutation(n_identification)",
+          "permutation_sha256": "1289cc73c75642c2b6094cbff47bfe318fe30e2fa1fa21ba3a1fccb40c18edee",
+          "q": [
+            {
+              "imag": -0.15147687800942125,
+              "real": 0.24215619711205433
+            },
+            {
+              "imag": 0.09170802393178272,
+              "real": -0.08906523843015328
+            },
+            {
+              "imag": 0.19710174256117263,
+              "real": 0.04179389485392744
+            }
+          ],
+          "tau_star_seconds": 1.0
+        }
+      },
+      "r2_certification": {
+        "missing_primitives": [
+          "annotation_timing_error_bound",
+          "hrv_and_whole_window_phase_warp_bound",
+          "measurement_noise_envelope",
+          "model_discrepancy_envelope",
+          "finite_dwell_transient_bound",
+          "prehistory_or_memory_tail_bound",
+          "sampling_and_quadrature_error_bound",
+          "subsampling_anti_alias_error_bound",
+          "omitted_harmonic_tail_and_window_leakage_bound",
+          "adc_gain_and_analog_front_end_calibration_bound",
+          "G_and_b_accumulation_rounding_enclosure",
+          "end_to_end_WLS_interval_enclosure"
+        ],
+        "reason": "Point estimates and empirical held-out residuals do not instantiate the required interval-valued R2 primitive bounds.",
+        "status": "NOT_CERTIFIABLE"
+      },
+      "record": "f2o01",
+      "role": "locked_engineering_validation",
+      "source_channel": {
+        "adc_gain": 819.2,
+        "baseline": 0,
+        "duration_seconds": 7011.232,
+        "name": "ECG",
+        "original_channel_index": 1,
+        "sampling_frequency_hz": 250.0,
+        "signal_samples": 1752808,
+        "units": "mV"
+      },
+      "validation_rate_hz": {
+        "maximum": 1.1524056467876693,
+        "median": 1.0007505629221918,
+        "minimum": 0.9272137227630969
+      },
+      "validation_window_count": 307,
+      "window_gram_diagnostics": {
+        "all_full_column_rank": true,
+        "maximum_condition_number_over_all_windows": 1.0359934525406298,
+        "minimum_eigenvalue_over_all_windows": 0.9765624999999998
+      }
+    }
+  ]
+}

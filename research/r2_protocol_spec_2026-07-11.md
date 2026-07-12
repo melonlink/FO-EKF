@@ -4,7 +4,7 @@
 - 适用分支：dev-codex
 - 对应理论门：R2 data-to-disk
 - 配置模板：config/r2_protocol_template.toml
-- 当前状态：协议和模板草案已形成；机器传播审计与数值上界均未闭合，R2 仍为 NOT_CLOSED
+- 当前状态：协议 validator、R2 v4 exact-index 组件界、exact integer-payload WLS interval certificate 和 R2--T1 bundle 已在合成链机器闭合；真实 ECG primitive 校准仍未闭合，真实数据 R2 仍为 NOT_CERTIFIABLE
 
 ## 1. 目的与允许结论
 
@@ -350,7 +350,13 @@ h_{mk}=e^{i(k-m)L/2}
 \right\}^{1/2}.
 \]
 
-若实现采用梯形公式逼近连续 lock-in，还需
+若实现采用梯形公式逼近连续 lock-in，必须先冻结唯一分解
+
+\[
+y(t_n)=x_{\rm nom}^{\rm ret}(t_n)+e_n,
+\]
+
+其中 \(x_{\rm nom}^{\rm ret}\) 是定义目标系数的 retained-harmonic、nominal-front-end reconstruction；history、dwell、采样、噪声和模型余项等由样本包络处理的量全部放入 \(e_n\)。梯形算子作用于 \(e_n\) 的误差由样本包络界定，而求积余项只允许作用于 \(x_{\rm nom}^{\rm ret}\)：
 
 \[
 \epsilon^{\rm quad}_{r,m}\le
@@ -361,10 +367,12 @@ h_{mk}=e^{i(k-m)L/2}
 \[
 M_{2,j}\ge
 \sup_{[t_j,t_{j+1}]}
-|x''-2im\widehat\omega_rx'-(m\widehat\omega_r)^2x|.
+|(x_{\rm nom}^{\rm ret})''
+-2im\widehat\omega_r(x_{\rm nom}^{\rm ret})'
+-(m\widehat\omega_r)^2x_{\rm nom}^{\rm ret}|.
 \]
 
-普通样本有限差分不是 \(M_1,M_2\) 的确定性证明。没有硬件抗混叠规格、带宽/导数上界或区间重建证书时为 NOT_CERTIFIABLE。
+若把 \(M_2\) 改成 actual signal 的二阶导数，同时仍只在样点界定 \(e_n\)，则漏掉连续 residual，证书无效。普通样本有限差分不是 \(M_1,M_2\) 的确定性证明。没有硬件抗混叠规格、带宽/导数上界或区间重建证书时为 NOT_CERTIFIABLE。
 
 ### 6.7 前端幅值和相对群延迟
 
@@ -413,13 +421,11 @@ d(|m|\widehat\omega_r\Delta_\tau+\Delta_{\psi,0})
 \frac{a_m\bar v_W}{|\widehat H_{r,m}|}.
 \]
 
-当 \(w_n\) 是归一化时间权且独立协议给出
-
-\[
-\|v\|_{L_2(a,b)}\le N_2,
-\]
-
-可取 \(\bar v_W\le N_2/\sqrt T\)。只有点态界时，最坏系数误差通常不随 \(T\) 下降。概率噪声只能进入 PASS_PROBABILISTIC。
+离散 WLS 的 \(\bar v_W\) 必须由离散样本噪声合同直接给出；仅有
+\(\|v\|_{L_2(a,b)}\le N_2\) 时，任意窄的采样点尖峰说明不能推出
+\(\bar v_W\le N_2/\sqrt T\)。只有 exact continuous lock-in 才能由
+Cauchy--Schwarz 直接得到系数误差 \(N_2/(|\widehat H_m|\sqrt T)\)，其
+trapezoidal 实现还必须另加已认证求积余项。只有点态界时，最坏系数误差通常不随 \(T\) 下降。概率噪声只能进入 PASS_PROBABILISTIC。
 
 ### 6.10 声明代理的模型余项
 
@@ -440,10 +446,8 @@ d(|m|\widehat\omega_r\Delta_\tau+\Delta_{\psi,0})
 
 \[
 C_H(\alpha,\lambda)=
-\max\left\{
-|z_0|+\frac{U_0}{\lambda},
-\frac{U_{\rm pre}+U_0}{\lambda}
-\right\}.
+|z_0|+C_{\rm pre}
++\frac{U_{\rm pre}+2U_0}{\lambda}.
 \]
 
 对固定窗口设计，除 history/dwell 外的半径为 \(\epsilon_{\rm rest}\)，总半径门为 \(\epsilon_\star\)。定义
@@ -466,10 +470,14 @@ T_{\rm dwell}\ge
 \]
 
 这是外包络证书的最小驻留，不是心脏达到稳态的真实最短时间。
+这里使用 history 与 dwell 两个独立半径相加后的系数。只有把二者的
+(M(s)-M(S+s)) 相关结构作为一个联合 residual budget 重新认证时，
+才可用较小的 max 系数；不能在分别签发两个半径后再用 max 代替其和。
 
 ### 7.2 最小确定性能量 SNR
 
-独立先验给出 \(|Z_{r,m}|\ge\underline Z_{r,m}>0\) 时，定义
+独立先验给出 \(|Z_{r,m}|\ge\underline Z_{r,m}>0\)，且估计器有已认证桥接
+\(\bar r_{\rm noise}\le C_sN_2/\sqrt T\) 时，定义
 
 \[
 \mathrm{SNR}_{E,r,m}=
@@ -481,11 +489,11 @@ T_{\rm dwell}\ge
 
 \[
 \mathrm{SNR}_{E,r,m}\ge
-\frac{a_m}
+\frac{a_mC_s}
 {\eta-\epsilon_{\rm rest}/\underline Z_{r,m}}.
 \]
 
-没有独立的 \(\underline Z_{r,m}\) 或确定性 \(N_2\) 时，不得报告确定性最低 SNR 已通过。
+exact continuous lock-in 取 \(a_m=C_s=1\)。离散 WLS 没有独立的 sampling/reconstruction 桥接时不得使用该 energy-SNR 推论。没有独立的 \(\underline Z_{r,m}\) 或确定性 \(N_2\) 时，也不得报告确定性最低 SNR 已通过。
 
 ## 8. 决策顺序
 
@@ -494,7 +502,7 @@ T_{\rm dwell}\ge
 1. 协议在读取目标 ECG 或拟合结果前冻结，否则 NOT_CERTIFIABLE。
 2. 相同导联/增益、共同 gauge、因果前端、无逐窗归一化；明确违反为 EXCLUDE_PROTOCOL。
 3. \(\tau_\star\)、信号单位及全部项量纲闭合，否则 NOT_CERTIFIABLE。
-4. \(G\succ0\)、条件数合格、\(\widehat H_{r,m}\ne0\)、窗口和权重可复现，否则 NOT_CERTIFIABLE。
+4. \(G\succ0\)、条件数合格、\(\widehat H_{r,m}\ne0\)、窗口和权重可复现，且数字样本到 \(G,b\)、联合求解和 \(H\) 除法有可重放 exact-functional interval certificate，否则 NOT_CERTIFIABLE。
 5. 所有适用项 provided=true、来源可追踪且未使用目标拟合残差，否则 NOT_CERTIFIABLE。
 6. 确定性请求中只要一个必需项是概率性，即 NOT_CERTIFIABLE；可另报 PASS_PROBABILISTIC。
 7. 谐波尾、前史、抗混叠/导数、延迟和总半径必须有限，否则 NOT_CERTIFIABLE。
@@ -507,7 +515,9 @@ T_{\rm dwell}\ge
 冻结前必须填写：
 
 - 协议 ID、版本、冻结时间、Git commit 和协议 SHA-256；该哈希只覆盖预注册部分并明确排除运行后的 `window_result`；
-- 数据角色与受试者级拆分 ID，不把原始 ECG 复制进仓库；
+- 数据角色与受试者级拆分 ID，不把原始 ECG 复制进仓库；calibration、identification、validation 两两不相交；
+- subject-specific identification 必须早于 validation，并冻结最小时间保护间隔、split manifest、record-interval manifest 及其 SHA-256；
+- 拆分轴固定为“校准受试者与评估受试者隔离，评估受试者内部再按时间分 identification/validation”；因此 patient-level 隔离不被误写成同一受试者的两个时间段必须来自不同患者；
 - \(\tau_\star,I,\Lambda,\mathcal M\)、信号单位和信号表示；
 - R 峰算法/版本及时间误差校准；
 - 前端因果性、系数、状态策略、频响和延迟校准；
@@ -515,7 +525,20 @@ T_{\rm dwell}\ge
 - 总/相对半径、Gram、最小驻留和最低 SNR 门；
 - 概率圆盘的逐项 \(\delta_j\) 与联合覆盖方法。
 
-运行后只允许填写：窗口/心率 ID、受试者、导联与物理增益 ID，R 峰端点、\(N,T,\widehat\omega_r\)、外向认证的 Gram 下/上界及证书哈希、\(\overline a_m\)、\(\widetilde Z\)、冻结公式传播出的逐项/总半径、状态和原因代码。同一 R1 联合组必须保持受试者、导联和物理增益一致；结果键 \((\texttt{window\_id},m)\) 必须唯一。每一结果行必须保存所引用的 `protocol_sha256`，并对排除自身 `result_sha256` 字段后的结果内容生成 `result_sha256`。修改运行结果不得改变冻结的协议哈希。
+运行后只允许填写：窗口/心率 ID、受试者、导联与物理增益 ID，R 峰端点、\(N,T,\widehat\omega_r\)、外向认证的 Gram 下/上界及证书哈希、\(\overline a_m\)、\(\widetilde Z\)、冻结公式传播出的逐项/总半径、状态和原因代码。同一 R1 联合组必须保持受试者、导联和物理增益一致；结果键 \((\texttt{window\_id},m)\) 必须唯一。每一 `PASS_DETERMINISTIC` 行必须绑定 `record_manifest_sha256`、`estimator_manifest_sha256`、`protocol_sha256`，以及 `wls_execution_sha256`、`wls_window_sha256`、整数 `wls_window_start_sample`/`wls_window_end_sample_exclusive`、sample-index/digital/time/normalized-weight payload hashes 和 `wls_interval_certificate_sha256`。离散 R2 component request 必须携带同一组 exact selected sample indices 和整数窗口端点；其 Gram 相位只能用 \(2\pi N(j-a)/(b-a)\) 计算，不能从 binary64 秒时间重新构造。该行还必须令 `wls_exact_sample_functional_coverage=true`，并登记目标谐波的 `wls_exact_functional_radius_upper`。此 full numeric radius 已同时覆盖数字样本换算、相位/指数、\(G,b\) 累积、联合求解和 \(H\) 除法；它加入 `radius_sampling`，不得再叠加旧的 solve-only 上界。结果内容排除自身 `result_sha256` 后生成 `result_sha256`；修改运行结果不得改变冻结协议哈希。
+
+### 9.1 组件证书与 T1 bundle
+
+`PASS_DETERMINISTIC` 的标量结果表本身不构成端到端证明。当前工程要求 `bound_engine_required=true`，并对每个 canonical rate--harmonic disk 提供一个可重放 R2 v4 exact-index component certificate。最终 bundle 还必须：
+
+- 重放冻结协议和旧 T1 `ROBUST_INNER` tube；
+- 核对冻结的 T1 certificate/input hash；
+- 重放 WLS execution 和 exact interval certificate，并核对 component、record、estimator、protocol、window、payload、target、center、单位、split 和先验；
+- 证明结果行没有高报 Gram 裕量或低报组件/完整 exact-functional 数值半径；
+- 构造完整新响应盘族并重放 frozen-selector margin transfer。
+
+bundle 只输出 `PRESERVED_ROBUST`、`PRESERVED_CLOSED` 或 `NOT_CERTIFIABLE`。它没有 outer/reject 权限。
+缺少 interval certificate、重放不是 `MATCH`、关系不是 `CERTIFIED_INTERVAL` 或任一绑定不一致时只能输出 `NOT_CERTIFIABLE`。只有 full exact-functional coverage 成立时，bundle 才能把 samples-to-disk 链提升为 `PRESERVED_*`。
 
 运行后不得改上界来源、公式、阈值、谐波集合或排除规则。修订必须生成新版本并保留旧结果。
 

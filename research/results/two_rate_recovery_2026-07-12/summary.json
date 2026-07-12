@@ -1,0 +1,169 @@
+{
+  "artifact_files": {
+    "cases.csv": "e07ab743991daedaa0ae883d278efbcb43b507a5878e1585f80b72af1a7db834"
+  },
+  "claim_boundary": {
+    "analytical_proof_replaced": false,
+    "noisy_or_real_ecg_validated": false,
+    "purpose": "floating-point audit of exact-model global inverse identities"
+  },
+  "design": {
+    "base_frequency_morphology_pairs": [
+      {
+        "base_frequency": 0.35,
+        "morphology": {
+          "imag": 0.7,
+          "real": 0.4
+        }
+      },
+      {
+        "base_frequency": 1.0,
+        "morphology": {
+          "imag": 0.3,
+          "real": -1.2
+        }
+      },
+      {
+        "base_frequency": 2.5,
+        "morphology": {
+          "imag": -1.5,
+          "real": 2.0
+        }
+      }
+    ],
+    "case_count": 1260,
+    "common_gains": [
+      {
+        "imag": -0.1350926361102302,
+        "real": -0.1474787431082491
+      },
+      {
+        "imag": -0.22164015499600465,
+        "real": 0.7165023668442045
+      },
+      {
+        "imag": 2.2280184001535885,
+        "real": 1.1339903035639434
+      },
+      {
+        "imag": 3.4190390418706382,
+        "real": -7.23257713613649
+      }
+    ],
+    "consistency_tolerance": 1e-09,
+    "damping_values": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "frequency_ratios": [
+      1.25,
+      1.75,
+      3.0,
+      6.0
+    ],
+    "generator": "fixed Cartesian product of order x damping x rate ratio x paired base-frequency/morphology condition; no PRNG",
+    "order_bounds": [
+      1e-06,
+      1.0
+    ],
+    "order_values": [
+      0.05,
+      0.0975,
+      0.14500000000000002,
+      0.1925,
+      0.24,
+      0.2875,
+      0.33499999999999996,
+      0.38249999999999995,
+      0.43,
+      0.4774999999999999,
+      0.525,
+      0.5725,
+      0.62,
+      0.6675,
+      0.715,
+      0.7625000000000001,
+      0.81,
+      0.8574999999999999,
+      0.9049999999999999,
+      0.9525000000000001,
+      1.0
+    ],
+    "pairing_rule": "paired by the shared condition index, not a Cartesian cross",
+    "seed": null,
+    "solver_tolerance": 1e-13,
+    "tamper_anchor": "first response held exact; only third response replaced",
+    "tamper_third_pair_damping_factor": 1.05
+  },
+  "determinism": {
+    "case_serialization_byte_identical": true,
+    "case_serialization_repeats": 2,
+    "fixed_grid_no_prng": true
+  },
+  "outcomes": {
+    "common_complex_gain_invariance": {
+      "failed_cases": 0,
+      "maximum_damping_difference": 1.092104184863274e-09,
+      "maximum_gained_morphology_absolute_error": 1.1285789008132262e-10,
+      "maximum_order_difference": 4.547473508864641e-13,
+      "successful_cases": 1260
+    },
+    "deterministic_third_rate_tamper": {
+      "consistency_outcome_counts": {
+        "INCONSISTENT": 1260
+      },
+      "detected_cases": 1260,
+      "minimum_tampered_cross_ratio_deviation": 0.00044999603105147967,
+      "missed_cases": 0
+    },
+    "three_rate_positive_consistency": {
+      "consistent_cases": 1260,
+      "inconsistent_cases": 0,
+      "maximum_damping_spread": 7.98323185335903e-10,
+      "maximum_geometric_cross_ratio_absolute_error": 3.873482507335666e-12,
+      "maximum_order_spread": 3.979039320256561e-13
+    },
+    "two_rate_global_inverse": {
+      "failed_cases": 0,
+      "maximum_damping_absolute_error": 8.859473155098385e-10,
+      "maximum_morphology_absolute_error": 2.1927792919263464e-11,
+      "maximum_order_absolute_error": 4.0668857170800266e-13,
+      "successful_cases": 1260
+    }
+  },
+  "provenance": {
+    "code_commit": "82f88c384c383e0cb3c3945e887fc5d9e0c18bcb",
+    "environment": {
+      "float_mantissa_bits": 53,
+      "platform_machine": "AMD64",
+      "platform_release": "10",
+      "platform_system": "Windows",
+      "python_implementation": "CPython",
+      "python_version": "3.11.4"
+    },
+    "production_source_manifest": [
+      {
+        "path": "pyproject.toml",
+        "sha256": "f7c9b7971812ce1edb80aee2430b819fae12d72309d4c727428c886040d21360"
+      },
+      {
+        "path": "requirements-repro-lock.txt",
+        "sha256": "eac204b34ecf543cbe93ee71205161cebc1edb2899946320cef1bcd0bfd9719b"
+      },
+      {
+        "path": "scripts/run_two_rate_recovery_sweep.py",
+        "sha256": "eb462501e7fba4d6c59e52fe65c0b18d0f1bc187c99ecd0f12a1c97bc313f756"
+      },
+      {
+        "path": "src/fo_ekf/multirate.py",
+        "sha256": "8a60aa5dc6a8c0adb823b641425bccbfcafdc947a85c94f4d6e1ccc1aeed9434"
+      }
+    ],
+    "production_source_manifest_sha256": "53b4b59035c7cfd8951b56f5e5a8198bc13213add51d2666c39a258bfd17e39c"
+  },
+  "schema": "fo-ekf.two-rate-recovery-sweep.v1",
+  "summary_sha256": "7e58edc544419a4196571c4b538ca429d528bc506cfe34a6502551404be4ba75"
+}

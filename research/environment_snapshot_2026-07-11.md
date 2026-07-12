@@ -31,13 +31,11 @@ Branch policy:
   - Arb/ACB rigorous ball arithmetic
   - official self-test: 227 tests and 3,092 doctests passed
 - Installation target: editable project with `.[dev,cert]`
-- Current repository validation: 107 tests passed, including 21 R1-CERT
-  tests and 53 R2 protocol/adversarial tests; full Ruff lint and the scoped
-  format check for all files changed in this stage passed. The repository-wide
-  format check still flags the pre-existing `src/fo_ekf/certificate.py`, which
-  this checkpoint deliberately leaves untouched.
-- Theory manuscript: `pdflatex` built 12 pages with no unresolved
-  references, warnings, or overfull/underfull boxes.
+- Final repository validation on 2026-07-12: 253 tests passed; full Ruff lint
+  and repository-wide format checks passed.
+- Manuscripts: the 15-page main paper and 25-page theory-core supplement build
+  without unresolved references or overfull boxes. Remaining bibliography
+  underfull warnings are nonblocking line-breaking diagnostics.
 
 The project environment is intentionally lightweight. It does not duplicate the existing PyTorch installation.
 The certification wheel was 9.15 MiB; the earlier 0.8.0 wheel used during
@@ -65,5 +63,5 @@ This environment is reserved for later deep baselines or differentiable optimiza
 ## Download boundary
 
 - Any individual dataset, software package, model, or file expected to exceed 100 MB requires explicit user approval before download.
-- The literature downloader enforces a hard 100 MiB per-file limit and refuses incomplete PDFs.
-- Current literature set: 15 PDFs, 73,553,418 bytes total; largest individual file 24,449,147 bytes.
+- The literature downloader enforces a hard 100,000,000-byte per-file limit and refuses incomplete PDFs.
+- Current literature set: 18 PDFs, 80,854,524 bytes total; largest individual file 24,449,147 bytes.
