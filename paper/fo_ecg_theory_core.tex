@@ -1,0 +1,878 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,booktabs}
+\usepackage[hidelinks]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\C}{\mathbb C}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Aset}{\mathcal A}
+\newcommand{\Yset}{\mathcal Y}
+\newcommand{\Eset}{\mathcal E}
+\newcommand{\Mset}{\mathcal M}
+\newcommand{\proj}{\operatorname{proj}}
+\newcommand{\diameter}{\operatorname{diam}}
+
+\title{Finite-Record Set Identifiability of a Fractional ECG Harmonic Surrogate}
+\author{FO-EKF theory-core working draft}
+\date{11 July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We establish the theory gates that precede real-data validation.  The first
+result proves that two exact complex rate responses are necessary and
+sufficient to recover the order of a scalar fractional ECG harmonic surrogate
+with an unknown common complex coefficient and positive real damping.  We then
+give a joint forward-disk feasible-set theorem, conditional finite-record
+data-to-disk bounds, and an exact output-set separation threshold for
+worst-case rate-window design.  The data-to-disk assumptions are not yet
+calibrated in the project, so the present result is a theory checkpoint rather
+than a real-ECG order certificate.  These statements concern a declared
+surface-ECG surrogate, not internal cardiac states.
+\end{abstract}
+
+\section{Model, units, and protocol}
+
+Fix one reference time \(\tau_\star>0\) before identification, put
+\(\xi=t/\tau_\star\), and use the dimensionless model
+\begin{equation}
+ {}^C D_\xi^\alpha z(\xi)
+ =-\lambda z(\xi)+\sum_{m\in\mathbb Z}q_m e^{im\theta(\xi)}.
+ \label{eq:time-model}
+\end{equation}
+Thus \(\lambda\) is dimensionless and \(q_m\) has the same measurement unit as
+\(z\), independently of the candidate order.  With dimensionless frequency
+\(\nu=m\tau_\star\Omega\), one selected positive harmonic has steady response
+\begin{equation}
+ Z_r=\frac{q}{\lambda+(i\nu_r)^\alpha},\qquad
+ (i\nu)^\alpha=\nu^\alpha e^{i\pi\alpha/2},
+ \label{eq:model}
+\end{equation}
+where
+\[
+ \alpha\in I=[\alpha_-,1],\quad 0<\alpha_-<1,\qquad
+ \lambda\in\Lambda=[\lambda_-,\lambda_+]\subset\R_{>0},\qquad
+ q\in\C\setminus\{0\}.
+\]
+The coefficient \(q\) is effective in measurement units.  A common nonzero
+complex lead gain is absorbed into \(q\).  For a real ECG, the corresponding
+negative harmonic is its conjugate and supplies no independent equation.
+
+\begin{assumption}[Information boundary]
+\label{ass:protocol}
+Rates are known, positive, and distinct.  Complex responses share one R-peak
+phase anchor, one causal preprocessing chain, the principal fractional branch,
+and common \(q,\lambda,\alpha\).  There is no uncalibrated rate-specific gain,
+phase, or delay.  Restitution bounds, when used, are calibrated independently
+of the identification record.
+\end{assumption}
+
+\section{R0: minimal structural identifiability}
+
+\begin{proposition}[One rate is insufficient]
+For one response \(Z_1\), the order is not structurally identifiable.
+\end{proposition}
+\begin{proof}
+For every \(\beta\in I\) and \(\ell\in\Lambda\), the nonzero choice
+\[
+ q_{\beta,\ell}=Z_1[\ell+(i\nu_1)^\beta]
+\]
+reproduces the same observation.
+\end{proof}
+
+For any ordered pair of nonzero responses, put
+\[
+ W_j=Z_j^{-1},\qquad D=W_2-W_1,
+\]
+and, whenever \(D\ne0\), define \(C=W_1/D\).
+
+\begin{lemma}[Complete common-gauge invariant]
+\label{lem:gauge}
+For an ordered nonzero response pair with \(D\ne0\), the quotient \(C\) is
+invariant under \((Z_1,Z_2)\mapsto(gZ_1,gZ_2)\), \(g\in\C\setminus\{0\}\).
+It is complete: two such ordered pairs have the same \(C\) if and only if one
+is obtained from the other by one common nonzero complex gain.
+\end{lemma}
+\begin{proof}
+The inverse responses obey \(W_1=CD\) and \(W_2=(C+1)D\).  If a second pair
+has difference \(D'\), then \(W'_j=(D'/D)W_j\) and hence
+\(Z'_j=(D/D')Z_j\).  The converse follows directly from cancellation in
+\(C=W_1/(W_2-W_1)\).
+\end{proof}
+
+\begin{theorem}[Quotient-space geometry]
+\label{thm:quotient}
+For fixed \(\varrho>1\), on the enlarged structural domain before the compact
+priors \(I\times\Lambda\) are imposed, the map
+\[
+ \Phi:(\alpha,\kappa)\longmapsto
+ \frac{1+\kappa e^{-i\pi\alpha/2}}{\varrho^\alpha-1}
+\]
+is one-to-one on \((0,1]\times\R_{>0}\), and its range is
+\[
+ \mathcal Q_\varrho=
+ \left\{u+iv:u\ge\frac{1}{\varrho-1},\ v<0\right\}.
+\]
+It is a smooth diffeomorphism from
+\((0,1)\times\R_{>0}\) onto
+\(\{u+iv:u>1/(\varrho-1),v<0\}\), and extends one-to-one to
+\(\alpha=1\).  In the interior its real Jacobian is
+\begin{equation}
+ \det\frac{\partial(\operatorname{Re}C,\operatorname{Im}C)}
+          {\partial(\alpha,\kappa)}
+ =\frac{\varrho^\alpha\log\varrho\sin(\pi\alpha/2)}
+        {(\varrho^\alpha-1)^3}
+  +\frac{\kappa\pi}{2(\varrho^\alpha-1)^2}>0.
+ \label{eq:jacobian}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Every image point has negative imaginary part; for \(\alpha<1\), its real part is strictly larger than
+\(1/(\varrho-1)\), whereas \(\alpha=1\) gives the boundary line.  Conversely,
+for \(v<0\), define
+\[
+ H_{u+iv}(\beta)=(\varrho^\beta-1)
+ [u+v\cot(\pi\beta/2)].
+\]
+The continuous equation \(H_{u+iv}(\beta)=1\) has a root in
+\((0,1]\) whenever \((\varrho-1)u\ge1\): its limit at zero is negative and
+its value at one is at least one.  The recovered
+\[
+ \kappa=-\frac{(\varrho^\alpha-1)v}{\sin(\pi\alpha/2)}
+\]
+is positive.  If \(\alpha\) is one root and \(A_\gamma=\pi\gamma/2\), then
+direct substitution gives, for any candidate \(\beta\),
+\[
+ (\varrho^\alpha-1)[H_{u+iv}(\beta)-1]
+ =\varrho^\beta-\varrho^\alpha
+ +\kappa(\varrho^\beta-1)
+ \frac{\sin(A_\beta-A_\alpha)}{\sin A_\beta}.
+\]
+Both terms have the sign of \(\beta-\alpha\), so the root and its positive
+\(\kappa\) are unique.  Lemma~\ref{lem:gauge} shows that this is the complete
+common-gauge quotient.
+Direct differentiation gives \eqref{eq:jacobian}; the inverse function
+theorem and the established bijection give the interior diffeomorphism.
+\end{proof}
+
+\begin{theorem}[Global two-rate recovery]
+\label{thm:two-rate}
+Let \(0<\nu_1<\nu_2\), and suppose two exact complex responses satisfy
+\eqref{eq:model}.  Define
+\[
+ W_r=Z_r^{-1},\quad D=W_2-W_1,\quad
+ C=\frac{W_1}{D},\quad \varrho=\frac{\nu_2}{\nu_1}>1.
+\]
+Then \(D\ne0\), \(\operatorname{Im}C<0\), and the true order is the unique
+\(\beta\in(0,1]\) satisfying
+\begin{equation}
+ H_C(\beta)=1,\qquad
+ H_C(\beta)=(\varrho^\beta-1)
+ \left[\operatorname{Re}C+
+ \operatorname{Im}C\cot\left(\frac{\pi\beta}{2}\right)\right].
+ \label{eq:root}
+\end{equation}
+After recovering \(\alpha\),
+\begin{align}
+ q&=\frac{e^{i\pi\alpha/2}(\nu_2^\alpha-\nu_1^\alpha)}{D},
+ \label{eq:q}\\
+ \lambda&=\nu_1^\alpha e^{i\pi\alpha/2}
+ [C(\varrho^\alpha-1)-1]\in\R_{>0}.
+ \label{eq:lambda}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+Inverse-response subtraction gives
+\[
+ D=\frac{e^{i\pi\alpha/2}(\nu_2^\alpha-\nu_1^\alpha)}{q}\ne0.
+\]
+With \(\kappa=\lambda/\nu_1^\alpha>0\) and \(A=\pi\alpha/2\),
+\begin{equation}
+ C=\frac{1+\kappa e^{-iA}}{\varrho^\alpha-1},
+ \label{eq:C}
+\end{equation}
+so \(\operatorname{Im}C<0\).  A candidate \(\beta\) first fixes \(q_\beta\)
+through the difference equation.  Substitution into the first response gives
+\[
+ \lambda_\beta=\nu_1^\beta e^{i\pi\beta/2}
+ [C(\varrho^\beta-1)-1].
+\]
+Writing \(C=u+iv\), \(t=\varrho^\beta-1\), and \(B=\pi\beta/2\),
+\[
+ \operatorname{Im}\lambda_\beta=0
+ \iff (tu-1)\sin B+tv\cos B=0
+ \iff H_C(\beta)=1.
+\]
+Substitute \eqref{eq:C} and use
+\[
+ \cos A-\sin A\cot B=\frac{\sin(B-A)}{\sin B}.
+\]
+The candidate equation becomes
+\begin{equation}
+ \varrho^\beta-\varrho^\alpha+
+ \kappa(\varrho^\beta-1)\frac{\sin(B-A)}{\sin B}=0.
+ \label{eq:sign}
+\end{equation}
+Both terms are positive when \(\beta>\alpha\) and negative when
+\(\beta<\alpha\); hence \(\beta=\alpha\) is the unique solution.  At a root,
+\[
+ \operatorname{Re}\lambda_\beta
+ =-\nu_1^\beta\frac{t\,\operatorname{Im}C}{\sin B}>0,
+\]
+and \(D\ne0\) ensures \(q_\beta\ne0\).
+\end{proof}
+
+\begin{corollary}[Strict minimum and quotient invariance]
+Under Assumption~\ref{ass:protocol}, two distinct rates are the strict
+structural minimum.  Under \(Z_r\mapsto gZ_r\),
+\(g\in\C\setminus\{0\}\), \(C,\alpha,\lambda\) are invariant, while
+\eqref{eq:q} recovers \(gq_{\rm physical}\).
+At least a third rate is required to make this scalar surrogate
+overdetermined and therefore independently rejectable in exact arithmetic.
+\end{corollary}
+
+For stable computation after \(\alpha\) is isolated, the equivalent real
+recovery
+\[
+ \kappa=-\frac{(\varrho^\alpha-1)\operatorname{Im}C}
+               {\sin(\pi\alpha/2)}>0,\qquad
+ \lambda=\nu_1^\alpha\kappa
+\]
+avoids accepting a nearly real complex value from \eqref{eq:lambda}; the
+recovered \(\lambda\) must also be checked against \(\Lambda\).
+
+\begin{remark}[Boundary and computation]
+\[
+ \lim_{\beta\to0^+}H_C(\beta)
+ =\frac{2\operatorname{Im}C\log\varrho}{\pi}<0.
+\]
+At \(\alpha=0\), \(D=0\); no uniform conditioning exists as
+\(\alpha_-\to0\) or \(\varrho\to1\).  Although model-consistent data have one
+root, \(H_C\) need not be monotone on all of \(I\).  Nonideal data therefore
+require complete root isolation or set inversion, not an unverified monotone
+inverse.  The endpoint \(\alpha=1\) is admissible and is not rejected merely
+because it lies on the boundary.
+\end{remark}
+
+\section{R1: joint forward-disk set}
+
+Assume deterministic response disks
+\begin{equation}
+ |Z_{r,m}-\widetilde Z_{r,m}|\le\epsilon_{r,m}.
+ \label{eq:response-disks}
+\end{equation}
+For every retained harmonic, pre-register the compact annulus
+\[
+ \Eset_m=\{q\in\C:q_{\min,m}\le|q|\le q_{\max,m}\},
+ \qquad 0<q_{\min,m}<q_{\max,m}<\infty.
+\]
+For \((\beta,\ell)\in I\times\Lambda\), let
+\[
+ d_{r,m}(\beta,\ell)=\ell+(i\nu_{r,m})^\beta
+\]
+and
+\begin{equation}
+ \mathcal Q_{r,m}(\beta,\ell)=
+ \mathcal D(d_{r,m}\widetilde Z_{r,m},
+            |d_{r,m}|\epsilon_{r,m}).
+ \label{eq:q-disk}
+\end{equation}
+
+\begin{theorem}[Fixed-candidate forward-disk equivalence]
+\label{thm:forward}
+For fixed \((\beta,\ell)\), there is one \(q_m\in\Eset_m\), shared by all
+rates, satisfying
+\[
+ \left|\widetilde Z_{r,m}-\frac{q_m}{d_{r,m}(\beta,\ell)}\right|
+ \le\epsilon_{r,m}\quad\forall r
+\]
+if and only if
+\begin{equation}
+ \left(\bigcap_r\mathcal Q_{r,m}(\beta,\ell)\right)
+ \cap\Eset_m\ne\varnothing.
+ \label{eq:intersection}
+\end{equation}
+The joint zero-drift order set is
+\begin{equation}
+ \Aset_{\rm joint}=\proj_\beta
+ \left\{(\beta,\ell)\in I\times\Lambda:
+ \left(\bigcap_r\mathcal Q_{r,m}(\beta,\ell)\right)
+ \cap\Eset_m\ne\varnothing\quad\forall m\in\Mset\right\}.
+ \label{eq:joint}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Because \(d_{r,m}\ne0\),
+\[
+ \left|\widetilde Z_{r,m}-q_m/d_{r,m}\right|\le\epsilon_{r,m}
+ \iff |d_{r,m}\widetilde Z_{r,m}-q_m|
+ \le|d_{r,m}|\epsilon_{r,m}.
+\]
+The right side is membership in \(\mathcal Q_{r,m}\).  A shared coefficient
+gives the intersection, and the annulus imposes compact nondegeneracy.
+\end{proof}
+
+\begin{corollary}[Independent complex morphology restitution]
+If \(q_{r,m}=\bar q_m+\delta q_{r,m}\),
+\(\bar q_m\in\Eset_m\), and each
+\(|\delta q_{r,m}|\le\rho^q_{r,m}\) is an independent complex-disk variable,
+then Theorem~\ref{thm:forward} remains exact after replacing the radius in
+\eqref{eq:q-disk} by
+\[
+ |d_{r,m}|\epsilon_{r,m}+\rho^q_{r,m}.
+\]
+Correlated, real-only, or cross-harmonic restitution must retain its shared
+variables; disk inflation is then only an outer enclosure.
+\end{corollary}
+
+\begin{definition}[Shared damping restitution]
+Let
+\[
+ \lambda_r=\bar\lambda+\delta\lambda_r,\quad
+ \bar\lambda\in\bar\Lambda,\quad
+ |\delta\lambda_r|\le\rho^\lambda_r,\quad
+ \lambda_r\in\Lambda_r\subset\R_{>0}.
+\]
+The same real \(\delta\lambda_r\) is shared across all harmonics at rate \(r\).
+If \(\bar\lambda\) needs a unique nominal interpretation, impose a zero-mean
+or anchored drift gauge.
+\end{definition}
+
+\begin{corollary}[Exact joint set with declared restitution]
+Let
+\[
+ d^{\rm dr}_{r,m}
+ =\bar\lambda+\delta\lambda_r+(i\nu_{r,m})^\beta,\qquad
+ \mathcal Q^{\rm dr}_{r,m}
+ =\mathcal D(d^{\rm dr}_{r,m}\widetilde Z_{r,m},
+ |d^{\rm dr}_{r,m}|\epsilon_{r,m}+\rho^q_{r,m}).
+\]
+Then the exact order set under independent complex morphology disks and shared
+real rate-indexed damping drift is
+\[
+ \proj_\beta\left\{(\beta,\bar\lambda,\delta\boldsymbol\lambda):
+ \begin{array}{l}
+ \beta\in I,\ \bar\lambda\in\bar\Lambda,
+ |\delta\lambda_r|\le\rho^\lambda_r,
+ \bar\lambda+\delta\lambda_r\in\Lambda_r,\\
+ (\bigcap_r\mathcal Q^{\rm dr}_{r,m})\cap\Eset_m
+ \ne\varnothing\quad\forall m\in\Mset
+ \end{array}\right\}.
+\]
+A damping gauge is required to interpret \(\bar\lambda\) uniquely, but not to
+form the conservative projection onto \(\beta\).
+\end{corollary}
+
+\begin{remark}[Certified algorithm boundary]
+Fixed-parameter disk intersection with an annulus has finite planar geometry.
+In exact or outward-rounded interval arithmetic, inclusion-monotone outer
+disks certify exclusion and uniform inner cores certify inclusion.  The
+current ordinary-floating implementation now requires an inward guard before
+promoting inner inclusion, but it still has no outward-rounding proof for
+outer exclusion.  It is an auditable prototype, not a machine certificate;
+unresolved boxes remain unknown, and a finite grid is never a complete
+projection certificate.
+\end{remark}
+
+\section{R2: finite-record data-to-disk theorem}
+
+Let \(t_n\) be samples in one rate window, \(w_n>0\),
+\(\sum_nw_n=1\), and let \(\widehat\phi_n\) be an R-peak-anchored phase.
+The window spans \(N\) complete detected R--R intervals and is released only
+after its right R-peak anchor arrives; it is delayed-causal, not zero-delay.
+No rate window is independently rephased or rescaled.  For included harmonics
+\(k\in\Mset\), define
+\[
+ \Psi_{n,k}=e^{ik\widehat\phi_n},\quad
+ W=\operatorname{diag}(w_n),\quad G=\Psi^*W\Psi.
+\]
+Assume \(G\succ0\).  Let \(\widehat H_m\ne0\) be the independently calibrated
+nominal response of one fixed causal front end (identity preprocessing means
+\(\widehat H_m=1\)).  Use
+\begin{equation}
+ \widetilde{\boldsymbol C}=G^{-1}\Psi^*W\boldsymbol y,\qquad
+ \widetilde Z_m=\widetilde C_m/\widehat H_m.
+ \label{eq:wls}
+\end{equation}
+
+\begin{theorem}[Conditional finite-sample enclosure]
+\label{thm:wls}
+If \(\boldsymbol y=\Psi\operatorname{diag}(\widehat H_k)
+\boldsymbol Z+\boldsymbol r\) and an independent protocol
+guarantees \(\|\boldsymbol r\|_W\le\bar r\), then
+\begin{equation}
+ |\widetilde Z_m-Z_m|
+ \le\frac{\sqrt{(G^{-1})_{mm}}}{|\widehat H_m|}\,\bar r
+ =:\epsilon_m.
+ \label{eq:wls-bound}
+\end{equation}
+\end{theorem}
+\begin{proof}
+\[
+ \widetilde{\boldsymbol C}
+ -\operatorname{diag}(\widehat H_k)\boldsymbol Z
+ =G^{-1}\Psi^*W\boldsymbol r.
+\]
+The squared weighted operator norm of row \(m\) is
+\[
+ e_m^*G^{-1}\Psi^*W\Psi G^{-1}e_m=(G^{-1})_{mm}.
+\]
+Cauchy--Schwarz followed by division by \(|\widehat H_m|\) gives
+\eqref{eq:wls-bound}.
+\end{proof}
+
+To make \(\bar r\) operational, let a rate segment start at dimensionless time
+\(S\), let the estimation window start after burn-in \(b_0\), and put
+\(s_n=(t_n-t_{\rm switch})/\tau_\star\in[b_0,b_0+T/\tau_\star]\) and
+\[
+ M_{\alpha,\lambda}(s)=E_\alpha(-\lambda s^\alpha),\qquad
+ k_{\alpha,\lambda}(s)=s^{\alpha-1}
+ E_{\alpha,\alpha}(-\lambda s^\alpha).
+\]
+Assume the pre-switch and new nominal inputs obey
+\(\|u_{\rm pre}\|_\infty\le U_{\rm pre}\) and
+\(\|u_0\|_\infty\le U_0\).  The finite-lower-limit and switch-memory
+envelopes are
+\begin{align}
+ B_{\rm hist}(s)
+ &=\left(|z_0|+\frac{U_0}{\lambda}\right)
+   M_{\alpha,\lambda}(S+s),\label{eq:hist}\\
+ B_{\rm dwell}(s)
+ &=\frac{U_{\rm pre}+U_0}{\lambda}
+   [M_{\alpha,\lambda}(s)-M_{\alpha,\lambda}(S+s)].
+ \label{eq:dwell}
+\end{align}
+If there is additional unmodelled pre-record Caputo history, an independently
+calibrated term \(C_{\rm pre}M_{\alpha,\lambda}(S+s)\) is mandatory.  For a
+nonidentity causal front end with impulse response \(h\), replace each
+time-domain envelope \(B\) by \(|h|*B\) before taking its weighted norm.
+
+Define the operational R--R phase by linear interpolation between detected
+R peaks.  Relative to the fixed nominal phase, let its total certified error
+be \(\Delta_\phi(s)\), including the observable warp, R-time error, and any
+claimed latent-phase discrepancy.  If \(|R_j-\widehat R_j|\le\Delta_R\), the
+detection part can be bounded within beat \(j\) by
+\[
+ \Delta_{\phi,R,j}\le
+ \frac{2\pi\Delta_R}{\widehat T_j-2\Delta_R},\qquad
+ \widehat T_j>2\Delta_R.
+\]
+With \(d(x)=2\sin(\min\{x,\pi\}/2)\) and independently bounded input
+harmonics \(|q_k|\le\overline Q_k\), put
+\begin{align}
+ \Delta U(s)&=\sum_{k\in\mathbb Z}\overline Q_k
+ d(|k|\Delta_\phi(s)),\label{eq:phase-input}\\
+ B_{\rm HRV}(s)&=\int_0^s k_{\alpha,\lambda}(s-v)
+ \Delta U(v)\,dv.\label{eq:hrv}
+\end{align}
+When \(\Delta U\le\overline{\Delta U}\), complete monotonicity gives
+\[
+ B_{\rm HRV}(s)\le
+ \frac{\overline{\Delta U}}{\lambda}
+ [1-M_{\alpha,\lambda}(s)].
+\]
+Thus HRV is propagated through the fractional dynamics; it is not merely an
+output-phasor rotation.
+
+For the discrete WLS estimator, define
+\[
+ a_m=\sqrt{(G^{-1})_{mm}},\qquad
+ h_{mk}=e_m^*G^{-1}\Psi^*W\boldsymbol\psi_k.
+\]
+A sufficient coefficient-level radius is
+\begin{align}
+ \epsilon_{r,m}
+ &=\frac{a_m}{|\widehat H_m|}
+   (\bar r_{\rm hist}+\bar r_{\rm dwell}+\bar r_{\rm HRV}
+   +\bar r_{\rm sample}+\bar r_{\rm model}+\bar r_{\rm noise})
+   \notag\\
+ &\quad+\epsilon^{\rm omitted}_{r,m}
+   +\epsilon^{\rm delay}_{r,m}
+   +\epsilon^{\rm quad}_{r,m}
+   +\epsilon^{\rm filt-init}_{r,m},
+ \label{eq:total-radius}
+\end{align}
+where, for \(j\in\{\mathrm{hist},\mathrm{dwell},\mathrm{HRV}\}\),
+\begin{equation}
+ \bar r_j\ge
+ \sup_{(\alpha,\lambda)\in I\times\Lambda}
+ \left(\sum_n w_n B_j(s_n)^2\right)^{1/2}.
+ \label{eq:dynamic-budget}
+\end{equation}
+The remaining terms require the following independent bounds.
+
+\paragraph{Window leakage and harmonic tail.}
+If \(\sum_k\overline{|H_{r,k}|}\,\overline Z_{r,k}<\infty\), then
+\[
+ \epsilon^{\rm omitted}_{r,m}\le
+ \sum_{k\notin\Mset}
+ \frac{|h_{mk}|\overline{|H_{r,k}|}}{|\widehat H_m|}
+ \overline Z_{r,k}.
+\]
+For a rectangular single-harmonic window of phase length
+\(L=\widehat\omega_rT\),
+\[
+ h_{mk}=e^{i(k-m)L/2}
+ \operatorname{sinc}((k-m)L/2).
+\]
+The nominal leakage vanishes when \(L=2\pi N\), but transient, HRV, and model
+errors do not.
+
+\paragraph{Sampling and interpolation.}
+For sample-time error \(\Delta t_n\), ADC step \(\Delta_{\rm ADC}\), and
+independently bounded interpolation error,
+\[
+ \bar r_{\rm sample}\ge
+ \left[\sum_nw_n
+ (M_1\Delta t_n+\Delta_{\rm ADC}/2+\epsilon_{{\rm interp},n})^2
+ \right]^{1/2}.
+\]
+If a continuous lock-in integral is instead approximated by the trapezoidal
+rule, add
+\[
+ \epsilon^{\rm quad}_{r,m}\le
+ \frac{1}{12T|\widehat H_m|}\sum_j\Delta t_j^3M_{2,j},
+ \quad
+ M_{2,j}\ge\sup_{[t_j,t_{j+1}]}
+ \left|x''-2im\widehat\omega_rx'-(m\widehat\omega_r)^2x\right|.
+\]
+The constants \(M_1,M_{2,j}\) cannot be certified from the same samples
+without an anti-aliasing, bandwidth, derivative, or interval-reconstruction
+assumption.
+
+\paragraph{Front-end delay, noise, and model discrepancy.}
+If
+\[
+ \frac{H_{r,m}}{\widehat H_m}=(1+\delta_a)e^{-i\delta_\psi},\quad
+ |\delta_a|\le a_H,\quad
+ |\delta_\psi|\le |m|\widehat\omega_r\Delta_\tau+\Delta_{\psi,0},
+\]
+then
+\[
+ \epsilon^{\rm delay}_{r,m}\le\overline Z_{r,m}
+ \left[a_H+(1+a_H)d(|m|\widehat\omega_r\Delta_\tau+
+ \Delta_{\psi,0})\right].
+\]
+A common phase angle may be absorbed into \(q_m\); a common delay in seconds
+may not, because its phase depends on heart rate.  Deterministic noise obeys
+\[
+ \|\boldsymbol v\|_W\le\bar v_W
+ \Longrightarrow
+ \bar r_{\rm noise}\le\bar v_W,
+\]
+For normalized time weights and \(\|v\|_{L_2(a,b)}\le N_2\), one may take
+\(\bar v_W\le N_2/\sqrt T\).  A Gaussian or RMS SNR gives a confidence disk,
+not a deterministic disk.  If the causal filter starts at \(t_0\), its
+pre-start input is bounded by \(Y_{\max}\), and its impulse response is \(h\),
+one valid initialization term is
+\[
+ \epsilon^{\rm filt-init}_{r,m}\le
+ \frac{Y_{\max}}{T|\widehat H_m|}
+ \int_a^b\int_{t-t_0}^{\infty}|h(s)|\,ds\,dt.
+\]
+The model term \(\bar r_{\rm model}\) must likewise be bounded independently;
+choosing it from the residual of the same fitted surrogate is circular.
+
+\begin{theorem}[Conditional finite-record data-to-disk map]
+Under the dimensionless model, delayed-causal phase protocol, calibrated
+front end, and every independent deterministic bound in
+\eqref{eq:hist}--\eqref{eq:total-radius},
+\[
+ |\widetilde Z_{r,m}-Z_{r,m}|\le\epsilon_{r,m}.
+\]
+Consequently the response disk in \eqref{eq:response-disks} has guaranteed
+coverage.  The sum is a valid outer disk; it need not be the smallest disk
+when errors are correlated.
+\end{theorem}
+\begin{proof}
+Equations \eqref{eq:hist} and \eqref{eq:dwell} follow by splitting the scalar
+Mittag--Leffler convolution at the recording and rate-switch boundaries.
+Equation \eqref{eq:hrv} is the same convolution applied to the bounded input
+perturbation \eqref{eq:phase-input}.  The remaining displayed inequalities
+bound linear extraction, leakage, sampling, calibration, noise, and
+initialization terms.  The triangle inequality and Theorem~\ref{thm:wls}
+give \eqref{eq:total-radius}.
+\end{proof}
+
+\begin{corollary}[Certified minimum burn-in]
+Let \(\epsilon_{\rm rest}\) contain every radius term except history and
+dwell, and let \(\epsilon_\star>\epsilon_{\rm rest}\).  For the identity front
+end, or after an independently calibrated filter-envelope factor is absorbed,
+with
+\[
+ C_H(\alpha,\lambda)=\max\left\{|z_0|+\frac{U_0}{\lambda},
+ \frac{U_{\rm pre}+U_0}{\lambda}\right\},
+\]
+a sufficient dimensionless burn-in is
+\[
+ B_{\min}=\inf\left\{B\ge0:
+ \frac{a_m}{|\widehat H_m|}
+ \sup_{I\times\Lambda}C_H(\alpha,\lambda)
+ E_\alpha(-\lambda B^\alpha)
+ \le\epsilon_\star-\epsilon_{\rm rest}\right\}.
+\]
+The physical dwell to the right window endpoint must satisfy
+\[
+ T_{\rm dwell}\ge\tau_\star B_{\min}
+ +\frac{2\pi N}{\widehat\omega_r}.
+\]
+This is a minimum for the declared certificate, not a physiological shortest
+settling time.
+\end{corollary}
+
+\begin{corollary}[Minimum deterministic energy SNR]
+Suppose \(|Z_{r,m}|\ge\underline Z_{r,m}>0\), the target relative radius is
+\(\eta\), and \(\eta\underline Z_{r,m}>\epsilon_{\rm rest}\).  With
+\[
+ \operatorname{SNR}_{E,r,m}=
+ \frac{|\widehat H_m|\underline Z_{r,m}\sqrt T}{N_2},
+\]
+the sufficient condition
+\[
+ \operatorname{SNR}_{E,r,m}\ge
+ \frac{a_m}{\eta-\epsilon_{\rm rest}/\underline Z_{r,m}}
+\]
+guarantees the target.  Under only pointwise worst-case noise, lengthening the
+window need not improve this deterministic SNR.
+\end{corollary}
+
+\begin{remark}[R2 is not yet closed]
+\label{rem:r2-gap}
+The algebraic and conditional data-to-disk theorems are exact, but the project
+does not yet possess independent numerical bounds for R-time and latent
+intra-beat phase error, measurement/model discrepancy, anti-aliasing or
+interpolation, relative filter delay, Caputo prehistory, and the harmonic tail.
+Without all of them, \eqref{eq:response-disks} cannot be invoked on real ECG.
+An absent bound yields \texttt{NOT\_CERTIFIABLE}, not model rejection.
+\end{remark}
+
+\section{R3: worst-case ambiguity and design}
+
+Let \(\mathfrak D\) be a compact design set, \(\Theta\) a compact nuisance
+set, and \(f_{\mathcal D}(\alpha,\theta)\in\C^n\) a jointly continuous nominal
+output map in \((\mathcal D,\alpha,\theta)\), with one fixed output dimension
+\(n\) across designs.  Let
+\[
+ \mathcal U_{\mathcal D}=
+ \{e:|e_j|\le\epsilon_j(\mathcal D)\},\qquad
+ \epsilon_j(\mathcal D)\ge\epsilon_{\min}>0,
+\]
+with continuous radii.  Define
+\[
+ \Yset_{\mathcal D}(\alpha)=
+ \{f_{\mathcal D}(\alpha,\theta)+e:
+   \theta\in\Theta,e\in\mathcal U_{\mathcal D}\},
+\quad
+ \Aset_{\mathcal D}(y)=
+ \{\alpha:y\in\Yset_{\mathcal D}(\alpha)\}.
+\]
+Write \(\mathcal O_{\mathcal D}=\bigcup_{\alpha\in I}
+\Yset_{\mathcal D}(\alpha)\) for the reachable observation set, and define
+the class of uniformly reliable set estimators by
+\[
+ \mathfrak R_{\mathcal D}=\left\{S:\mathcal O_{\mathcal D}\to2^I:
+ \alpha\in S(f_{\mathcal D}(\alpha,\theta)+e)
+ \quad\forall\alpha\in I,\ \theta\in\Theta,\ e\in\mathcal U_{\mathcal D}
+ \right\}.
+\]
+
+\begin{theorem}[Minimal reliable set and ambiguity identity]
+\label{thm:ambiguity}
+Every deterministic set estimator guaranteed to contain the true order for
+all admissible realizations must contain \(\Aset_{\mathcal D}(y)\) pointwise.
+Moreover,
+\begin{equation}
+ \inf_{S\in\mathfrak R_{\mathcal D}}
+ \sup_{y\in\mathcal O_{\mathcal D}}\diameter S(y)
+ =\sup_{y\in\mathcal O_{\mathcal D}}
+ \diameter\Aset_{\mathcal D}(y)=\Delta(\mathcal D),
+ \label{eq:minimax-radius}
+ \end{equation}
+where
+\begin{equation}
+ \quad
+ \Delta(\mathcal D)=
+ \max\{|\alpha-\beta|:
+ \Yset_{\mathcal D}(\alpha)\cap
+ \Yset_{\mathcal D}(\beta)\ne\varnothing\}.
+ \label{eq:ambiguity}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Every \(\alpha\in\Aset_{\mathcal D}(y)\) can be the true order of an
+admissible experiment producing \(y\), so a uniformly reliable set must
+contain it.  Conversely, \(S(y)=\Aset_{\mathcal D}(y)\) is itself reliable,
+which proves the first equality in \eqref{eq:minimax-radius}.  Two orders occur
+in one consistency set exactly when their output sets intersect.  Compactness
+and continuity attain the displayed maximum.
+\end{proof}
+
+\begin{definition}[Separation modulus]
+For \(0<\delta\le\diameter I\), let
+\begin{align}
+ s_{\mathcal D}(\alpha,\beta)&=
+ \min_{\theta,\theta'\in\Theta}
+ \max_j
+ \frac{|f_{\mathcal D,j}(\alpha,\theta)
+       -f_{\mathcal D,j}(\beta,\theta')|}
+      {\epsilon_j(\mathcal D)},\\
+ \mu_{\mathcal D}(\delta)&=
+ \min_{\substack{\alpha,\beta\in I\\|\alpha-\beta|\ge\delta}}
+ s_{\mathcal D}(\alpha,\beta).
+ \label{eq:mu}
+\end{align}
+\end{definition}
+
+\begin{theorem}[Exact disk threshold and optimal-design existence]
+\label{thm:design}
+For product complex-disk errors,
+\[
+ \Yset_{\mathcal D}(\alpha)\cap\Yset_{\mathcal D}(\beta)\ne\varnothing
+ \iff s_{\mathcal D}(\alpha,\beta)\le2,
+\]
+and hence
+\[
+ \Delta(\mathcal D)<\delta
+ \iff \mu_{\mathcal D}(\delta)>2.
+\]
+For fixed \(\delta\), \(\mathcal D\mapsto\mu_{\mathcal D}(\delta)\) is
+continuous and
+\[
+ \mathcal D_\delta^\star\in
+ \arg\max_{\mathcal D\in\mathfrak D}\mu_{\mathcal D}(\delta)
+\]
+exists.  If the optimum exceeds \(2\), a maximizing design with the canonical
+estimator \(S(y)=\Aset_{\mathcal D}(y)\) guarantees worst-case diameter less
+than \(\delta\).  If the optimum is at most \(2\), no uniformly reliable
+deterministic set estimator under any design in \(\mathfrak D\) can guarantee
+diameter less than \(\delta\).
+\end{theorem}
+\begin{proof}
+A common observation implies coordinatewise nominal-output differences at
+most \(2\epsilon_j\).  Conversely, the midpoint of two nominal outputs whose
+coordinate differences are at most \(2\epsilon_j\) lies in both disk products.
+This proves the threshold.  Continuity follows by successive minimization of
+a continuous function over fixed compact sets; maximization over compact
+\(\mathfrak D\) attains an optimum.
+\end{proof}
+
+\begin{theorem}[Local close-rate condition numbers]
+\label{thm:conditioning}
+Fix \(x\), \(q\ne0\), \(\lambda>0\), and
+\(\alpha\in\operatorname{int}I\).  Let \(\mathcal R_{2,h}\) denote the
+locally defined physical two-rate recovery map at log-rates \(x,x+h\), and
+let \(\mathcal R_{3,h}\) denote recovery from the three-rate difference
+quotient at \(x,x+h,x+2h\).  For independent complex inverse-response
+perturbations with the \(\ell_\infty\) norm,
+\[
+ \|D_W\mathcal R_{2,h}\|_{\infty\to\R}=\Theta(h^{-1}),\qquad
+ \|D_W\mathcal R_{3,h}\|_{\infty\to\R}=\Theta(h^{-2})
+\]
+as \(h\to0^+\).
+\end{theorem}
+\begin{proof}
+For two rates, \(D_h=W(x+h)-W(x)=\Theta(h)\), so differentiating
+\(C=W_1/(W_2-W_1)\) gives \(\Theta(h^{-2})\).  The derivative of \(H_C\)
+with respect to \(C\) contains
+\(e^{\beta h}-1=\Theta(h)\), while at the true order
+\[
+ \frac{\partial H_C}{\partial\beta}
+ =\frac{e^{\alpha h}h}{e^{\alpha h}-1}
+ +\frac{\lambda}{\nu_1^\alpha}
+  \frac{\pi}{2\sin(\pi\alpha/2)}
+ =\Theta(1).
+\]
+The implicit sensitivity is \(\Theta(h^{-1})\).  For three equal log steps,
+\[
+ F_h(\alpha)=1+e^{\alpha h},\qquad
+ F_h'(\alpha)=he^{\alpha h}=\Theta(h),
+\]
+while the inverse-response ratio has sensitivity \(\Theta(h^{-1})\), giving
+\(\Theta(h^{-2})\).
+\end{proof}
+
+These are worst-direction condition numbers of the stated algebraic maps, not
+information-theoretic lower bounds for all three-rate estimators.  The
+corresponding finite-error expansions require respectively
+\(\epsilon=o(h)\) and \(\epsilon=o(h^2)\); fixed nonzero error eventually
+leaves the local regime.
+
+\section{Gate status and claim boundary}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Gate & Current status & Blocking item\\
+\midrule
+R0 & pass & assumptions and compact-prior checks\\
+R1 & analytic pass; code open & directed rounding and complete projection\\
+R2 & protocol fail & independent bounds in Remark~\ref{rem:r2-gap}\\
+R3 & theorem pass & globally certified numerical optimizer\\
+R4 & narrow pass & no claim of generic set/design novelty\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Result semantics.}
+\texttt{PASS} requires a certified protocol and a sufficiently narrow nonempty
+joint set.  \texttt{REJECT} means the declared surrogate and uncertainty set
+have empty joint feasibility.  \texttt{NOT\_CERTIFIABLE} covers missing
+protocol bounds, singular fast certificates, unresolved global boxes, and
+nonempty but overly wide order sets.
+
+\paragraph{Excluded claim.}
+The theory outputs an order set.  It does not prove stability of an observer
+implemented with a mismatched fractional derivative; that problem contains a
+full-history operator mismatch and is deferred.
+
+\paragraph{Prior-art boundary.}
+Bounded complex-frequency set inversion for an isomorphic fractional
+first-order model and complex-disk set estimation already exist
+\cite{malti2010,khemane2012}; robust fractional experiment design and generic
+set-membership design also exist \cite{abrashov2017,cerone2020}.  The defensible
+contribution is therefore restricted to the combined ECG protocol: a
+dimensionless two-rate quotient theorem modulo one common complex
+morphology/lead gauge, its strict structural minimum, the joint multi-rate
+consistency semantics, and the finite-record uncertainty/design chain.  We do
+not claim priority with the word first.
+
+\begin{thebibliography}{9}
+\small
+\bibitem{malti2010}
+R. Malti, M. Thomassin, F. Khemane, and T. Raissi,
+Set membership parameter estimation of fractional models based on bounded
+frequency domain data, CNSNS 15 (2010), 927--938,
+\href{https://doi.org/10.1016/j.cnsns.2009.05.005}{doi link}.
+\bibitem{khemane2012}
+F. Khemane, R. Malti, T. Raissi, and X. Moreau,
+Robust estimation of fractional models in the frequency domain using set
+membership methods, Signal Processing 92 (2012), 1591--1601,
+\href{https://doi.org/10.1016/j.sigpro.2011.12.008}{doi link}.
+\bibitem{nazarian2010}
+P. Nazarian, M. Haeri, and M. S. Tavazoei,
+Identifiability of fractional order systems using input output frequency
+contents, ISA Transactions 49 (2010), 207--214,
+\href{https://doi.org/10.1016/j.isatra.2009.11.007}{doi link}.
+\bibitem{abrashov2017}
+S. Abrashov et al.,
+Simple and robust experiment design for system identification using
+fractional models, IEEE TAC 62 (2017), 2648--2658,
+\href{https://doi.org/10.1109/TAC.2016.2614910}{doi link}.
+\bibitem{cerone2020}
+V. Cerone, D. Piga, and D. Regruto,
+Design of experiments for nonlinear system identification: A set membership
+approach, Automatica 119 (2020), 109036,
+\href{https://doi.org/10.1016/j.automatica.2020.109036}{doi link}.
+\end{thebibliography}
+
+\end{document}
