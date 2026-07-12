@@ -2,10 +2,12 @@ import cmath
 import hashlib
 import json
 import math
+from dataclasses import replace
 from fractions import Fraction
 
 import pytest
 
+from fo_ekf import tube_certificate
 from fo_ekf.certified_set import (
     CertifiedHarmonicData,
     CertifiedJointProblem,
@@ -109,6 +111,15 @@ def _canonical_json(value: object) -> str:
     )
 
 
+def _reseal(document: dict[str, object]) -> str:
+    unsigned = dict(document)
+    del unsigned["certificate_sha256"]
+    document["certificate_sha256"] = hashlib.sha256(
+        _canonical_json(unsigned).encode("utf-8")
+    ).hexdigest()
+    return _canonical_json(document)
+
+
 def test_robust_tube_replays_and_binds_exact_input_hash() -> None:
     problem, box = _single_rate_problem()
 
@@ -122,6 +133,14 @@ def test_robust_tube_replays_and_binds_exact_input_hash() -> None:
     assert document["input_sha256"] == certificate.input_sha256
     assert document["certificate_sha256"] == certificate.certificate_sha256
     assert document["proof"]["contraction_inf_norm"] == "0"
+    conditioning = document["proof"]["conditioning"]
+    mu_lower = Fraction(conditioning["lambda_min_lower"])
+    baseline = Fraction(conditioning["inverse_inf_baseline"])
+    hessian_inf = Fraction(conditioning["hessian_inf_norm"])
+    assert mu_lower >= baseline > 0
+    assert Fraction(conditioning["selector_gain_squared_upper"]) == (
+        hessian_inf / (mu_lower * mu_lower)
+    )
     assert all(isinstance(value, str) for row in document["proof"]["variable_box"] for value in row)
 
     changed_problem, changed_box = _single_rate_problem(response_radius=0.051)
@@ -160,6 +179,79 @@ def test_common_measurement_scale_preserves_robust_tube(scale: float) -> None:
 
     assert certificate.relation is TubeRelation.ROBUST_INNER
     assert replay_tube_certificate(problem, box, certificate.to_json()).valid
+
+
+def test_shifted_ldlt_conditioning_bound_is_positive_and_replays() -> None:
+    problem, box = _multirate_free_damping_problem()
+
+    certificate = certify_alpha_tube(problem, box)
+    conditioning = json.loads(certificate.to_json())["proof"]["conditioning"]
+
+    assert certificate.relation is TubeRelation.ROBUST_INNER
+    assert conditioning["method"] == "exact-shifted-ldlt"
+    assert Fraction(conditioning["lambda_min_lower"]) > 0
+    assert all(Fraction(value) > 0 for value in conditioning["shifted_ldlt_pivots"])
+    assert replay_tube_certificate(problem, box, certificate.to_json()).valid
+
+
+def test_inverse_inf_conditioning_baseline_survives_refinement_resource_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    problem, box = _multirate_free_damping_problem()
+    monkeypatch.setattr(tube_certificate, "MAX_LDLT_REFINEMENT_STEPS", 0)
+
+    certificate = certify_alpha_tube(problem, box)
+    conditioning = json.loads(certificate.to_json())["proof"]["conditioning"]
+
+    assert certificate.relation is TubeRelation.ROBUST_INNER
+    assert conditioning["method"] == "exact-inverse-inf-norm"
+    assert conditioning["lambda_min_lower"] == conditioning["inverse_inf_baseline"]
+    assert conditioning["shifted_ldlt_pivots"] == []
+    assert replay_tube_certificate(problem, box, certificate.to_json()).valid
+
+
+def test_taylor2_selector_predictor_reduces_interval_dependency() -> None:
+    problem, original = _multirate_free_damping_problem(order_interval=(0.7, 0.74))
+    box = CertifiedParameterBox(
+        original.order,
+        ClosedInterval(0.45, 0.55),
+        original.damping_offsets,
+    )
+
+    certificate = certify_alpha_tube(problem, box)
+    predictor = json.loads(certificate.to_json())["proof"]["predictor"]
+    selector = predictor["selector"]
+
+    assert certificate.relation is TubeRelation.ROBUST_INNER
+    direct_widths = tuple(
+        Fraction(interval[1]) - Fraction(interval[0]) for interval in selector["direct_image"]
+    )
+    predictor_widths = tuple(
+        Fraction(interval[1]) - Fraction(interval[0]) for interval in selector["predictor_image"]
+    )
+    assert all(
+        predicted < direct
+        for predicted, direct in zip(predictor_widths, direct_widths, strict=True)
+    )
+    assert all(Fraction(value) > 0 for value in selector["second_derivative_abs_upper"])
+    assert replay_tube_certificate(problem, box, certificate.to_json()).valid
+
+
+@pytest.mark.parametrize("target", ("conditioning", "predictor"))
+def test_rehashed_conditioning_or_predictor_tamper_is_rejected(target: str) -> None:
+    problem, box = _multirate_free_damping_problem()
+    certificate = certify_alpha_tube(problem, box)
+    document = json.loads(certificate.to_json())
+    if target == "conditioning":
+        document["proof"]["conditioning"]["lambda_min_lower"] = "1"
+    else:
+        document["proof"]["predictor"]["selector"]["second_derivative_abs_upper"][0] = "0"
+
+    replay = replay_tube_certificate(problem, box, _reseal(document))
+
+    assert not replay.valid
+    assert replay.relation is TubeRelation.UNKNOWN
+    assert replay.reason in ("malformed_proof", "predictor_evidence_mismatch")
 
 
 def test_variable_q_tube_closes_fixed_q_counterexample() -> None:
@@ -201,6 +293,10 @@ def test_zero_radius_point_selector_is_closed_inner() -> None:
     replay = replay_tube_certificate(problem, broad_box, certificate.to_json())
     assert replay.valid
     assert replay.relation is TubeRelation.CLOSED_INNER
+    predictor = json.loads(certificate.to_json())["proof"]["predictor"]
+    assert predictor["half_width"] == "0"
+    assert all(value == "0" for value in predictor["selector"]["remainder_radius"])
+    assert all(value == "0" for value in predictor["residual"]["remainder_radius"])
 
 
 def test_exact_physical_boundary_is_unknown_not_false_robust() -> None:
@@ -364,7 +460,7 @@ def test_one_dyadic_split_closes_parent_and_leaf_proofs_are_domain_bound() -> No
         harmonic_index=1,
         measured_responses=responses,
         response_radii=(0.0, 0.0),
-        morphology_drift_radii=(0.08, 0.08),
+        morphology_drift_radii=(0.0285, 0.0285),
         morphology_bounds=(0.2, 2.0),
         label="split",
     )
@@ -416,6 +512,53 @@ def test_alpha_subdivision_budgets_keep_root_unknown() -> None:
         assert replay_alpha_tube_branch(problem, initial, result).valid
 
 
+def test_branch_replay_rejects_leaf_depth_above_declared_budget() -> None:
+    problem, initial = _multirate_free_damping_problem(order_interval=(0.7, 0.74))
+    result = branch_alpha_tube(problem, initial, max_depth=2, max_leaves=8)
+    assert any(leaf.depth > 0 for leaf in result.leaves)
+
+    replay = replay_alpha_tube_branch(
+        problem,
+        initial,
+        replace(result, max_depth=0),
+    )
+
+    assert not replay.valid
+    assert replay.reason == "invalid_branch_partition"
+
+
+def test_branch_replay_recomputes_unknown_reason_before_classification() -> None:
+    problem, initial = _multirate_free_damping_problem(order_interval=(0.7, 0.74))
+    result = branch_alpha_tube(problem, initial, max_depth=0, max_leaves=4)
+    leaf = result.leaves[0]
+    assert leaf.certificate.reason == "arb_parametric_tube_undecided"
+    document = json.loads(leaf.certificate.to_json())
+    document["reason"] = "selector_rank_deficient"
+    tampered_json = _reseal(document)
+    tampered_document = json.loads(tampered_json)
+    tampered_certificate = replace(
+        leaf.certificate,
+        reason="selector_rank_deficient",
+        certificate_sha256=tampered_document["certificate_sha256"],
+        certificate_json=tampered_json,
+    )
+    tampered_leaf = replace(
+        leaf,
+        certificate=tampered_certificate,
+        terminal_reason="structural_unknown",
+    )
+    tampered_result = replace(
+        result,
+        leaves=(tampered_leaf,),
+        budget_exhausted=False,
+    )
+
+    replay = replay_alpha_tube_branch(problem, initial, tampered_result)
+
+    assert not replay.valid
+    assert replay.reason == "unknown_reason_not_reproduced"
+
+
 def test_rehashed_excessive_precision_is_rejected_before_arb_replay() -> None:
     problem, box = _single_rate_problem()
     certificate = certify_alpha_tube(problem, box)
@@ -429,6 +572,17 @@ def test_rehashed_excessive_precision_is_rejected_before_arb_replay() -> None:
     ).hexdigest()
 
     replay = replay_tube_certificate(problem, box, _canonical_json(document))
+
+    assert not replay.valid
+    assert replay.relation is TubeRelation.UNKNOWN
+    assert replay.reason == "invalid_certificate_envelope"
+
+
+def test_deeply_nested_certificate_fails_closed() -> None:
+    problem, box = _single_rate_problem()
+    deeply_nested = "[" * 1100 + "0" + "]" * 1100
+
+    replay = replay_tube_certificate(problem, box, deeply_nested)
 
     assert not replay.valid
     assert replay.relation is TubeRelation.UNKNOWN

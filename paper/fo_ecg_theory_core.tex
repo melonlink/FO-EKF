@@ -33,8 +33,9 @@ result proves that two exact complex rate responses are necessary and
 sufficient to recover the order of a scalar fractional ECG harmonic surrogate
 with an unknown common complex coefficient and positive real damping.  We then
 give a joint forward-disk feasible-set theorem, a gauge-reduced analytic
-nuisance-selector tube, conditional finite-record data-to-disk bounds, and an
-exact output-set separation threshold for
+nuisance-selector tube with an exact spectral margin and second-order path
+enclosure, replayable finite-record component bounds, a frozen-witness
+R2-to-T1 transfer theorem, and an exact output-set separation threshold for
 worst-case rate-window design.  The data-to-disk assumptions are not yet
 calibrated in the project, so the present result is a theory checkpoint rather
 than a real-ECG order certificate.  These statements concern a declared
@@ -563,6 +564,58 @@ Summation proves \eqref{eq:selector-conditioning}; monotonicity of
 \(\nu^{2\beta}\) gives the endpoint rule.
 \end{proof}
 
+\begin{proposition}[Exact rational spectral-margin certificate]
+\label{prop:exact-spectral-margin}
+In the implemented unweighted case \(W=I\), suppose the exact rational
+Gram matrix \(H=B^\top B\) is nonsingular and let \(C=H^{-1}\).  Define
+\[
+ s_C=\lVert C\rVert_\infty,\qquad
+ \mu_0=s_C^{-1},\qquad h_\infty=\lVert H\rVert_\infty.
+\]
+Then
+\begin{equation}
+ 0<\mu_0\le\lambda_{\min}(H),\qquad
+ \frac{\sigma^2}{\lambda_{\min}(H)^2}
+ \le \frac{h_\infty}{\mu_0^2},
+ \quad \sigma=\lVert B^\top\rVert_2.
+ \label{eq:exact-spectral-baseline}
+\end{equation}
+Moreover, let \(0<\widehat\mu\in\mathbb Q\) and suppose exact rational
+elimination gives
+\[
+ H-\widehat\mu I=LDL^\top,\qquad
+ L_{ii}=1,\quad D=\operatorname{diag}(d_i),\quad d_i>0.
+\]
+Then
+\[
+ \widehat\mu<\lambda_{\min}(H),\qquad
+ \frac{\sigma^2}{\lambda_{\min}(H)^2}
+ <\frac{h_\infty}{\widehat\mu^2}.
+\]
+Thus a bounded rational bisection may sharpen the guaranteed baseline
+\(\mu_0\); exhaustion of the refinement budget may fall back to \(\mu_0\)
+without losing certification.
+\end{proposition}
+\begin{proof}
+The matrix \(C\) is positive definite, so
+\[
+ \lambda_{\max}(C)=\lambda_{\min}(H)^{-1}
+ \le\lVert C\rVert_\infty=s_C.
+\]
+This proves the first baseline inequality.  Since \(W=I\),
+\(\sigma^2=\lambda_{\max}(BB^\top)=\lambda_{\max}(B^\top B)\)
+on the nonzero spectrum, and
+\(\lambda_{\max}(H)\le\lVert H\rVert_\infty\), proving the second.
+For the refined claim, every nonzero \(x\) satisfies
+\[
+ x^\top(H-\widehat\mu I)x
+ =(L^\top x)^\top D(L^\top x)>0.
+\]
+Hence \(H-\widehat\mu I\succ0\), which is equivalent to the asserted
+strict eigenvalue inequality.  No floating-point eigensolver enters either
+certificate.
+\end{proof}
+
 \begin{remark}[Rate separation versus certification]
 For the fully free damping case, Lemma~\ref{lem:selector-rank} is the
 structural threshold, while \(\mu\) in
@@ -621,6 +674,24 @@ wider.
 Apply Taylor's theorem with integral remainder componentwise and use
 \(|\beta-\beta_0|\le h\).
 \end{proof}
+
+\begin{remark}[Replayable second-order path enclosure]
+The machine certificate applies Corollary~\ref{cor:selector-taylor-tube} both
+to \(y_\star(\beta)=H^{-1}B^\top g(\beta)\) and to the correlation-preserving
+residual
+\[
+ r_\star(\beta)=(BH^{-1}B^\top-I)g(\beta).
+\]
+Arb encloses the value and first derivative at the interval midpoint and the
+second derivative over the complete interval.  Every component remainder is
+rounded outward to an exact dyadic rational.  The final image is the
+intersection of this Taylor enclosure and direct interval evaluation; since
+the analytic path lies in both, the intersection is sound and can only be
+tighter.  Replay reconstructs both source enclosures, the exact intersection,
+and every original disk and annulus inequality.  The current implementation
+uses \(W=I\); the theorem for a general frozen positive rational \(W\) is not
+yet an implementation claim.
+\end{remark}
 
 \begin{definition}[Full and \(q\)-eliminated feasible sets]
 \label{def:feasible-spaces}
@@ -1082,6 +1153,204 @@ initialization terms.  The triangle inequality and Theorem~\ref{thm:wls}
 give \eqref{eq:total-radius}.
 \end{proof}
 
+\begin{proposition}[Elementary uniform Mittag--Leffler envelope]
+\label{prop:ml-envelope}
+Let \(I=[\alpha_-,\alpha_+]\subset(0,1]\),
+\(\Lambda=[\lambda_-,\lambda_+]\subset\mathbb R_{>0}\), and
+\[
+ p_I(t)=
+ \begin{cases}
+ 0,&t=0,\\
+ t^{\alpha_+},&0<t\le1,\\
+ t^{\alpha_-},&t\ge1,
+ \end{cases}
+ \qquad
+ R_I(t)=\frac{1}{1+\lambda_-p_I(t)}.
+\]
+Then, uniformly for \((\alpha,\lambda)\in I\times\Lambda\) and \(t\ge0\),
+\begin{equation}
+ 0<E_\alpha(-\lambda t^\alpha)\le R_I(t).
+ \label{eq:ml-rational-envelope}
+\end{equation}
+Consequently,
+\begin{align}
+ B_{\rm hist}(s)
+ &\le
+ \left(|z_0|+\frac{U_0}{\lambda_-}+C_{\rm pre}\right)R_I(S+s),
+ \label{eq:cert-hist-envelope}\\
+ B_{\rm dwell}(s)
+ &\le
+ \frac{U_{\rm pre}+U_0}{\lambda_-}R_I(s).
+ \label{eq:cert-dwell-envelope}
+\end{align}
+\end{proposition}
+\begin{proof}
+For \(0<\alpha<1\), Simon's uniform bound gives
+\[
+ E_\alpha(-x)\le
+ \frac{1}{1+x/\Gamma(1+\alpha)},\qquad x\ge0
+ \]
+\cite{simon2014}.  Log-convexity of \(\Gamma\), together with
+\(\Gamma(1)=\Gamma(2)=1\), gives \(\Gamma(1+\alpha)\le1\), hence
+\(E_\alpha(-x)\le(1+x)^{-1}\).  At \(\alpha=1\),
+\(E_1(-x)=e^{-x}\le(1+x)^{-1}\).  By construction,
+\(p_I(t)\le t^\alpha\) and \(\lambda_-\le\lambda\), proving the upper
+bound.  Pollard's complete monotonicity theorem gives positivity and
+monotone decrease of \(E_\alpha(-x)\) \cite{pollard1948}.  Applying these
+facts to \eqref{eq:hist}--\eqref{eq:dwell}, and dropping the nonnegative
+subtracted dwell term, proves the two envelopes.
+\end{proof}
+
+\begin{proposition}[Replayable WLS Gram margin]
+\label{prop:r2-gram-margin}
+Suppose complex balls \(G_{jk}\) contain every entry of the Hermitian WLS Gram
+matrix.  Let \(\underline g_{jj}\) be a lower bound for its real diagonal,
+\(\overline g_{jj}\) an upper bound, and
+\(\overline a_{jk}\ge |G_{jk}|\) for \(j\ne k\).  Define
+\[
+ g_-=\min_j\left(\underline g_{jj}
+       -\sum_{k\ne j}\overline a_{jk}\right),\qquad
+ g_+=\max_j\left(\overline g_{jj}
+       +\sum_{k\ne j}\overline a_{jk}\right).
+\]
+If \(g_->0\), then
+\[
+ G\succ0,\qquad
+ \lambda_{\min}(G)\ge g_-,\qquad
+ \lambda_{\max}(G)\le g_+,\qquad
+ \kappa_2(G)\le\frac{g_+}{g_-},
+\]
+and every WLS row factor satisfies
+\[
+ \sqrt{(G^{-1})_{mm}}\le g_-^{-1/2}.
+\]
+If \(g_->0\) cannot be proved, this test is inconclusive rather than a
+singularity certificate.
+\end{proposition}
+\begin{proof}
+The first two spectral inclusions are the Hermitian Gershgorin theorem applied
+with outward-containing entries.  Positivity of every lower endpoint implies
+positive definiteness.  Spectral inversion then gives
+\((G^{-1})_{mm}\le\lambda_{\max}(G^{-1})=1/\lambda_{\min}(G)\).
+\end{proof}
+
+\begin{theorem}[Machine-certified R2 component map]
+\label{thm:r2-component-certificate}
+Fix exact binary-rational representations of the sample times, positive
+weights, protocol intervals, and independently sourced primitive bounds.
+Normalize the weights exactly.  For the dynamic residual, require either an
+exactly identity front end or independently certified per-sample output
+envelopes containing \((|h|*B_{\rm hist})(s_n)\) and
+\((|h|*B_{\rm dwell})(s_n)\).  For estimator extraction, use either the
+discrete WLS map of \eqref{eq:wls}, or a complete-cycle continuous lock-in
+approximated with the exact nonuniform composite-trapezoid weights; in the
+latter case the continuous harmonic Gram is \(I\), and the panelwise
+quadrature remainder is added separately.
+
+Suppose ball arithmetic proves Proposition~\ref{prop:r2-gram-margin} for the
+discrete path (or verifies the exact \(G=I\) continuous path) and evaluates
+the applicable dynamic output envelopes, sampling norm, quadrature remainder,
+and front-end delay expression with outward rounding.  Then the resulting
+history, dwell, sampling, quadrature, delay, Gram, condition-number, and
+extraction-amplification upper bounds are simultaneous deterministic
+component bounds for the frozen window.
+
+A certificate that binds the complete input manifest, evidence hashes,
+backend and precision, outward rational enclosures, and a canonical digest
+can be independently replayed by reconstructing every derived quantity.
+Failure of a source contract, a positive Gram lower bound, ball comparison,
+or a resource limit has only \texttt{UNKNOWN}/\texttt{NOT\_CERTIFIABLE}
+semantics.
+\end{theorem}
+\begin{proof}
+Proposition~\ref{prop:ml-envelope} bounds the two model-input memory sequences
+pointwise.  Identity propagation preserves them; otherwise the separately
+certified convolved envelopes are used.  Positive normalized weights and
+monotonicity of the square root preserve their weighted-norm bounds.
+Proposition~\ref{prop:r2-gram-margin} supplies the discrete-WLS coefficient
+amplification.  Orthogonality over a complete integer number of cycles gives
+\(G=I\) for the continuous lock-in path, while requiring the exact composite
+weights binds its sampled implementation.  The sample bound follows from the
+pointwise triangle inequality, and the trapezoid term follows panelwise from
+the Peano-kernel error bound.  Finally,
+\(|e^{-i\theta}-1|=2|\sin(\theta/2)|\), capped by \(2\), gives the declared
+delay expression.  All operations are inclusion isotone under outward ball
+arithmetic.  Recalculation from the bound input rather than trust in stored
+derived fields proves replay.
+\end{proof}
+
+\begin{theorem}[Frozen-selector R2-to-T1 margin transfer]
+\label{thm:r2-t1-transfer}
+Let one T1 certificate provide a selector path
+\((d^\star_{r,m}(\alpha),q^\star_m(\alpha))\) on a closed interval \(A\)
+and certified old disk margins
+\[
+ \mu_{r,m}(\alpha)=
+ |d^\star_{r,m}|\epsilon_{r,m}+\rho^q_{r,m}
+ -|q^\star_m-d^\star_{r,m}\widetilde Z_{r,m}|
+ \ge\underline\mu_{r,m}\ge0.
+\]
+Keep this old path fixed.  Consider an independently certified family of new
+R2 disks
+\[
+ \widetilde Z'=\widetilde Z+\xi,\qquad
+ \epsilon'=\epsilon+a,\qquad
+ \rho^{q\prime}=\rho^q+b,
+\]
+with nonnegative new radii.  If \(0<d^-\le|d^\star|\le d^+\),
+\(|\xi|\le\zeta\), \(a\ge\underline a\), and
+\(b\ge\underline b\), define
+\[
+ c=\zeta-\underline a,\qquad
+ L^q=
+ \begin{cases}
+ d^+c-\underline b,&c\ge0,\\
+ d^-c-\underline b,&c<0.
+ \end{cases}
+\]
+Then every member of the new family has, along the same path,
+\begin{equation}
+ \mu'_{r,m}(\alpha)\ge
+ \underline\mu_{r,m}-L^q_{r,m}.
+ \label{eq:margin-transfer}
+\end{equation}
+If all transferred disk, coordinate, damping-facet, and annulus margins are
+strictly positive, \(A\) remains a robust inner interval for every member of
+the family.  If all are nonnegative, it remains a closed inner interval.
+Otherwise this transfer is unknown and makes no outer-exclusion claim.
+\end{theorem}
+\begin{proof}
+The triangle inequality gives
+\[
+ |q^\star-d^\star(\widetilde Z+\xi)|
+ \le |q^\star-d^\star\widetilde Z|+|d^\star||\xi|.
+\]
+After adding the new radius,
+\[
+ \mu'\ge\mu-|d^\star|(\zeta-\underline a)+\underline b.
+\]
+Maximizing the affine expression
+\(|d^\star|(\zeta-\underline a)-\underline b\) over
+\([d^-,d^+]\) selects the displayed endpoint according to the sign of \(c\),
+which proves \eqref{eq:margin-transfer}.  The old path already satisfies the
+model equations and all unchanged priors.  Transferred nonnegative margins
+therefore supply one witness for every \(\alpha\) and every admitted R2
+perturbation; strict margins give the robust version.
+\end{proof}
+
+\begin{remark}[Direction of the transfer theorem]
+Increasing a response or independent morphology radius while holding its
+centre fixed can only help inner feasibility, although it weakens exclusion
+power and enlarges the outer parameter set.  Thus
+Theorem~\ref{thm:r2-t1-transfer} is a budget for centre motion, radius
+shrinkage, and prior tightening; it is not by itself a statement that a
+larger data-error radius is higher quality.  Rebuilding the least-squares
+selector from the new centres would prove a different path and is not a valid
+replay of the old witness.  The current transfer certificate binds the
+declared perturbation family and the old T1 certificate; binding that family
+to a named R2 component-certificate bundle is a separate integration gate.
+\end{remark}
+
 For probabilistic components, the coverage event must be declared
 simultaneously over every selected rate--harmonic disk used by R1.  Unless a
 direct joint calibration is supplied, its failure budget includes all error
@@ -1131,14 +1400,19 @@ guarantees the target.  Under only pointwise worst-case noise, lengthening the
 window need not improve this deterministic SNR.
 \end{corollary}
 
-\begin{remark}[R2 is not yet closed]
+\begin{remark}[R2 is conditionally closed, but not calibrated on real ECG]
 \label{rem:r2-gap}
-The algebraic and conditional data-to-disk theorems are exact, but the project
-does not yet possess independent numerical bounds for R-time and latent
-intra-beat phase error, measurement/model discrepancy, anti-aliasing or
+The algebraic data-to-disk theorem and the machine propagation of history,
+dwell, sampling, optional quadrature, relative delay, and WLS Gram bounds are
+now closed conditional on their declared primitive envelopes.  The project
+does not yet possess independent real-ECG numerical bounds for R-time and
+latent intra-beat phase error, measurement/model discrepancy, anti-aliasing or
 interpolation, relative filter delay, Caputo prehistory, and the harmonic tail.
-Without all of them, \eqref{eq:response-disks} cannot be invoked on real ECG.
-An absent bound yields \texttt{NOT\_CERTIFIABLE}, not model rejection.
+The component certificate also lists HRV, phase anchor, filter initialization,
+measurement noise, and model residual as omitted terms, so it cannot by itself
+issue a complete R2 pass.  Without every required bound,
+\eqref{eq:response-disks} cannot be invoked on real ECG.  An absent bound
+yields \texttt{NOT\_CERTIFIABLE}, not model rejection.
 \end{remark}
 
 \section{R3: worst-case ambiguity and design}
@@ -1300,9 +1574,10 @@ leaves the local regime.
 Gate & Current status & Blocking item\\
 \midrule
 R0 & pass & assumptions and compact-prior checks\\
-R1 & core and tube pass; exact closure open &
+R1 & core, spectral/predictor tube, and transfer pass; exact closure open &
 unresolved leaves, sufficient selector, and finite budgets\\
-R2 & protocol tooling pass; calibration open & independent bounds in Remark~\ref{rem:r2-gap}\\
+R2 & component certificate pass; real calibration open &
+independent and omitted bounds in Remark~\ref{rem:r2-gap}\\
 R3 & theorem pass & globally certified numerical optimizer\\
 R4 & narrow pass & no claim of generic set/design novelty\\
 \bottomrule
@@ -1339,9 +1614,9 @@ not propose a new interval Newton or validated-continuation method.  The defensi
 contribution is restricted to their FO-ECG specialization: a dimensionless
 two-rate quotient theorem modulo one common complex morphology/lead gauge, the
 rank characterization in Lemma~\ref{lem:selector-rank}, the analytic witness
-tube paired with the outer disk cover, the joint multi-rate consistency
-semantics, and the finite-record uncertainty/design chain.  We do not claim
-priority with the word first.
+tube paired with the outer disk cover, the frozen-witness finite-record margin
+transfer, the joint multi-rate consistency semantics, and the finite-record
+uncertainty/design chain.  We do not claim priority with the word first.
 
 \begin{thebibliography}{99}
 \small
@@ -1390,6 +1665,17 @@ B. Ponleitner and H. Schichl,
 Exclusion regions for parameter-dependent systems of equations,
 Journal of Global Optimization 81 (2021), 621--644,
 \href{https://doi.org/10.1007/s10898-021-01082-3}{doi link}.
+\bibitem{pollard1948}
+H. Pollard,
+The completely monotonic character of the Mittag--Leffler function
+\(E_\alpha(-x)\),
+Bulletin of the American Mathematical Society 54 (1948), 1115--1116,
+\href{https://doi.org/10.1090/S0002-9904-1948-09132-7}{doi link}.
+\bibitem{simon2014}
+T. Simon,
+Comparing Fr\'echet and positive stable laws,
+Electronic Journal of Probability 19 (2014), paper 16, 1--25,
+\href{https://doi.org/10.1214/EJP.v19-3058}{doi link}.
 \end{thebibliography}
 
 \end{document}

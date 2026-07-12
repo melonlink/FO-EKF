@@ -17,11 +17,14 @@ equations of the unweighted central least-squares selector are
 ``F(alpha, x) = B.T * g = H*x - B.T*c(alpha) = 0``.
 
 ``H = B.T*B`` is an exact rational matrix independent of ``alpha``.  When it
-is nonsingular, the certificate stores the exact rational inverse ``C``.
+is nonsingular, the certificate stores the exact rational inverse ``C`` and a
+positive lower bound for ``lambda_min(H)``.  The bound has an inverse-norm
+baseline and, when resources permit, an exact shifted-``LDL.T`` refinement.
 Consequently ``I-C*H`` is exactly zero: the parametric Krawczyk map is the
-constant map ``C*B.T*c(alpha)``.  Arb encloses that tube, while the original
-disk/annulus inequalities -- not the least-squares equations -- carry the
-physical feasibility claim.
+constant map ``C*B.T*c(alpha)``.  Arb intersects that direct image with a
+second-order Taylor predictor for both the selector and its residual path.
+The original disk/annulus inequalities -- not the least-squares equations --
+carry the physical feasibility claim.
 """
 
 from __future__ import annotations
@@ -48,8 +51,8 @@ from .certified_set import (
     _validate_precision_schedule,
 )
 
-SCHEMA = "fo-ekf.parametric-gram-krawczyk.v1"
-ALGORITHM = "central-unweighted-gram-selector-v1"
+SCHEMA = "fo-ekf.parametric-gram-krawczyk-taylor2.v2"
+ALGORITHM = "central-unweighted-gram-selector-taylor2-v2"
 MAX_SELECTOR_DIMENSION = 32
 MAX_RESIDUAL_ROWS = 512
 MAX_RATIONAL_BITS = 16_384
@@ -58,12 +61,14 @@ MAX_CERTIFICATE_BYTES = 8_000_000
 MAX_REPLAY_PRECISION = 4096
 MAX_ALPHA_DEPTH = 64
 MAX_ALPHA_LEAVES = 4096
+MAX_LDLT_REFINEMENT_STEPS = 24
 _SUBDIVIDABLE_UNKNOWN_REASON = "arb_parametric_tube_undecided"
 _RESOURCE_UNKNOWN_REASONS = frozenset(
     {
         "precision_resource_limit",
         "certificate_resource_bytes",
         "selector_inverse_resource_bits",
+        "selector_conditioning_resource_bits",
         "selector_resource_dimension",
     }
 )
@@ -142,6 +147,26 @@ class AlphaTubeBranchReplayResult:
 
 
 @dataclass(frozen=True)
+class _ConditioningProof:
+    method: str
+    lambda_min_lower: Fraction
+    inverse_inf_baseline: Fraction
+    hessian_inf_norm: Fraction
+    selector_gain_squared_upper: Fraction
+    shifted_ldlt_pivots: tuple[Fraction, ...]
+
+
+@dataclass(frozen=True)
+class _Taylor2Path:
+    direct_image: tuple[tuple[Fraction, Fraction], ...]
+    predictor_image: tuple[tuple[Fraction, Fraction], ...]
+    selected_image: tuple[tuple[Fraction, Fraction], ...]
+    second_derivative_abs_upper: tuple[Fraction, ...]
+    remainder_radius: tuple[Fraction, ...]
+    selected_balls: tuple[arb, ...]
+
+
+@dataclass(frozen=True)
 class _Selector:
     variable_names: tuple[str, ...]
     variable_box: tuple[tuple[Fraction, Fraction], ...]
@@ -149,9 +174,11 @@ class _Selector:
     fixed_rate_damping: tuple[Fraction, ...]
     q_columns: tuple[tuple[int, int], ...]
     b: tuple[tuple[Fraction, ...], ...]
+    hessian: tuple[tuple[Fraction, ...], ...]
     c_inverse: tuple[tuple[Fraction, ...], ...]
     selector_map: tuple[tuple[Fraction, ...], ...]
     residual_map: tuple[tuple[Fraction, ...], ...]
+    conditioning: _ConditioningProof
 
 
 def _fraction(value: float) -> Fraction:
@@ -293,6 +320,93 @@ def _identity(size: int) -> tuple[tuple[Fraction, ...], ...]:
     )
 
 
+def _rational_within_resource(value: Fraction) -> bool:
+    value = Fraction(value)
+    return (
+        max(abs(value.numerator).bit_length(), value.denominator.bit_length()) <= MAX_RATIONAL_BITS
+    )
+
+
+def _matrix_inf_norm(matrix: tuple[tuple[Fraction, ...], ...]) -> Fraction:
+    return max(sum((abs(value) for value in row), Fraction(0)) for row in matrix)
+
+
+def _exact_shifted_ldlt_pivots(
+    matrix: tuple[tuple[Fraction, ...], ...],
+    shift: Fraction,
+) -> tuple[Fraction, ...] | None:
+    """Prove ``matrix - shift*I`` positive definite using exact rationals.
+
+    Returning positive pivots is a proof because the recurrence constructs a
+    unit-lower ``L`` with ``matrix - shift*I = L*D*L.T`` exactly.  A failed
+    sign or resource check has no negative-semidefinite meaning.
+    """
+
+    size = len(matrix)
+    lower = [[Fraction(int(row == column)) for column in range(size)] for row in range(size)]
+    pivots: list[Fraction] = []
+    for column in range(size):
+        pivot = matrix[column][column] - shift
+        for prior in range(column):
+            pivot -= lower[column][prior] ** 2 * pivots[prior]
+        if pivot <= 0 or not _rational_within_resource(pivot):
+            return None
+        pivots.append(pivot)
+        for row in range(column + 1, size):
+            numerator = matrix[row][column]
+            for prior in range(column):
+                numerator -= lower[row][prior] * lower[column][prior] * pivots[prior]
+            value = numerator / pivot
+            if not _rational_within_resource(value):
+                return None
+            lower[row][column] = value
+    return tuple(pivots)
+
+
+def _build_conditioning_proof(
+    hessian: tuple[tuple[Fraction, ...], ...],
+    inverse: tuple[tuple[Fraction, ...], ...],
+) -> _ConditioningProof:
+    """Build a positive spectral-gap proof with a fail-safe exact baseline."""
+
+    inverse_inf = _matrix_inf_norm(inverse)
+    if inverse_inf <= 0:
+        raise _CertificateResourceExceeded
+    baseline = Fraction(1, 1) / inverse_inf
+    hessian_inf = _matrix_inf_norm(hessian)
+    if baseline <= 0 or hessian_inf <= 0:
+        raise _CertificateResourceExceeded
+
+    lower_bound = baseline
+    upper_bound = min(hessian[index][index] for index in range(len(hessian)))
+    best_pivots: tuple[Fraction, ...] = ()
+    for _ in range(MAX_LDLT_REFINEMENT_STEPS):
+        if lower_bound >= upper_bound:
+            break
+        candidate = (lower_bound + upper_bound) / 2
+        if not _rational_within_resource(candidate):
+            break
+        pivots = _exact_shifted_ldlt_pivots(hessian, candidate)
+        if pivots is None:
+            upper_bound = candidate
+        else:
+            lower_bound = candidate
+            best_pivots = pivots
+
+    gain_squared = hessian_inf / (lower_bound * lower_bound)
+    fields = (baseline, hessian_inf, lower_bound, gain_squared, *best_pivots)
+    if not all(_rational_within_resource(value) for value in fields):
+        raise _CertificateResourceExceeded
+    return _ConditioningProof(
+        method="exact-shifted-ldlt" if best_pivots else "exact-inverse-inf-norm",
+        lambda_min_lower=lower_bound,
+        inverse_inf_baseline=baseline,
+        hessian_inf_norm=hessian_inf,
+        selector_gain_squared_upper=gain_squared,
+        shifted_ldlt_pivots=best_pivots,
+    )
+
+
 def _build_selector(
     problem: CertifiedJointProblem,
     box: CertifiedParameterBox,
@@ -385,6 +499,10 @@ def _build_selector(
         return None, "selector_inverse_resource_bits"
     if _matrix_product(c_inverse, hessian) != _identity(dimension):
         return None, "selector_inverse_integrity"
+    try:
+        conditioning = _build_conditioning_proof(hessian, c_inverse)
+    except _CertificateResourceExceeded:
+        return None, "selector_conditioning_resource_bits"
 
     selector_map = _matrix_product(c_inverse, b_t)
     projection = _matrix_product(b, selector_map)
@@ -400,9 +518,11 @@ def _build_selector(
             fixed_rate_damping=tuple(fixed_rate_damping),
             q_columns=tuple(q_columns),
             b=b,
+            hessian=hessian,
             c_inverse=c_inverse,
             selector_map=selector_map,
             residual_map=residual_map,
+            conditioning=conditioning,
         ),
         "ok",
     )
@@ -422,12 +542,14 @@ def _linear_ball_map(
     return tuple(results)
 
 
-def _central_vector(
+def _central_derivative_vector(
     problem: CertifiedJointProblem,
-    box: CertifiedParameterBox,
     selector: _Selector,
+    order: arb,
+    derivative_order: int,
 ) -> tuple[arb, ...]:
-    order = _arb_fraction_interval((_fraction(box.order.lower), _fraction(box.order.upper)))
+    if derivative_order not in (0, 1, 2):
+        raise ValueError("only derivatives of order 0, 1, and 2 are supported")
     values: list[arb] = []
     for harmonic in problem.harmonics:
         for rate_index, (frequency, response) in enumerate(
@@ -443,7 +565,15 @@ def _central_vector(
                 _arb_fraction(_fraction(response.real)),
                 _arb_fraction(_fraction(response.imag)),
             )
-            center = z * (acb(fixed) + fractional)
+            if derivative_order == 0:
+                center = z * (acb(fixed) + fractional)
+            else:
+                frequency = _arb_fraction(_fraction(frequency)) * harmonic.harmonic_index
+                zeta = acb(frequency.log(), arb.pi() / 2)
+                derivative = fractional * zeta
+                if derivative_order == 2:
+                    derivative *= zeta
+                center = z * derivative
             values.extend((center.real, center.imag))
     return tuple(values)
 
@@ -470,10 +600,9 @@ def _constraint_balls(
     problem: CertifiedJointProblem,
     box: CertifiedParameterBox,
     selector: _Selector,
-    central: tuple[arb, ...],
+    residual: tuple[arb, ...],
     selected: tuple[arb, ...],
 ) -> tuple[tuple[str, arb], ...]:
-    residual = _linear_ball_map(selector.residual_map, central)
     order = _arb_fraction_interval((_fraction(box.order.lower), _fraction(box.order.upper)))
     rate_dampings = _physical_rate_dampings(problem, selector, selected)
     margins: list[tuple[str, arb]] = []
@@ -532,6 +661,146 @@ def _outer_dyadic(value: arb) -> tuple[Fraction, Fraction] | None:
     else:
         return None
     return lower, upper
+
+
+def _build_taylor2_path(
+    linear_map: tuple[tuple[Fraction, ...], ...],
+    direct_source: tuple[arb, ...],
+    center_source: tuple[arb, ...],
+    first_source: tuple[arb, ...],
+    second_source: tuple[arb, ...],
+    half_width: Fraction,
+) -> _Taylor2Path | None:
+    direct_balls = _linear_ball_map(linear_map, direct_source)
+    center_balls = _linear_ball_map(linear_map, center_source)
+    first_balls = _linear_ball_map(linear_map, first_source)
+    second_balls = _linear_ball_map(linear_map, second_source)
+    delta = _arb_fraction_interval((-half_width, half_width))
+
+    direct_image: list[tuple[Fraction, Fraction]] = []
+    predictor_image: list[tuple[Fraction, Fraction]] = []
+    selected_image: list[tuple[Fraction, Fraction]] = []
+    selected_balls: list[arb] = []
+    second_upper: list[Fraction] = []
+    remainder_radius: list[Fraction] = []
+    for direct, center, first, second in zip(
+        direct_balls,
+        center_balls,
+        first_balls,
+        second_balls,
+        strict=True,
+    ):
+        direct_outer = _outer_dyadic(direct)
+        magnitude_outer = _outer_dyadic(second.abs_upper())
+        if direct_outer is None or magnitude_outer is None:
+            return None
+        magnitude = max(Fraction(0), magnitude_outer[1])
+        remainder = magnitude * half_width * half_width / 2
+        remainder_ball = (-_arb_fraction(remainder)).union(_arb_fraction(remainder))
+        predictor = center + first * delta + remainder_ball
+        predictor_outer = _outer_dyadic(predictor)
+        if predictor_outer is None:
+            return None
+        try:
+            selected_ball = direct.intersection(predictor)
+        except ValueError:
+            return None
+        selected = _outer_dyadic(selected_ball)
+        if selected is None:
+            return None
+        direct_image.append(direct_outer)
+        predictor_image.append(predictor_outer)
+        selected_image.append(selected)
+        selected_balls.append(selected_ball)
+        second_upper.append(magnitude)
+        remainder_radius.append(remainder)
+    return _Taylor2Path(
+        direct_image=tuple(direct_image),
+        predictor_image=tuple(predictor_image),
+        selected_image=tuple(selected_image),
+        second_derivative_abs_upper=tuple(second_upper),
+        remainder_radius=tuple(remainder_radius),
+        selected_balls=tuple(selected_balls),
+    )
+
+
+def _taylor2_evidence(
+    problem: CertifiedJointProblem,
+    box: CertifiedParameterBox,
+    selector: _Selector,
+) -> tuple[_Taylor2Path, _Taylor2Path] | None:
+    lower = _fraction(box.order.lower)
+    upper = _fraction(box.order.upper)
+    center = (lower + upper) / 2
+    half_width = (upper - lower) / 2
+    order_interval = _arb_fraction_interval((lower, upper))
+    direct_source = _central_derivative_vector(problem, selector, order_interval, 0)
+    center_source = _central_derivative_vector(problem, selector, _arb_fraction(center), 0)
+    first_source = _central_derivative_vector(problem, selector, _arb_fraction(center), 1)
+    second_source = _central_derivative_vector(problem, selector, order_interval, 2)
+    selected = _build_taylor2_path(
+        selector.selector_map,
+        direct_source,
+        center_source,
+        first_source,
+        second_source,
+        half_width,
+    )
+    residual = _build_taylor2_path(
+        selector.residual_map,
+        direct_source,
+        center_source,
+        first_source,
+        second_source,
+        half_width,
+    )
+    if selected is None or residual is None:
+        return None
+    return selected, residual
+
+
+def _conditioning_payload(proof: _ConditioningProof) -> dict[str, Any]:
+    return {
+        "method": proof.method,
+        "lambda_min_lower": _rat(proof.lambda_min_lower),
+        "inverse_inf_baseline": _rat(proof.inverse_inf_baseline),
+        "hessian_inf_norm": _rat(proof.hessian_inf_norm),
+        "selector_gain_squared_upper": _rat(proof.selector_gain_squared_upper),
+        "shifted_ldlt_pivots": [_rat(value) for value in proof.shifted_ldlt_pivots],
+    }
+
+
+def _conditioning_proof_is_valid(selector: _Selector) -> bool:
+    proof = selector.conditioning
+    inverse_inf = _matrix_inf_norm(selector.c_inverse)
+    hessian_inf = _matrix_inf_norm(selector.hessian)
+    if (
+        inverse_inf <= 0
+        or proof.inverse_inf_baseline != 1 / inverse_inf
+        or proof.hessian_inf_norm != hessian_inf
+        or proof.lambda_min_lower < proof.inverse_inf_baseline
+        or proof.selector_gain_squared_upper
+        != hessian_inf / (proof.lambda_min_lower * proof.lambda_min_lower)
+    ):
+        return False
+    if proof.method == "exact-inverse-inf-norm":
+        return (
+            proof.lambda_min_lower == proof.inverse_inf_baseline and not proof.shifted_ldlt_pivots
+        )
+    if proof.method != "exact-shifted-ldlt":
+        return False
+    pivots = _exact_shifted_ldlt_pivots(selector.hessian, proof.lambda_min_lower)
+    return pivots is not None and pivots == proof.shifted_ldlt_pivots
+
+
+def _path_payload(path: _Taylor2Path) -> dict[str, Any]:
+    return {
+        "direct_image": [[_rat(a), _rat(b)] for a, b in path.direct_image],
+        "predictor_image": [[_rat(a), _rat(b)] for a, b in path.predictor_image],
+        "selected_image": [[_rat(a), _rat(b)] for a, b in path.selected_image],
+        "second_derivative_abs_upper": [_rat(value) for value in path.second_derivative_abs_upper],
+        "remainder_radius": [_rat(value) for value in path.remainder_radius],
+    }
 
 
 def _positive_margin_claim(value: arb) -> Fraction | None:
@@ -601,12 +870,13 @@ def _proof_at_precision(
     attempted: tuple[int, ...],
     precision: int,
 ) -> TubeCertificate | None:
-    central = _central_vector(problem, box, selector)
-    selected = _linear_ball_map(selector.selector_map, central)
-    krawczyk = tuple(_outer_dyadic(value) for value in selected)
-    if any(value is None for value in krawczyk):
+    evidence = _taylor2_evidence(problem, box, selector)
+    if evidence is None:
         return None
-    image = tuple(value for value in krawczyk if value is not None)
+    selected_path, residual_path = evidence
+    image = selected_path.selected_image
+    selected = selected_path.selected_balls
+    residual = residual_path.selected_balls
 
     closed_containment = all(
         domain[0] <= enclosure[0] and enclosure[1] <= domain[1]
@@ -619,10 +889,10 @@ def _proof_at_precision(
         for domain, enclosure in zip(selector.variable_box, image, strict=True)
         for gap in (enclosure[0] - domain[0], domain[1] - enclosure[1])
     )
-    krawczyk_margin = min(gaps)
-    strict_containment = krawczyk_margin > 0
+    selector_margin = min(gaps)
+    strict_containment = selector_margin > 0
 
-    constraint_balls = _constraint_balls(problem, box, selector, central, selected)
+    constraint_balls = _constraint_balls(problem, box, selector, residual, selected)
     if not all(value >= 0 for _, value in constraint_balls):
         return None
     claimed_margins: list[dict[str, str]] = []
@@ -641,6 +911,8 @@ def _proof_at_precision(
     )
     input_hash = _sha256_json(manifest)
     x_midpoints = tuple((lower + upper) / 2 for lower, upper in selector.variable_box)
+    alpha_lower = _fraction(box.order.lower)
+    alpha_upper = _fraction(box.order.upper)
     payload = {
         "schema": SCHEMA,
         "algorithm": ALGORITHM,
@@ -660,8 +932,16 @@ def _proof_at_precision(
             "center": [_rat(value) for value in x_midpoints],
             "preconditioner_c": _matrix_payload(selector.c_inverse),
             "contraction_inf_norm": "0",
-            "krawczyk_image": [[_rat(a), _rat(b)] for a, b in image],
-            "krawczyk_margin": _rat(krawczyk_margin),
+            "conditioning": _conditioning_payload(selector.conditioning),
+            "predictor": {
+                "alpha_center": _rat((alpha_lower + alpha_upper) / 2),
+                "half_width": _rat((alpha_upper - alpha_lower) / 2),
+                "selector": _path_payload(selected_path),
+                "residual": _path_payload(residual_path),
+            },
+            "krawczyk_image": [[_rat(a), _rat(b)] for a, b in selected_path.direct_image],
+            "selector_image": [[_rat(a), _rat(b)] for a, b in image],
+            "selector_margin": _rat(selector_margin),
             "constraint_margins": claimed_margins,
         },
     }
@@ -748,7 +1028,10 @@ def _load_document(certificate_json: str) -> dict[str, Any]:
         raise ValueError("certificate must be JSON text")
     if len(certificate_json.encode("utf-8")) > MAX_CERTIFICATE_BYTES:
         raise ValueError("certificate exceeds the replay byte limit")
-    value = json.loads(certificate_json, object_pairs_hook=_no_duplicate_object)
+    try:
+        value = json.loads(certificate_json, object_pairs_hook=_no_duplicate_object)
+    except RecursionError as exc:
+        raise ValueError("certificate nesting exceeds the replay limit") from exc
     if not isinstance(value, dict):
         raise ValueError("certificate root must be an object")
     return value
@@ -799,12 +1082,26 @@ def _verify_proof(
             raise ValueError("preconditioner mismatch")
         if _parse_rat(proof["contraction_inf_norm"]) != 0:
             raise ValueError("contraction mismatch")
-        image = tuple(
+        if proof["conditioning"] != _conditioning_payload(
+            selector.conditioning
+        ) or not _conditioning_proof_is_valid(selector):
+            raise ValueError("conditioning proof mismatch")
+        krawczyk_image = tuple(
             (_parse_rat(value[0]), _parse_rat(value[1])) for value in proof["krawczyk_image"]
         )
-        if len(image) != dimension or any(a > b for a, b in image):
+        image = tuple(
+            (_parse_rat(value[0]), _parse_rat(value[1])) for value in proof["selector_image"]
+        )
+        if (
+            len(krawczyk_image) != dimension
+            or len(image) != dimension
+            or any(a > b for a, b in (*krawczyk_image, *image))
+        ):
             raise ValueError("invalid Krawczyk image")
-        stored_k_margin = _parse_rat(proof["krawczyk_margin"])
+        stored_selector_margin = _parse_rat(proof["selector_margin"])
+        predictor = proof["predictor"]
+        if not isinstance(predictor, dict):
+            raise ValueError("invalid predictor table")
         margins = proof["constraint_margins"]
         if not isinstance(margins, list):
             raise ValueError("invalid margin table")
@@ -813,29 +1110,43 @@ def _verify_proof(
 
     with _CERTIFICATION_LOCK:
         with ctx.workprec(precision):
-            central = _central_vector(problem, box, selector)
-            selected = _linear_ball_map(selector.selector_map, central)
-            constraints = _constraint_balls(problem, box, selector, central, selected)
-            for ball, enclosure in zip(selected, image, strict=True):
-                if not (
-                    ball >= _arb_fraction(enclosure[0]) and ball <= _arb_fraction(enclosure[1])
-                ):
-                    return TubeReplayResult(False, TubeRelation.UNKNOWN, "krawczyk_image_mismatch")
+            evidence = _taylor2_evidence(problem, box, selector)
+            if evidence is None:
+                return TubeReplayResult(False, TubeRelation.UNKNOWN, "predictor_replay_failed")
+            selected_path, residual_path = evidence
+            alpha_lower = _fraction(box.order.lower)
+            alpha_upper = _fraction(box.order.upper)
+            expected_predictor = {
+                "alpha_center": _rat((alpha_lower + alpha_upper) / 2),
+                "half_width": _rat((alpha_upper - alpha_lower) / 2),
+                "selector": _path_payload(selected_path),
+                "residual": _path_payload(residual_path),
+            }
+            if predictor != expected_predictor:
+                return TubeReplayResult(False, TubeRelation.UNKNOWN, "predictor_evidence_mismatch")
+            if (
+                krawczyk_image != selected_path.direct_image
+                or image != selected_path.selected_image
+            ):
+                return TubeReplayResult(False, TubeRelation.UNKNOWN, "selector_image_mismatch")
+            selected = selected_path.selected_balls
+            residual = residual_path.selected_balls
+            constraints = _constraint_balls(problem, box, selector, residual, selected)
 
             closed_containment = all(
                 domain[0] <= enclosure[0] and enclosure[1] <= domain[1]
                 for domain, enclosure in zip(selector.variable_box, image, strict=True)
             )
             if not closed_containment:
-                return TubeReplayResult(False, TubeRelation.UNKNOWN, "krawczyk_not_contained")
+                return TubeReplayResult(False, TubeRelation.UNKNOWN, "selector_not_contained")
             gaps = tuple(
                 gap
                 for domain, enclosure in zip(selector.variable_box, image, strict=True)
                 for gap in (enclosure[0] - domain[0], domain[1] - enclosure[1])
             )
-            actual_k_margin = min(gaps)
-            if stored_k_margin != actual_k_margin:
-                return TubeReplayResult(False, TubeRelation.UNKNOWN, "krawczyk_margin_mismatch")
+            actual_selector_margin = min(gaps)
+            if stored_selector_margin != actual_selector_margin:
+                return TubeReplayResult(False, TubeRelation.UNKNOWN, "selector_margin_mismatch")
 
             if len(margins) != len(constraints):
                 return TubeReplayResult(False, TubeRelation.UNKNOWN, "constraint_count_mismatch")
@@ -865,7 +1176,7 @@ def _verify_proof(
                             False, TubeRelation.UNKNOWN, "closed_constraint_false"
                         )
 
-    strict_k = actual_k_margin > 0
+    strict_k = actual_selector_margin > 0
     if relation is TubeRelation.ROBUST_INNER:
         if not (strict_k and all_claimed_strict):
             return TubeReplayResult(False, TubeRelation.UNKNOWN, "robust_claim_without_margin")
@@ -1096,8 +1407,10 @@ def replay_alpha_tube_branch(
         or not 1 <= result.max_leaves <= MAX_ALPHA_LEAVES
     ):
         return AlphaTubeBranchReplayResult(False, "invalid_branch_budget", ())
-    if len(result.leaves) > result.max_leaves or not _alpha_partition_covers(
-        initial_box, result.leaves
+    if (
+        len(result.leaves) > result.max_leaves
+        or any(leaf.depth > result.max_depth for leaf in result.leaves)
+        or not _alpha_partition_covers(initial_box, result.leaves)
     ):
         return AlphaTubeBranchReplayResult(False, "invalid_branch_partition", ())
 
@@ -1116,7 +1429,8 @@ def replay_alpha_tube_branch(
                 tuple(leaf_replays),
             )
         try:
-            sealed_reason = _load_document(leaf.certificate.to_json())["reason"]
+            sealed_document = _load_document(leaf.certificate.to_json())
+            sealed_reason = sealed_document["reason"]
         except (KeyError, TypeError, ValueError, json.JSONDecodeError):
             return AlphaTubeBranchReplayResult(
                 False,
@@ -1131,6 +1445,28 @@ def replay_alpha_tube_branch(
             )
         children = _bisect_alpha(leaf.box)
         if replay.relation is TubeRelation.UNKNOWN:
+            attempted = sealed_document.get("attempted_precisions")
+            if not isinstance(attempted, list):
+                return AlphaTubeBranchReplayResult(
+                    False,
+                    "invalid_unknown_precision_evidence",
+                    tuple(leaf_replays),
+                )
+            replay_schedule = tuple(attempted) if attempted else DEFAULT_PRECISION_SCHEDULE
+            regenerated = certify_alpha_tube(
+                problem,
+                leaf.box,
+                precision_schedule=replay_schedule,
+            )
+            if (
+                regenerated.relation is not TubeRelation.UNKNOWN
+                or regenerated.reason != sealed_reason
+            ):
+                return AlphaTubeBranchReplayResult(
+                    False,
+                    "unknown_reason_not_reproduced",
+                    tuple(leaf_replays),
+                )
             expected_terminal = {
                 "atomic_unknown"
                 if sealed_reason == _SUBDIVIDABLE_UNKNOWN_REASON and children is None
