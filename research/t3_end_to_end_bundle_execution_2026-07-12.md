@@ -122,7 +122,7 @@ Gershgorin 给出快速且可靠的
 
 合并 exact-index/WLS interval/T5/T6 代码后的实际质量门：
 
-- 全仓 pytest：`253 passed`；
+- 全仓 pytest：`254 passed`；
 - T5/T6/Fantasia provenance 聚焦测试：`19 passed`；
 - two-rate sweep + multirate 聚焦测试：`16 passed`；
 - R2 protocol/bound/bundle/WLS 聚焦路径包含在全仓门中；

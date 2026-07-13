@@ -10,13 +10,15 @@ Build from this directory with:
     latexmk -pdf -interaction=nonstopmode -halt-on-error fo_ecg_certified_identifiability.tex
     latexmk -pdf -interaction=nonstopmode -halt-on-error fo_ecg_theory_core.tex
 
-Regenerate the data-derived figure from the repository root with:
+Regenerate the method and data-derived figures from the repository root with:
 
     .\.venv\Scripts\python.exe scripts\make_paper_figures.py
 
-The figure reads only the locked derived bundle under
-research/results/fantasia_pilot_2026-07-12. Raw ECG remains outside the
-repository.
+The generator creates the structural-identifiability geometry, the
+point-estimate/certified-set workflow comparison, the core-method evidence
+figure, and the Fantasia pilot summary.  Data-derived panels read only the
+sealed exact-data bundles and versioned legacy results under
+`research/results`; raw ECG remains outside the repository.
 
 The manuscript intentionally preserves two negative conclusions:
 

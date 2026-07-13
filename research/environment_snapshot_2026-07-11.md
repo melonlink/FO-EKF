@@ -31,9 +31,9 @@ Branch policy:
   - Arb/ACB rigorous ball arithmetic
   - official self-test: 227 tests and 3,092 doctests passed
 - Installation target: editable project with `.[dev,cert]`
-- Final repository validation on 2026-07-12: 253 tests passed; full Ruff lint
+- Final repository validation on 2026-07-12: 254 tests passed; full Ruff lint
   and repository-wide format checks passed.
-- Manuscripts: the 15-page main paper and 25-page theory-core supplement build
+- Manuscripts: the 17-page main paper and 25-page theory-core supplement build
   without unresolved references or overfull boxes. Remaining bibliography
   underfull warnings are nonblocking line-breaking diagnostics.
 

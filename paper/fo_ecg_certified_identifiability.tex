@@ -124,6 +124,12 @@ Its contributions are deliberately narrow.
       real-ECG response disk.
 \end{enumerate}
 
+Figures~\ref{fig:identifiability-ladder-main} and
+\ref{fig:chain-main} make the methodological distinction explicit: the first
+separates one-rate nonidentifiability, two-rate recovery, and three-rate model
+checking; the second separates a fitted point from a response-disk coverage
+certificate and a shared-parameter feasible set.
+
 Detailed proofs, validated-continuation constructions, and all component
 bounds are given in the accompanying theory-core supplement.  The present
 paper retains only the results needed to understand the control contribution
@@ -491,6 +497,28 @@ $\deg P\le L-1<N$.
 Even a certified singleton inside \eqref{eq:response-main} is therefore an
 effective surrogate order, not proof of fractional cardiac physiology.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/method_identifiability_geometry.pdf}
+\caption{Identifiability ladder for the declared exact harmonic surrogate.
+(a) At one rate, every candidate order and damping can reproduce the same
+response through a candidate-dependent morphology, so a numerical point is
+not structural identification.  (b) With two exact rates and one shared
+nonzero complex morphology, the complete quotient removes the common complex
+gain and has a unique physical inverse.  The displayed rays use rate ratio
+$\rho=2$; the theorem holds for every $\rho>1$.  (c) A third geometrically
+spaced rate supplies a redundant cross-ratio equation rather than another
+fitted nuisance.  These panels concern exact structural geometry under
+Assumption~\ref{ass:boundary-main}; they do not establish finite-record
+coverage or a physiological fractional mechanism.}
+\label{fig:identifiability-ladder-main}
+\end{figure}
+
+Figure~\ref{fig:identifiability-ladder-main} summarizes the information
+hierarchy: one rate leaves an equivalence fibre, two rates collapse it under
+the common-gauge contract, and a third rate creates a falsifiable equation.
+Finite-record uncertainty is addressed separately below.
+
 \section{Finite-record set certificate}
 
 \subsection{Exact joint disk inversion}
@@ -641,23 +669,18 @@ relation is an outer feasibility proof or general model-acceptance decision.
 
 \begin{figure}[t]
 \centering
-\fbox{\begin{minipage}{0.94\linewidth}
-\centering
-\textbf{Frozen samples and manifests}
-$\longrightarrow$ replayed complex WLS centre
-$\oplus$ exact-payload numerical enclosure\\[3pt]
-$\oplus$ \textbf{independently calibrated primitive bounds}
-$\longrightarrow$ R2 response disks\\[3pt]
-$\oplus$ \textbf{joint protocol result and prior hashes}
-$\longrightarrow$ frozen-selector R1 witness\\[3pt]
-$\longrightarrow$ \status{PRESERVED\_ROBUST} or
-\status{PRESERVED\_CLOSED}.\\[5pt]
-Any missing link, hash mismatch, unsupported bound, singular Gram proof, or
-insufficient margin $\longrightarrow$ \status{NOT\_CERTIFIABLE}.
-\end{minipage}}
-\caption{Certificate composition and fail-closed semantics.  The current
-real-data pilot completes WLS execution replay but not the independent R2
-primitive calibration; it therefore stops before a real-data response-disk
+\includegraphics[width=0.98\linewidth]{figures/certification_workflow_comparison.pdf}
+\caption{Conceptual point-estimation and certified-set paths; the upper path
+is illustrative and is not an algorithm comparison performed in this paper.
+A point WLS estimate or point optimizer/filter output does not by itself
+enclose acquisition, numerical, and model errors.  The proposed path binds
+exact sample indices and hashes, replays the WLS centre and validated
+numerical disk, and sends independently sourced primitives through the R2
+coverage gate.  A pass forms response disks for shared-parameter joint
+inversion; missing evidence returns \status{NOT\_CERTIFIABLE}, while a protocol
+outside the declared information boundary is excluded.  R2 pass means
+coverage, not model acceptance.  \status{REJECT\_MODEL} would require a
+complete outer-set emptiness proof; the current real-data pilot has no R2
 pass.}
 \label{fig:chain-main}
 \end{figure}
@@ -740,46 +763,36 @@ together rather than using a fixed beats-per-minute rule.
 
 \subsection{Synthetic and adversarial verification}
 
-Table~\ref{tab:synthetic-main} summarizes the deterministic evidence bundle.
+Figure~\ref{fig:core-method-evidence-main} aligns the deterministic evidence
+with four distinguishing method claims: gauge-invariant recovery, redundant
+falsification, a fail-closed response disk, and explicit finite-error
+resolution cost.
 All random experiments use NumPy PCG64 with seed 20260711, and stored CSV
 outputs are byte-reproducible apart from explicitly excluded elapsed-time
 fields.  These experiments check implementation consistency and bound
 coverage on their declared domains; they do not replace a proof or calibrate
 real ECG errors.
 
-\begin{table}[t]
+\begin{figure}[t]
 \centering
-\caption{Synthetic and replay evidence.  ``Pass'' is scoped to the test in the
-second column and is not a real-ECG order certificate.}
-\label{tab:synthetic-main}
-\small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}
->{\raggedright\arraybackslash}X r
->{\raggedright\arraybackslash}p{0.18\linewidth}@{}}
-\toprule
-Layer & Check & Cases & Result \\
-\midrule
-Two-rate theorem & Global inverse and common-gain invariance
- & 1,260 & all pass; max. $|\Delta\alpha|=4.07\times10^{-13}$ \\
-Three-rate check & Reference-pair consistency / valid-pair tamper
- & 1,260/1,260 & all consistent / all inconsistent \\
-Exact sample chain & WLS/interval/R2/protocol/bundle; two seal attacks
- & 1+2 & preserved robust; both attacks not certifiable \\
-Legacy 3-rate & Analytic triplet recovery diagnostic
- & 1,200 & 1,200 pass \\
-Full memory & Pointwise history/dwell and demodulation bounds
- & 75+15 & all pass \\
-Switch stress & Constant positive/negative forcing switches
- & 225 & all pass; max utilization 0.999832 \\
-Legacy G0 gate & Valid controls / invalid protocols / equivalent nuisances
- & 60/180/10 & 60 pass; 190 not certifiable \\
-Legacy triplet outer & Bounded random complex perturbations
- & 49,152 & 0 bound violations \\
-Legacy triplet boundary & Circle-directed adversarial perturbations
- & 256 & 100\% order coverage \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\includegraphics[width=0.98\linewidth]{figures/core_method_evidence.pdf}
+\caption{Evidence matched to the distinguishing method claims.  (a) Absolute
+order error before and after a common complex gain over 1,260 exact two-rate
+cases spanning the frozen rate ratios, damping decades, and morphology pairs.
+(b) Truth-referenced geometric residuals for admissible triples and controls:
+the control replaces only the third response by one from a separately valid
+$(1,3)$ pair with 5\% changed damping and morphology re-anchored to preserve
+the first response.  Every admissible triple is consistent and every control
+is detected.  (c) The sealed exact-sample fixture contains its known response,
+while either a payload change or an unsealed radius change returns
+\status{NOT\_CERTIFIABLE}.  (d) A conservative legacy fixed-subset outer
+diagnostic retains coverage but widens as the response radius grows; it is not
+the exact joint R1 projection.  These panels audit implementations and their
+resolution cost on exact or synthetic domains; they are not proofs,
+noisy-data validation, real-ECG R2 calibration, or evidence for a physiological
+fractional mechanism.}
+\label{fig:core-method-evidence-main}
+\end{figure}
 
 The production exact-sample case then closes the implemented composition on
 eight signed integer samples at indices 80--87 with uniform weights.  WLS
@@ -796,6 +809,8 @@ binary64 WLS record alone deliberately retains
 \status{NOT\_CERTIFIABLE}; only the separately replayed exact uniform-weight
 interval closes its phase, $G$, right-hand-side, solve, and division rounding.
 This positive chain is synthetic and does not supply any real-data primitive.
+Figure~\ref{fig:core-method-evidence-main}(c) shows the known response in units
+of the final certified radius and the two fail-closed seal controls.
 
 The production two-rate sweep used a fixed Cartesian grid over 21 orders from
 0.05 to 1, five damping decades from $10^{-2}$ to $10^2$, four rate ratios
@@ -809,7 +824,9 @@ three-rate triples were consistent.  Replacing only the third response by a
 separately valid pair with 5\% changed damping produced 1,260/1,260 explicit
 \status{INCONSISTENT} results, rather than relying on an out-of-image failure.
 This is a floating-point implementation audit of the proved identities, not a
-proof and not noisy-data evidence.
+proof and not noisy-data evidence; panels (a)--(b) of
+Figure~\ref{fig:core-method-evidence-main} visualize the recovery accuracy and
+the separation between valid and deliberately inconsistent triples.
 
 The legacy three-rate diagnostic's maximum absolute recovery errors were
 $3.47\times10^{-13}$ for $\alpha$, $2.78\times10^{-12}$ for $\lambda$, and
@@ -831,6 +848,9 @@ coverage remained correct.  At relative complex-response radii 0.01\%, 0.1\%,
 by itself guarantee a narrow certified outer set.  These widths diagnose the
 conservatism and practical resolution of that legacy propagation chain, not
 the exact ambiguity of the joint feasible set.
+Figure~\ref{fig:core-method-evidence-main}(d) places that loss of resolution on
+the same radius axis: unlike a point output, the outer set visibly reports the
+price of finite error instead of retaining false precision.
 
 The certificate test suite also modifies or removes evidence fields.  Missing
 rate--harmonic links, component/record/estimator hash mismatches, altered
@@ -841,6 +861,10 @@ margin, and aliased singular Gram matrices are all downgraded to
 Gram example exercises the validated $LDL^*$ fallback.
 
 \subsection{Design-locked four-record Fantasia pilot}
+
+Figure~\ref{fig:core-method-evidence-main} audits the method on declared exact
+and synthetic domains.  The present subsection separately reports the
+real-data negative pilot and does not reuse its residuals as R2 bounds.
 
 Fantasia contains long ECG and respiration recordings from young and older
 participants and was originally used to study age-related interbeat dynamics
@@ -956,6 +980,8 @@ Empirical validation residuals are not used to fill these bounds.
 
 \subsection{What the theory establishes}
 
+As Figure~\ref{fig:identifiability-ladder-main} emphasizes, the contribution
+is not an additional fractional filter but a change in information structure.
 The global quotient theorem provides a clean answer to the structural
 question posed in the introduction.  Positive real damping adds a phase
 constraint that makes two complete complex rate responses sufficient despite
